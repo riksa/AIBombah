@@ -8,3 +8,8 @@ target
 /plugins
 /web-app/plugins
 /web-app/WEB-INF/classes
+
+# no idea
+.idea/workspace.xml
+/out
+
