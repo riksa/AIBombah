@@ -1,5 +1,5 @@
 import com.caucho.hessian.client.HessianProxyFactory
-import org.riksa.aibombah.server.GameApi
+import org.riksa.aibombah.api.GameApi
 
 /**
  * User: riksa
@@ -7,18 +7,26 @@ import org.riksa.aibombah.server.GameApi
  * Time: 2:59 PM
  */
 
-def url = "http://localhost:8888/AIBombahServer/hessian/GameService";
+def url = "http://localhost:8080/AIBombahServer/hessian/GameService";
 
 println "Connecting to $url"
 
 HessianProxyFactory factory = new HessianProxyFactory();
 GameApi api = (GameApi) factory.create(GameApi.class, url);
 
-def start = System.currentTimeMillis()
-999.times {
-    api.ping()
+println "Ping ${api.ping()}"
+
+def gameInfo = api.createGame()
+println "Created a new game $gameInfo"
+
+api.listGames().each {
+    println "Game running :: $it"
 }
-def response = api.ping()
-def spent = System.currentTimeMillis() - start
-println "Ping $response in {$spent}ms )"
+
+api.killGame( gameInfo.id )
+
+api.listGames().each {
+    println "Game running :: $it"
+}
+
 

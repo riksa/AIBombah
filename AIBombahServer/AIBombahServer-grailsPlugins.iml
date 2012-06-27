@@ -37,9 +37,6 @@
       <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/resources-1.1.6/grails-app/taglib" isTestSource="false" />
     </content>
     <content url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/tomcat-2.0.4" />
-    <content url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/webxml-1.4.1">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
-    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
