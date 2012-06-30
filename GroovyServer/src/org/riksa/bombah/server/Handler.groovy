@@ -31,7 +31,7 @@ class Handler implements BombahService.Iface {
 
     @Override
     ControllerResult controllerEvent(ControllerState controllerState) {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        return new ControllerResult()
     }
 
     @Override

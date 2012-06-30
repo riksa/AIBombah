@@ -8,6 +8,7 @@ import org.riksa.bombah.thrift.Tile
 import org.riksa.bombah.thrift.Coordinate
 import java.util.concurrent.atomic.AtomicInteger
 import org.riksa.bombah.thrift.GameOverException
+import org.riksa.bombah.thrift.Constants
 
 /**
  * Created with IntelliJ IDEA.
@@ -69,7 +70,7 @@ class Game {
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * 25, ticksPerSecond: 250)
+        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: Constants.TICKS_PER_SECOND)
 
         if (asciiArt.length() != width * height) {
             log.error("Map is not $width X $height")

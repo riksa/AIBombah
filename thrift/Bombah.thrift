@@ -1,5 +1,20 @@
 namespace java org.riksa.bombah.thrift
 
+/**
+ * 25 ticks per second at normal rate
+ */
+const i32 TICKS_PER_SECOND = 50
+/**
+ * movement takes 5 ticks / tile
+ */
+const i32 TICKS_PER_TILE   = 10
+/**
+ * normal bomb explodes in 150 ticks (3s)
+ * fast bomb in half that time
+ * slow bomb takes double that
+ */
+const i32 TICKS_BOMB      = 150
+
 enum Direction {
     N  = 0,
     NE = 1,
