@@ -4,6 +4,9 @@ import org.apache.thrift.transport.TServerSocket
 import org.apache.thrift.transport.TServerTransport
 import org.riksa.bombah.server.Handler
 import org.riksa.bombah.thrift.BombahService
+import org.apache.thrift.server.TThreadPoolServer
+import java.util.logging.LogManager
+import org.slf4j.LoggerFactory
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,15 +26,19 @@ def PORT = 12345
 //final BombahService.Processor processor = new BombahService.Processor( new Handler());
 //TServer server = new TSimpleServer(processor, serverTransport);
 
+FileInputStream fis =  new FileInputStream("logging.properties");
+LogManager.getLogManager().readConfiguration(fis);
+def log = LoggerFactory.getLogger( getClass() )
+
 try {
     Handler handler = new Handler();
     BombahService.Processor processor = new BombahService.Processor(handler);
 
     TServerTransport serverTransport = new TServerSocket(PORT);
-    TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
+//    TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
 
     // Use this for a multithreaded server
-    // TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
+     TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
 
     System.out.println("Starting the simple server...");
     server.serve();

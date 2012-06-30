@@ -48,6 +48,10 @@ exception YouAreDeadException {
 
 }
 
+exception TimeoutException {
+
+}
+
 struct PlayerState {
     1:i32 bomb_size, // just the buffs, actual size might be different because of diseases
     2:i32 bomb_amount,
@@ -113,6 +117,8 @@ service BombahService {
 	MoveActionResult move(1: MoveAction moveAction ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 	BombActionResult bomb(1: BombAction bombAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 //	ChainActionResult chainActions(1: ChainAction chainAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+
+    MapState joinGame() throws (1:TimeoutException timeOutException);
 	MapState getMapState();
 
 }

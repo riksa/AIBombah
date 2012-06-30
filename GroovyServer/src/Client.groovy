@@ -2,6 +2,8 @@ import org.apache.thrift.protocol.TBinaryProtocol
 import org.apache.thrift.protocol.TProtocol
 import org.apache.thrift.transport.TSocket
 import org.riksa.bombah.thrift.BombahService
+import org.slf4j.LoggerFactory
+import java.util.logging.LogManager
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,23 +15,30 @@ import org.riksa.bombah.thrift.BombahService
 
 def HOST = "localhost"
 def PORT = 12345
+def log = LoggerFactory.getLogger( getClass() )
+FileInputStream fis =  new FileInputStream("logging.properties");
+LogManager.getLogManager().readConfiguration(fis);
 
-def transport = new TSocket(HOST, 12345);
-transport.open();
+def clientRunnable = new Runnable() {
+    @Override
+    void run() {
+        def transport = new TSocket(HOST, PORT);
+        transport.open();
 
-TProtocol protocol = new TBinaryProtocol(transport);
-BombahService.Client client = new BombahService.Client(protocol);
+        TProtocol protocol = new TBinaryProtocol(transport);
+        def id = Thread.currentThread().id
+        BombahService.Client client = new BombahService.Client(protocol);
+        log.debug("#$id Joining game")
+        def mapState = client.joinGame()
+        log.debug("#$id Joined game $mapState")
 
-client.ping()
+        Thread.sleep( 5000 );
+        log.debug("#$id Done...")
 
-def start = System.currentTimeMillis()
-1000.times {
-    client.ping()
+        transport.close()
+    }
 }
 
-def spent = System.currentTimeMillis()-start
-
-println "ping "+client.ping()
-println "1000 evocations too ${spent}ms"
-
-transport.close()
+5.times {
+    new Thread( clientRunnable ).start()
+}
