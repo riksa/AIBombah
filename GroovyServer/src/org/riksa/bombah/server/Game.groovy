@@ -7,6 +7,7 @@ import org.riksa.bombah.thrift.GameInfo
 import org.riksa.bombah.thrift.Tile
 import org.riksa.bombah.thrift.Coordinate
 import java.util.concurrent.atomic.AtomicInteger
+import org.riksa.bombah.thrift.GameOverException
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,7 +25,7 @@ class Game {
     GameInfo gameInfo
     def List clientIds = new ArrayList()
     def tick
-    def tickerThread
+    Timer timer
 
     public Game() {
         id = idGenerator.incrementAndGet()
@@ -68,7 +69,7 @@ class Game {
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * 30, ticksPerSecond: 30)
+        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * 25, ticksPerSecond: 250)
 
         if (asciiArt.length() != width * height) {
             log.error("Map is not $width X $height")
@@ -123,50 +124,75 @@ class Game {
 
     }
 
-    synchronized void tick() {
+    synchronized void tick() throws GameOverException {
         def time = System.currentTimeMillis()
         tick++
         log.debug( "Tick #$tick, time = $time")
+        if( tick >= gameInfo.ticksTotal )
+            throw new GameOverException()
     }
 
-    def gameRunnable = new Runnable() {
-        @Override
-        void run() {
-            def running = true
-            while( running ) {
-                try {
-                    Thread.sleep( 1000l )
-                    log.error( "Noone woke me up and I died :(")
-                    running = false
-                } catch( InterruptedException ie ) {
-                    tick()
-                }
-            }
-        }
-    }
+//    def gameRunnable = new Runnable() {
+//        @Override
+//        void run() {
+//            def running = true
+//            while( running ) {
+//                try {
+//                    Thread.sleep( 1000l )
+//                    log.error( "Noone woke me up and I died :(")
+//                    running = false
+//                } catch( InterruptedException ie ) {
+//                    tick()
+//                }
+//            }
+//        }
+//    }
 
     void startGame() {
-        def final gameThread = new Thread( gameRunnable )
-        gameThread.start()
+//        def final gameThread = new Thread( gameRunnable )
+//        gameThread.start()
 
         final long sleepTime = 1000l/gameInfo.ticksPerSecond
-        def tickerRunnable = new Runnable() {
+//        def tickerRunnable = new Runnable() {
+//            @Override
+//            void run() {
+//                def running = true
+//                while( running ) {
+//                    try {
+//                        Thread.sleep( sleepTime );
+//                        gameThread.interrupt()
+//                    } catch( InterruptedException ie ) {
+//                        running = false
+//                    }
+//                }
+//            }
+//        }
+
+        if( timer )
+            timer.cancel()
+
+        def timerTask = new TimerTask() {
+            def previousExecution = System.currentTimeMillis()
             @Override
             void run() {
-                def running = true
-                while( running ) {
-                    try {
-                        Thread.sleep( sleepTime );
-                        gameThread.interrupt()
-                    } catch( InterruptedException ie ) {
-                        running = false
-                    }
+                def now = System.currentTimeMillis()
+                def delta = now - previousExecution
+                previousExecution = now
+                log.debug( "delta = $delta")
+                try {
+                    tick()
+                } catch( GameOverException e ) {
+                    log.debug("Game over")
+                    timer.cancel()
+                    timer = null
                 }
             }
         }
+        timer = new Timer()
+        timer.scheduleAtFixedRate( timerTask, 0, sleepTime )
 
-        tickerThread = new Thread( tickerRunnable );
-        tickerThread.start()
+//        tickerThread = new Thread( tickerRunnable );
+//        tickerThread.start()
 
     }
 }
