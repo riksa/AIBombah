@@ -33,11 +33,28 @@ public class BombahService {
 
     public String ping() throws org.apache.thrift.TException;
 
+    /**
+     * Event from controller
+     * 
+     * @param controllerState
+     */
+    public ControllerResult controllerEvent(ControllerState controllerState) throws YouAreDeadException, GameOverException, org.apache.thrift.TException;
+
+    public MoveActionResult move(MoveAction moveAction) throws YouAreDeadException, GameOverException, org.apache.thrift.TException;
+
+    public BombActionResult bomb(BombAction bombAction) throws YouAreDeadException, GameOverException, org.apache.thrift.TException;
+
   }
 
   public interface AsyncIface {
 
     public void ping(org.apache.thrift.async.AsyncMethodCallback<AsyncClient.ping_call> resultHandler) throws org.apache.thrift.TException;
+
+    public void controllerEvent(ControllerState controllerState, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.controllerEvent_call> resultHandler) throws org.apache.thrift.TException;
+
+    public void move(MoveAction moveAction, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.move_call> resultHandler) throws org.apache.thrift.TException;
+
+    public void bomb(BombAction bombAction, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.bomb_call> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -81,6 +98,93 @@ public class BombahService {
         return result.success;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "ping failed: unknown result");
+    }
+
+    public ControllerResult controllerEvent(ControllerState controllerState) throws YouAreDeadException, GameOverException, org.apache.thrift.TException
+    {
+      send_controllerEvent(controllerState);
+      return recv_controllerEvent();
+    }
+
+    public void send_controllerEvent(ControllerState controllerState) throws org.apache.thrift.TException
+    {
+      controllerEvent_args args = new controllerEvent_args();
+      args.setControllerState(controllerState);
+      sendBase("controllerEvent", args);
+    }
+
+    public ControllerResult recv_controllerEvent() throws YouAreDeadException, GameOverException, org.apache.thrift.TException
+    {
+      controllerEvent_result result = new controllerEvent_result();
+      receiveBase(result, "controllerEvent");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.youAreDead != null) {
+        throw result.youAreDead;
+      }
+      if (result.gameOver != null) {
+        throw result.gameOver;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "controllerEvent failed: unknown result");
+    }
+
+    public MoveActionResult move(MoveAction moveAction) throws YouAreDeadException, GameOverException, org.apache.thrift.TException
+    {
+      send_move(moveAction);
+      return recv_move();
+    }
+
+    public void send_move(MoveAction moveAction) throws org.apache.thrift.TException
+    {
+      move_args args = new move_args();
+      args.setMoveAction(moveAction);
+      sendBase("move", args);
+    }
+
+    public MoveActionResult recv_move() throws YouAreDeadException, GameOverException, org.apache.thrift.TException
+    {
+      move_result result = new move_result();
+      receiveBase(result, "move");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.youAreDead != null) {
+        throw result.youAreDead;
+      }
+      if (result.gameOver != null) {
+        throw result.gameOver;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "move failed: unknown result");
+    }
+
+    public BombActionResult bomb(BombAction bombAction) throws YouAreDeadException, GameOverException, org.apache.thrift.TException
+    {
+      send_bomb(bombAction);
+      return recv_bomb();
+    }
+
+    public void send_bomb(BombAction bombAction) throws org.apache.thrift.TException
+    {
+      bomb_args args = new bomb_args();
+      args.setBombAction(bombAction);
+      sendBase("bomb", args);
+    }
+
+    public BombActionResult recv_bomb() throws YouAreDeadException, GameOverException, org.apache.thrift.TException
+    {
+      bomb_result result = new bomb_result();
+      receiveBase(result, "bomb");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.youAreDead != null) {
+        throw result.youAreDead;
+      }
+      if (result.gameOver != null) {
+        throw result.gameOver;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "bomb failed: unknown result");
     }
 
   }
@@ -130,6 +234,102 @@ public class BombahService {
       }
     }
 
+    public void controllerEvent(ControllerState controllerState, org.apache.thrift.async.AsyncMethodCallback<controllerEvent_call> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      controllerEvent_call method_call = new controllerEvent_call(controllerState, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class controllerEvent_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private ControllerState controllerState;
+      public controllerEvent_call(ControllerState controllerState, org.apache.thrift.async.AsyncMethodCallback<controllerEvent_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.controllerState = controllerState;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("controllerEvent", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        controllerEvent_args args = new controllerEvent_args();
+        args.setControllerState(controllerState);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public ControllerResult getResult() throws YouAreDeadException, GameOverException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_controllerEvent();
+      }
+    }
+
+    public void move(MoveAction moveAction, org.apache.thrift.async.AsyncMethodCallback<move_call> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      move_call method_call = new move_call(moveAction, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class move_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private MoveAction moveAction;
+      public move_call(MoveAction moveAction, org.apache.thrift.async.AsyncMethodCallback<move_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.moveAction = moveAction;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("move", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        move_args args = new move_args();
+        args.setMoveAction(moveAction);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public MoveActionResult getResult() throws YouAreDeadException, GameOverException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_move();
+      }
+    }
+
+    public void bomb(BombAction bombAction, org.apache.thrift.async.AsyncMethodCallback<bomb_call> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      bomb_call method_call = new bomb_call(bombAction, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class bomb_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private BombAction bombAction;
+      public bomb_call(BombAction bombAction, org.apache.thrift.async.AsyncMethodCallback<bomb_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.bombAction = bombAction;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("bomb", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        bomb_args args = new bomb_args();
+        args.setBombAction(bombAction);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public BombActionResult getResult() throws YouAreDeadException, GameOverException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_bomb();
+      }
+    }
+
   }
 
   public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
@@ -144,6 +344,9 @@ public class BombahService {
 
     private static <I extends Iface> Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> getProcessMap(Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
       processMap.put("ping", new ping());
+      processMap.put("controllerEvent", new controllerEvent());
+      processMap.put("move", new move());
+      processMap.put("bomb", new bomb());
       return processMap;
     }
 
@@ -159,6 +362,72 @@ public class BombahService {
       protected ping_result getResult(I iface, ping_args args) throws org.apache.thrift.TException {
         ping_result result = new ping_result();
         result.success = iface.ping();
+        return result;
+      }
+    }
+
+    private static class controllerEvent<I extends Iface> extends org.apache.thrift.ProcessFunction<I, controllerEvent_args> {
+      public controllerEvent() {
+        super("controllerEvent");
+      }
+
+      protected controllerEvent_args getEmptyArgsInstance() {
+        return new controllerEvent_args();
+      }
+
+      protected controllerEvent_result getResult(I iface, controllerEvent_args args) throws org.apache.thrift.TException {
+        controllerEvent_result result = new controllerEvent_result();
+        try {
+          result.success = iface.controllerEvent(args.controllerState);
+        } catch (YouAreDeadException youAreDead) {
+          result.youAreDead = youAreDead;
+        } catch (GameOverException gameOver) {
+          result.gameOver = gameOver;
+        }
+        return result;
+      }
+    }
+
+    private static class move<I extends Iface> extends org.apache.thrift.ProcessFunction<I, move_args> {
+      public move() {
+        super("move");
+      }
+
+      protected move_args getEmptyArgsInstance() {
+        return new move_args();
+      }
+
+      protected move_result getResult(I iface, move_args args) throws org.apache.thrift.TException {
+        move_result result = new move_result();
+        try {
+          result.success = iface.move(args.moveAction);
+        } catch (YouAreDeadException youAreDead) {
+          result.youAreDead = youAreDead;
+        } catch (GameOverException gameOver) {
+          result.gameOver = gameOver;
+        }
+        return result;
+      }
+    }
+
+    private static class bomb<I extends Iface> extends org.apache.thrift.ProcessFunction<I, bomb_args> {
+      public bomb() {
+        super("bomb");
+      }
+
+      protected bomb_args getEmptyArgsInstance() {
+        return new bomb_args();
+      }
+
+      protected bomb_result getResult(I iface, bomb_args args) throws org.apache.thrift.TException {
+        bomb_result result = new bomb_result();
+        try {
+          result.success = iface.bomb(args.bombAction);
+        } catch (YouAreDeadException youAreDead) {
+          result.youAreDead = youAreDead;
+        } catch (GameOverException gameOver) {
+          result.gameOver = gameOver;
+        }
         return result;
       }
     }
@@ -757,6 +1026,2748 @@ public class BombahService {
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class controllerEvent_args implements org.apache.thrift.TBase<controllerEvent_args, controllerEvent_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("controllerEvent_args");
+
+    private static final org.apache.thrift.protocol.TField CONTROLLER_STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("controllerState", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new controllerEvent_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new controllerEvent_argsTupleSchemeFactory());
+    }
+
+    public ControllerState controllerState; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      CONTROLLER_STATE((short)1, "controllerState");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // CONTROLLER_STATE
+            return CONTROLLER_STATE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.CONTROLLER_STATE, new org.apache.thrift.meta_data.FieldMetaData("controllerState", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ControllerState.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(controllerEvent_args.class, metaDataMap);
+    }
+
+    public controllerEvent_args() {
+    }
+
+    public controllerEvent_args(
+      ControllerState controllerState)
+    {
+      this();
+      this.controllerState = controllerState;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public controllerEvent_args(controllerEvent_args other) {
+      if (other.isSetControllerState()) {
+        this.controllerState = new ControllerState(other.controllerState);
+      }
+    }
+
+    public controllerEvent_args deepCopy() {
+      return new controllerEvent_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.controllerState = null;
+    }
+
+    public ControllerState getControllerState() {
+      return this.controllerState;
+    }
+
+    public controllerEvent_args setControllerState(ControllerState controllerState) {
+      this.controllerState = controllerState;
+      return this;
+    }
+
+    public void unsetControllerState() {
+      this.controllerState = null;
+    }
+
+    /** Returns true if field controllerState is set (has been assigned a value) and false otherwise */
+    public boolean isSetControllerState() {
+      return this.controllerState != null;
+    }
+
+    public void setControllerStateIsSet(boolean value) {
+      if (!value) {
+        this.controllerState = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case CONTROLLER_STATE:
+        if (value == null) {
+          unsetControllerState();
+        } else {
+          setControllerState((ControllerState)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case CONTROLLER_STATE:
+        return getControllerState();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case CONTROLLER_STATE:
+        return isSetControllerState();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof controllerEvent_args)
+        return this.equals((controllerEvent_args)that);
+      return false;
+    }
+
+    public boolean equals(controllerEvent_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_controllerState = true && this.isSetControllerState();
+      boolean that_present_controllerState = true && that.isSetControllerState();
+      if (this_present_controllerState || that_present_controllerState) {
+        if (!(this_present_controllerState && that_present_controllerState))
+          return false;
+        if (!this.controllerState.equals(that.controllerState))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(controllerEvent_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      controllerEvent_args typedOther = (controllerEvent_args)other;
+
+      lastComparison = Boolean.valueOf(isSetControllerState()).compareTo(typedOther.isSetControllerState());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetControllerState()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.controllerState, typedOther.controllerState);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("controllerEvent_args(");
+      boolean first = true;
+
+      sb.append("controllerState:");
+      if (this.controllerState == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.controllerState);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class controllerEvent_argsStandardSchemeFactory implements SchemeFactory {
+      public controllerEvent_argsStandardScheme getScheme() {
+        return new controllerEvent_argsStandardScheme();
+      }
+    }
+
+    private static class controllerEvent_argsStandardScheme extends StandardScheme<controllerEvent_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, controllerEvent_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // CONTROLLER_STATE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.controllerState = new ControllerState();
+                struct.controllerState.read(iprot);
+                struct.setControllerStateIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, controllerEvent_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.controllerState != null) {
+          oprot.writeFieldBegin(CONTROLLER_STATE_FIELD_DESC);
+          struct.controllerState.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class controllerEvent_argsTupleSchemeFactory implements SchemeFactory {
+      public controllerEvent_argsTupleScheme getScheme() {
+        return new controllerEvent_argsTupleScheme();
+      }
+    }
+
+    private static class controllerEvent_argsTupleScheme extends TupleScheme<controllerEvent_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, controllerEvent_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetControllerState()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetControllerState()) {
+          struct.controllerState.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, controllerEvent_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.controllerState = new ControllerState();
+          struct.controllerState.read(iprot);
+          struct.setControllerStateIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class controllerEvent_result implements org.apache.thrift.TBase<controllerEvent_result, controllerEvent_result._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("controllerEvent_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField YOU_ARE_DEAD_FIELD_DESC = new org.apache.thrift.protocol.TField("youAreDead", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField GAME_OVER_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOver", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new controllerEvent_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new controllerEvent_resultTupleSchemeFactory());
+    }
+
+    public ControllerResult success; // required
+    public YouAreDeadException youAreDead; // required
+    public GameOverException gameOver; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      YOU_ARE_DEAD((short)1, "youAreDead"),
+      GAME_OVER((short)2, "gameOver");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // YOU_ARE_DEAD
+            return YOU_ARE_DEAD;
+          case 2: // GAME_OVER
+            return GAME_OVER;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ControllerResult.class)));
+      tmpMap.put(_Fields.YOU_ARE_DEAD, new org.apache.thrift.meta_data.FieldMetaData("youAreDead", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.GAME_OVER, new org.apache.thrift.meta_data.FieldMetaData("gameOver", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(controllerEvent_result.class, metaDataMap);
+    }
+
+    public controllerEvent_result() {
+    }
+
+    public controllerEvent_result(
+      ControllerResult success,
+      YouAreDeadException youAreDead,
+      GameOverException gameOver)
+    {
+      this();
+      this.success = success;
+      this.youAreDead = youAreDead;
+      this.gameOver = gameOver;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public controllerEvent_result(controllerEvent_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new ControllerResult(other.success);
+      }
+      if (other.isSetYouAreDead()) {
+        this.youAreDead = new YouAreDeadException(other.youAreDead);
+      }
+      if (other.isSetGameOver()) {
+        this.gameOver = new GameOverException(other.gameOver);
+      }
+    }
+
+    public controllerEvent_result deepCopy() {
+      return new controllerEvent_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.youAreDead = null;
+      this.gameOver = null;
+    }
+
+    public ControllerResult getSuccess() {
+      return this.success;
+    }
+
+    public controllerEvent_result setSuccess(ControllerResult success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public YouAreDeadException getYouAreDead() {
+      return this.youAreDead;
+    }
+
+    public controllerEvent_result setYouAreDead(YouAreDeadException youAreDead) {
+      this.youAreDead = youAreDead;
+      return this;
+    }
+
+    public void unsetYouAreDead() {
+      this.youAreDead = null;
+    }
+
+    /** Returns true if field youAreDead is set (has been assigned a value) and false otherwise */
+    public boolean isSetYouAreDead() {
+      return this.youAreDead != null;
+    }
+
+    public void setYouAreDeadIsSet(boolean value) {
+      if (!value) {
+        this.youAreDead = null;
+      }
+    }
+
+    public GameOverException getGameOver() {
+      return this.gameOver;
+    }
+
+    public controllerEvent_result setGameOver(GameOverException gameOver) {
+      this.gameOver = gameOver;
+      return this;
+    }
+
+    public void unsetGameOver() {
+      this.gameOver = null;
+    }
+
+    /** Returns true if field gameOver is set (has been assigned a value) and false otherwise */
+    public boolean isSetGameOver() {
+      return this.gameOver != null;
+    }
+
+    public void setGameOverIsSet(boolean value) {
+      if (!value) {
+        this.gameOver = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((ControllerResult)value);
+        }
+        break;
+
+      case YOU_ARE_DEAD:
+        if (value == null) {
+          unsetYouAreDead();
+        } else {
+          setYouAreDead((YouAreDeadException)value);
+        }
+        break;
+
+      case GAME_OVER:
+        if (value == null) {
+          unsetGameOver();
+        } else {
+          setGameOver((GameOverException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case YOU_ARE_DEAD:
+        return getYouAreDead();
+
+      case GAME_OVER:
+        return getGameOver();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case YOU_ARE_DEAD:
+        return isSetYouAreDead();
+      case GAME_OVER:
+        return isSetGameOver();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof controllerEvent_result)
+        return this.equals((controllerEvent_result)that);
+      return false;
+    }
+
+    public boolean equals(controllerEvent_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_youAreDead = true && this.isSetYouAreDead();
+      boolean that_present_youAreDead = true && that.isSetYouAreDead();
+      if (this_present_youAreDead || that_present_youAreDead) {
+        if (!(this_present_youAreDead && that_present_youAreDead))
+          return false;
+        if (!this.youAreDead.equals(that.youAreDead))
+          return false;
+      }
+
+      boolean this_present_gameOver = true && this.isSetGameOver();
+      boolean that_present_gameOver = true && that.isSetGameOver();
+      if (this_present_gameOver || that_present_gameOver) {
+        if (!(this_present_gameOver && that_present_gameOver))
+          return false;
+        if (!this.gameOver.equals(that.gameOver))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(controllerEvent_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      controllerEvent_result typedOther = (controllerEvent_result)other;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetYouAreDead()).compareTo(typedOther.isSetYouAreDead());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetYouAreDead()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.youAreDead, typedOther.youAreDead);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetGameOver()).compareTo(typedOther.isSetGameOver());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGameOver()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gameOver, typedOther.gameOver);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("controllerEvent_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("youAreDead:");
+      if (this.youAreDead == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.youAreDead);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("gameOver:");
+      if (this.gameOver == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gameOver);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class controllerEvent_resultStandardSchemeFactory implements SchemeFactory {
+      public controllerEvent_resultStandardScheme getScheme() {
+        return new controllerEvent_resultStandardScheme();
+      }
+    }
+
+    private static class controllerEvent_resultStandardScheme extends StandardScheme<controllerEvent_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, controllerEvent_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new ControllerResult();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // YOU_ARE_DEAD
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.youAreDead = new YouAreDeadException();
+                struct.youAreDead.read(iprot);
+                struct.setYouAreDeadIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // GAME_OVER
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.gameOver = new GameOverException();
+                struct.gameOver.read(iprot);
+                struct.setGameOverIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, controllerEvent_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.youAreDead != null) {
+          oprot.writeFieldBegin(YOU_ARE_DEAD_FIELD_DESC);
+          struct.youAreDead.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.gameOver != null) {
+          oprot.writeFieldBegin(GAME_OVER_FIELD_DESC);
+          struct.gameOver.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class controllerEvent_resultTupleSchemeFactory implements SchemeFactory {
+      public controllerEvent_resultTupleScheme getScheme() {
+        return new controllerEvent_resultTupleScheme();
+      }
+    }
+
+    private static class controllerEvent_resultTupleScheme extends TupleScheme<controllerEvent_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, controllerEvent_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetYouAreDead()) {
+          optionals.set(1);
+        }
+        if (struct.isSetGameOver()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetYouAreDead()) {
+          struct.youAreDead.write(oprot);
+        }
+        if (struct.isSetGameOver()) {
+          struct.gameOver.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, controllerEvent_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.success = new ControllerResult();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.youAreDead = new YouAreDeadException();
+          struct.youAreDead.read(iprot);
+          struct.setYouAreDeadIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.gameOver = new GameOverException();
+          struct.gameOver.read(iprot);
+          struct.setGameOverIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class move_args implements org.apache.thrift.TBase<move_args, move_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("move_args");
+
+    private static final org.apache.thrift.protocol.TField MOVE_ACTION_FIELD_DESC = new org.apache.thrift.protocol.TField("moveAction", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new move_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new move_argsTupleSchemeFactory());
+    }
+
+    public MoveAction moveAction; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      MOVE_ACTION((short)1, "moveAction");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // MOVE_ACTION
+            return MOVE_ACTION;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.MOVE_ACTION, new org.apache.thrift.meta_data.FieldMetaData("moveAction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, MoveAction.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(move_args.class, metaDataMap);
+    }
+
+    public move_args() {
+    }
+
+    public move_args(
+      MoveAction moveAction)
+    {
+      this();
+      this.moveAction = moveAction;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public move_args(move_args other) {
+      if (other.isSetMoveAction()) {
+        this.moveAction = new MoveAction(other.moveAction);
+      }
+    }
+
+    public move_args deepCopy() {
+      return new move_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.moveAction = null;
+    }
+
+    public MoveAction getMoveAction() {
+      return this.moveAction;
+    }
+
+    public move_args setMoveAction(MoveAction moveAction) {
+      this.moveAction = moveAction;
+      return this;
+    }
+
+    public void unsetMoveAction() {
+      this.moveAction = null;
+    }
+
+    /** Returns true if field moveAction is set (has been assigned a value) and false otherwise */
+    public boolean isSetMoveAction() {
+      return this.moveAction != null;
+    }
+
+    public void setMoveActionIsSet(boolean value) {
+      if (!value) {
+        this.moveAction = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case MOVE_ACTION:
+        if (value == null) {
+          unsetMoveAction();
+        } else {
+          setMoveAction((MoveAction)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case MOVE_ACTION:
+        return getMoveAction();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case MOVE_ACTION:
+        return isSetMoveAction();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof move_args)
+        return this.equals((move_args)that);
+      return false;
+    }
+
+    public boolean equals(move_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_moveAction = true && this.isSetMoveAction();
+      boolean that_present_moveAction = true && that.isSetMoveAction();
+      if (this_present_moveAction || that_present_moveAction) {
+        if (!(this_present_moveAction && that_present_moveAction))
+          return false;
+        if (!this.moveAction.equals(that.moveAction))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(move_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      move_args typedOther = (move_args)other;
+
+      lastComparison = Boolean.valueOf(isSetMoveAction()).compareTo(typedOther.isSetMoveAction());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetMoveAction()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.moveAction, typedOther.moveAction);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("move_args(");
+      boolean first = true;
+
+      sb.append("moveAction:");
+      if (this.moveAction == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.moveAction);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class move_argsStandardSchemeFactory implements SchemeFactory {
+      public move_argsStandardScheme getScheme() {
+        return new move_argsStandardScheme();
+      }
+    }
+
+    private static class move_argsStandardScheme extends StandardScheme<move_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, move_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // MOVE_ACTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.moveAction = new MoveAction();
+                struct.moveAction.read(iprot);
+                struct.setMoveActionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, move_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.moveAction != null) {
+          oprot.writeFieldBegin(MOVE_ACTION_FIELD_DESC);
+          struct.moveAction.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class move_argsTupleSchemeFactory implements SchemeFactory {
+      public move_argsTupleScheme getScheme() {
+        return new move_argsTupleScheme();
+      }
+    }
+
+    private static class move_argsTupleScheme extends TupleScheme<move_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, move_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetMoveAction()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetMoveAction()) {
+          struct.moveAction.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, move_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.moveAction = new MoveAction();
+          struct.moveAction.read(iprot);
+          struct.setMoveActionIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class move_result implements org.apache.thrift.TBase<move_result, move_result._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("move_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField YOU_ARE_DEAD_FIELD_DESC = new org.apache.thrift.protocol.TField("youAreDead", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField GAME_OVER_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOver", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new move_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new move_resultTupleSchemeFactory());
+    }
+
+    public MoveActionResult success; // required
+    public YouAreDeadException youAreDead; // required
+    public GameOverException gameOver; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      YOU_ARE_DEAD((short)1, "youAreDead"),
+      GAME_OVER((short)2, "gameOver");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // YOU_ARE_DEAD
+            return YOU_ARE_DEAD;
+          case 2: // GAME_OVER
+            return GAME_OVER;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, MoveActionResult.class)));
+      tmpMap.put(_Fields.YOU_ARE_DEAD, new org.apache.thrift.meta_data.FieldMetaData("youAreDead", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.GAME_OVER, new org.apache.thrift.meta_data.FieldMetaData("gameOver", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(move_result.class, metaDataMap);
+    }
+
+    public move_result() {
+    }
+
+    public move_result(
+      MoveActionResult success,
+      YouAreDeadException youAreDead,
+      GameOverException gameOver)
+    {
+      this();
+      this.success = success;
+      this.youAreDead = youAreDead;
+      this.gameOver = gameOver;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public move_result(move_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new MoveActionResult(other.success);
+      }
+      if (other.isSetYouAreDead()) {
+        this.youAreDead = new YouAreDeadException(other.youAreDead);
+      }
+      if (other.isSetGameOver()) {
+        this.gameOver = new GameOverException(other.gameOver);
+      }
+    }
+
+    public move_result deepCopy() {
+      return new move_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.youAreDead = null;
+      this.gameOver = null;
+    }
+
+    public MoveActionResult getSuccess() {
+      return this.success;
+    }
+
+    public move_result setSuccess(MoveActionResult success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public YouAreDeadException getYouAreDead() {
+      return this.youAreDead;
+    }
+
+    public move_result setYouAreDead(YouAreDeadException youAreDead) {
+      this.youAreDead = youAreDead;
+      return this;
+    }
+
+    public void unsetYouAreDead() {
+      this.youAreDead = null;
+    }
+
+    /** Returns true if field youAreDead is set (has been assigned a value) and false otherwise */
+    public boolean isSetYouAreDead() {
+      return this.youAreDead != null;
+    }
+
+    public void setYouAreDeadIsSet(boolean value) {
+      if (!value) {
+        this.youAreDead = null;
+      }
+    }
+
+    public GameOverException getGameOver() {
+      return this.gameOver;
+    }
+
+    public move_result setGameOver(GameOverException gameOver) {
+      this.gameOver = gameOver;
+      return this;
+    }
+
+    public void unsetGameOver() {
+      this.gameOver = null;
+    }
+
+    /** Returns true if field gameOver is set (has been assigned a value) and false otherwise */
+    public boolean isSetGameOver() {
+      return this.gameOver != null;
+    }
+
+    public void setGameOverIsSet(boolean value) {
+      if (!value) {
+        this.gameOver = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((MoveActionResult)value);
+        }
+        break;
+
+      case YOU_ARE_DEAD:
+        if (value == null) {
+          unsetYouAreDead();
+        } else {
+          setYouAreDead((YouAreDeadException)value);
+        }
+        break;
+
+      case GAME_OVER:
+        if (value == null) {
+          unsetGameOver();
+        } else {
+          setGameOver((GameOverException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case YOU_ARE_DEAD:
+        return getYouAreDead();
+
+      case GAME_OVER:
+        return getGameOver();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case YOU_ARE_DEAD:
+        return isSetYouAreDead();
+      case GAME_OVER:
+        return isSetGameOver();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof move_result)
+        return this.equals((move_result)that);
+      return false;
+    }
+
+    public boolean equals(move_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_youAreDead = true && this.isSetYouAreDead();
+      boolean that_present_youAreDead = true && that.isSetYouAreDead();
+      if (this_present_youAreDead || that_present_youAreDead) {
+        if (!(this_present_youAreDead && that_present_youAreDead))
+          return false;
+        if (!this.youAreDead.equals(that.youAreDead))
+          return false;
+      }
+
+      boolean this_present_gameOver = true && this.isSetGameOver();
+      boolean that_present_gameOver = true && that.isSetGameOver();
+      if (this_present_gameOver || that_present_gameOver) {
+        if (!(this_present_gameOver && that_present_gameOver))
+          return false;
+        if (!this.gameOver.equals(that.gameOver))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(move_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      move_result typedOther = (move_result)other;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetYouAreDead()).compareTo(typedOther.isSetYouAreDead());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetYouAreDead()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.youAreDead, typedOther.youAreDead);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetGameOver()).compareTo(typedOther.isSetGameOver());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGameOver()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gameOver, typedOther.gameOver);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("move_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("youAreDead:");
+      if (this.youAreDead == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.youAreDead);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("gameOver:");
+      if (this.gameOver == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gameOver);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class move_resultStandardSchemeFactory implements SchemeFactory {
+      public move_resultStandardScheme getScheme() {
+        return new move_resultStandardScheme();
+      }
+    }
+
+    private static class move_resultStandardScheme extends StandardScheme<move_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, move_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new MoveActionResult();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // YOU_ARE_DEAD
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.youAreDead = new YouAreDeadException();
+                struct.youAreDead.read(iprot);
+                struct.setYouAreDeadIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // GAME_OVER
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.gameOver = new GameOverException();
+                struct.gameOver.read(iprot);
+                struct.setGameOverIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, move_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.youAreDead != null) {
+          oprot.writeFieldBegin(YOU_ARE_DEAD_FIELD_DESC);
+          struct.youAreDead.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.gameOver != null) {
+          oprot.writeFieldBegin(GAME_OVER_FIELD_DESC);
+          struct.gameOver.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class move_resultTupleSchemeFactory implements SchemeFactory {
+      public move_resultTupleScheme getScheme() {
+        return new move_resultTupleScheme();
+      }
+    }
+
+    private static class move_resultTupleScheme extends TupleScheme<move_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, move_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetYouAreDead()) {
+          optionals.set(1);
+        }
+        if (struct.isSetGameOver()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetYouAreDead()) {
+          struct.youAreDead.write(oprot);
+        }
+        if (struct.isSetGameOver()) {
+          struct.gameOver.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, move_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.success = new MoveActionResult();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.youAreDead = new YouAreDeadException();
+          struct.youAreDead.read(iprot);
+          struct.setYouAreDeadIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.gameOver = new GameOverException();
+          struct.gameOver.read(iprot);
+          struct.setGameOverIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class bomb_args implements org.apache.thrift.TBase<bomb_args, bomb_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("bomb_args");
+
+    private static final org.apache.thrift.protocol.TField BOMB_ACTION_FIELD_DESC = new org.apache.thrift.protocol.TField("bombAction", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new bomb_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new bomb_argsTupleSchemeFactory());
+    }
+
+    public BombAction bombAction; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      BOMB_ACTION((short)1, "bombAction");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // BOMB_ACTION
+            return BOMB_ACTION;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.BOMB_ACTION, new org.apache.thrift.meta_data.FieldMetaData("bombAction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, BombAction.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(bomb_args.class, metaDataMap);
+    }
+
+    public bomb_args() {
+    }
+
+    public bomb_args(
+      BombAction bombAction)
+    {
+      this();
+      this.bombAction = bombAction;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public bomb_args(bomb_args other) {
+      if (other.isSetBombAction()) {
+        this.bombAction = new BombAction(other.bombAction);
+      }
+    }
+
+    public bomb_args deepCopy() {
+      return new bomb_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.bombAction = null;
+    }
+
+    public BombAction getBombAction() {
+      return this.bombAction;
+    }
+
+    public bomb_args setBombAction(BombAction bombAction) {
+      this.bombAction = bombAction;
+      return this;
+    }
+
+    public void unsetBombAction() {
+      this.bombAction = null;
+    }
+
+    /** Returns true if field bombAction is set (has been assigned a value) and false otherwise */
+    public boolean isSetBombAction() {
+      return this.bombAction != null;
+    }
+
+    public void setBombActionIsSet(boolean value) {
+      if (!value) {
+        this.bombAction = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case BOMB_ACTION:
+        if (value == null) {
+          unsetBombAction();
+        } else {
+          setBombAction((BombAction)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case BOMB_ACTION:
+        return getBombAction();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case BOMB_ACTION:
+        return isSetBombAction();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof bomb_args)
+        return this.equals((bomb_args)that);
+      return false;
+    }
+
+    public boolean equals(bomb_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_bombAction = true && this.isSetBombAction();
+      boolean that_present_bombAction = true && that.isSetBombAction();
+      if (this_present_bombAction || that_present_bombAction) {
+        if (!(this_present_bombAction && that_present_bombAction))
+          return false;
+        if (!this.bombAction.equals(that.bombAction))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(bomb_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      bomb_args typedOther = (bomb_args)other;
+
+      lastComparison = Boolean.valueOf(isSetBombAction()).compareTo(typedOther.isSetBombAction());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetBombAction()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.bombAction, typedOther.bombAction);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("bomb_args(");
+      boolean first = true;
+
+      sb.append("bombAction:");
+      if (this.bombAction == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.bombAction);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class bomb_argsStandardSchemeFactory implements SchemeFactory {
+      public bomb_argsStandardScheme getScheme() {
+        return new bomb_argsStandardScheme();
+      }
+    }
+
+    private static class bomb_argsStandardScheme extends StandardScheme<bomb_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, bomb_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // BOMB_ACTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.bombAction = new BombAction();
+                struct.bombAction.read(iprot);
+                struct.setBombActionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, bomb_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.bombAction != null) {
+          oprot.writeFieldBegin(BOMB_ACTION_FIELD_DESC);
+          struct.bombAction.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class bomb_argsTupleSchemeFactory implements SchemeFactory {
+      public bomb_argsTupleScheme getScheme() {
+        return new bomb_argsTupleScheme();
+      }
+    }
+
+    private static class bomb_argsTupleScheme extends TupleScheme<bomb_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, bomb_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetBombAction()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetBombAction()) {
+          struct.bombAction.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, bomb_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.bombAction = new BombAction();
+          struct.bombAction.read(iprot);
+          struct.setBombActionIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class bomb_result implements org.apache.thrift.TBase<bomb_result, bomb_result._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("bomb_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField YOU_ARE_DEAD_FIELD_DESC = new org.apache.thrift.protocol.TField("youAreDead", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField GAME_OVER_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOver", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new bomb_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new bomb_resultTupleSchemeFactory());
+    }
+
+    public BombActionResult success; // required
+    public YouAreDeadException youAreDead; // required
+    public GameOverException gameOver; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      YOU_ARE_DEAD((short)1, "youAreDead"),
+      GAME_OVER((short)2, "gameOver");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // YOU_ARE_DEAD
+            return YOU_ARE_DEAD;
+          case 2: // GAME_OVER
+            return GAME_OVER;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, BombActionResult.class)));
+      tmpMap.put(_Fields.YOU_ARE_DEAD, new org.apache.thrift.meta_data.FieldMetaData("youAreDead", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.GAME_OVER, new org.apache.thrift.meta_data.FieldMetaData("gameOver", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(bomb_result.class, metaDataMap);
+    }
+
+    public bomb_result() {
+    }
+
+    public bomb_result(
+      BombActionResult success,
+      YouAreDeadException youAreDead,
+      GameOverException gameOver)
+    {
+      this();
+      this.success = success;
+      this.youAreDead = youAreDead;
+      this.gameOver = gameOver;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public bomb_result(bomb_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new BombActionResult(other.success);
+      }
+      if (other.isSetYouAreDead()) {
+        this.youAreDead = new YouAreDeadException(other.youAreDead);
+      }
+      if (other.isSetGameOver()) {
+        this.gameOver = new GameOverException(other.gameOver);
+      }
+    }
+
+    public bomb_result deepCopy() {
+      return new bomb_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.youAreDead = null;
+      this.gameOver = null;
+    }
+
+    public BombActionResult getSuccess() {
+      return this.success;
+    }
+
+    public bomb_result setSuccess(BombActionResult success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public YouAreDeadException getYouAreDead() {
+      return this.youAreDead;
+    }
+
+    public bomb_result setYouAreDead(YouAreDeadException youAreDead) {
+      this.youAreDead = youAreDead;
+      return this;
+    }
+
+    public void unsetYouAreDead() {
+      this.youAreDead = null;
+    }
+
+    /** Returns true if field youAreDead is set (has been assigned a value) and false otherwise */
+    public boolean isSetYouAreDead() {
+      return this.youAreDead != null;
+    }
+
+    public void setYouAreDeadIsSet(boolean value) {
+      if (!value) {
+        this.youAreDead = null;
+      }
+    }
+
+    public GameOverException getGameOver() {
+      return this.gameOver;
+    }
+
+    public bomb_result setGameOver(GameOverException gameOver) {
+      this.gameOver = gameOver;
+      return this;
+    }
+
+    public void unsetGameOver() {
+      this.gameOver = null;
+    }
+
+    /** Returns true if field gameOver is set (has been assigned a value) and false otherwise */
+    public boolean isSetGameOver() {
+      return this.gameOver != null;
+    }
+
+    public void setGameOverIsSet(boolean value) {
+      if (!value) {
+        this.gameOver = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((BombActionResult)value);
+        }
+        break;
+
+      case YOU_ARE_DEAD:
+        if (value == null) {
+          unsetYouAreDead();
+        } else {
+          setYouAreDead((YouAreDeadException)value);
+        }
+        break;
+
+      case GAME_OVER:
+        if (value == null) {
+          unsetGameOver();
+        } else {
+          setGameOver((GameOverException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case YOU_ARE_DEAD:
+        return getYouAreDead();
+
+      case GAME_OVER:
+        return getGameOver();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case YOU_ARE_DEAD:
+        return isSetYouAreDead();
+      case GAME_OVER:
+        return isSetGameOver();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof bomb_result)
+        return this.equals((bomb_result)that);
+      return false;
+    }
+
+    public boolean equals(bomb_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_youAreDead = true && this.isSetYouAreDead();
+      boolean that_present_youAreDead = true && that.isSetYouAreDead();
+      if (this_present_youAreDead || that_present_youAreDead) {
+        if (!(this_present_youAreDead && that_present_youAreDead))
+          return false;
+        if (!this.youAreDead.equals(that.youAreDead))
+          return false;
+      }
+
+      boolean this_present_gameOver = true && this.isSetGameOver();
+      boolean that_present_gameOver = true && that.isSetGameOver();
+      if (this_present_gameOver || that_present_gameOver) {
+        if (!(this_present_gameOver && that_present_gameOver))
+          return false;
+        if (!this.gameOver.equals(that.gameOver))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(bomb_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      bomb_result typedOther = (bomb_result)other;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetYouAreDead()).compareTo(typedOther.isSetYouAreDead());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetYouAreDead()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.youAreDead, typedOther.youAreDead);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetGameOver()).compareTo(typedOther.isSetGameOver());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGameOver()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gameOver, typedOther.gameOver);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("bomb_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("youAreDead:");
+      if (this.youAreDead == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.youAreDead);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("gameOver:");
+      if (this.gameOver == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gameOver);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class bomb_resultStandardSchemeFactory implements SchemeFactory {
+      public bomb_resultStandardScheme getScheme() {
+        return new bomb_resultStandardScheme();
+      }
+    }
+
+    private static class bomb_resultStandardScheme extends StandardScheme<bomb_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, bomb_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new BombActionResult();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // YOU_ARE_DEAD
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.youAreDead = new YouAreDeadException();
+                struct.youAreDead.read(iprot);
+                struct.setYouAreDeadIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // GAME_OVER
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.gameOver = new GameOverException();
+                struct.gameOver.read(iprot);
+                struct.setGameOverIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, bomb_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.youAreDead != null) {
+          oprot.writeFieldBegin(YOU_ARE_DEAD_FIELD_DESC);
+          struct.youAreDead.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.gameOver != null) {
+          oprot.writeFieldBegin(GAME_OVER_FIELD_DESC);
+          struct.gameOver.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class bomb_resultTupleSchemeFactory implements SchemeFactory {
+      public bomb_resultTupleScheme getScheme() {
+        return new bomb_resultTupleScheme();
+      }
+    }
+
+    private static class bomb_resultTupleScheme extends TupleScheme<bomb_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, bomb_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetYouAreDead()) {
+          optionals.set(1);
+        }
+        if (struct.isSetGameOver()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetYouAreDead()) {
+          struct.youAreDead.write(oprot);
+        }
+        if (struct.isSetGameOver()) {
+          struct.gameOver.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, bomb_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.success = new BombActionResult();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.youAreDead = new YouAreDeadException();
+          struct.youAreDead.read(iprot);
+          struct.setYouAreDeadIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.gameOver = new GameOverException();
+          struct.gameOver.read(iprot);
+          struct.setGameOverIsSet(true);
         }
       }
     }
