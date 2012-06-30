@@ -12,22 +12,27 @@ enum Direction {
 }
 
 enum Tile {
-    I_GREY = 0, // Indestructible grey brick
-    D_GREY = 1, // Destructible grey brick
-    // TODO:
-}
+    NONE = 0,
+    BUFF_BOMB = 1,
+    BUFF_FLAME = 2,
+    BUFF_CHAIN = 3,
+    BUFF_FOOT = 4,
+    DEBUFF = 5,
+    FIRE = 6,
 
-struct TileState {
-    1: Tile tile
-    2: byte xCoordinate,
-    3: byte yCoordinate
+    I_GREY = 7, // Indestructible grey brick
+    D_GREY = 8, // Destructible grey brick
+
+    // TODO:
 }
 
 struct BombState {
     1: byte blastSize,
-    2: byte xCoordinate,
-    3: byte yCoordinate,
-    4: byte ticksRemaining
+    2: double xCoordinate,
+    3: double yCoordinate,
+    4: byte ticksRemaining,
+    5: bool moving,
+    6: Direction direction
 }
 
 enum Disease {
@@ -53,22 +58,33 @@ exception TimeoutException {
 }
 
 struct PlayerState {
-    1:i32 bomb_size, // just the buffs, actual size might be different because of diseases
-    2:i32 bomb_amount,
+    1:byte bomb_size, // just the buffs, actual size might be different because of diseases
+    2:byte bomb_amount,
     3:bool foot,
     4:bool chain,
     5:Disease disease,
     6:bool alive,
-    7:double xCoordinate,
-    8:double yCoordinate
+    7:double x,
+    8:double y
 }
 
 struct MapState {
-    1: set<TileState> indestructibleTiles,
-    2: set<TileState> destructibleTiles,
-    3: set<BombState> bombs,
-    4: list<PlayerState> players,
-    5: i32 ticksRemaining,
+    1: list<Tile> tiles,
+    2: list<BombState> bombs,
+    3: list<PlayerState> players,
+    4: i32 ticksRemaining,
+}
+
+struct Coordinate {
+    1: byte x,
+    2: byte y
+}
+
+struct GameInfo {
+    1: byte mapWidth,
+    2: byte mapHeight,
+    3: byte playerIndex,
+    4: list<Coordinate> startingPositions
 }
 
 /**
