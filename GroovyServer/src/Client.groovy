@@ -4,6 +4,8 @@ import org.apache.thrift.transport.TSocket
 import org.riksa.bombah.thrift.BombahService
 import org.slf4j.LoggerFactory
 import java.util.logging.LogManager
+import org.riksa.bombah.thrift.GameOverException
+import org.riksa.bombah.server.SimpleObserver
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,6 +47,8 @@ def clientRunnable = new Runnable() {
     }
 }
 
-5.times {
+4.times {
     new Thread( clientRunnable ).start()
 }
+
+new SimpleObserver( HOST, PORT ).start();

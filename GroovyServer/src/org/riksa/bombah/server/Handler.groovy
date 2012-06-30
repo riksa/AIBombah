@@ -12,6 +12,7 @@ import org.riksa.bombah.thrift.GameOverException
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.riksa.bombah.thrift.GameInfo
+import org.riksa.bombah.thrift.Constants
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +24,7 @@ import org.riksa.bombah.thrift.GameInfo
 class Handler implements BombahService.Iface {
     private static final Logger log = LoggerFactory.getLogger( Handler.class )
     Game game
+    ControllerState controllerState
 
     @Override
     String ping() {
@@ -31,17 +33,27 @@ class Handler implements BombahService.Iface {
 
     @Override
     ControllerResult controllerEvent(ControllerState controllerState) {
+        this.controllerState = controllerState;
         return new ControllerResult()
     }
 
     @Override
     MoveActionResult move(MoveAction moveAction) {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        this.controllerState = new ControllerState( directionPadDown: true, direction: moveAction.direction, key1Down: false, key2Down: false )
+        game.waitTicks( Constants.TICKS_PER_TILE );
+        this.controllerState.directionPadDown = false
+        return new MoveActionResult( playerState: game.getPlayerState(), mapState: game.mapState )
     }
 
     @Override
     BombActionResult bomb(BombAction bombAction) {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        return game.bomb( bombAction );
+    }
+
+    @Override
+    MapState waitTicks(int ticks) {
+        game.waitTicks( ticks );
+        return game.mapState
     }
 
     @Override
@@ -67,6 +79,8 @@ class Handler implements BombahService.Iface {
 
     @Override
     MapState getMapState() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        if( game )
+            return game.mapState
+        return new MapState()
     }
 }

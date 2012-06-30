@@ -47,7 +47,8 @@ struct BombState {
     3: double yCoordinate,
     4: byte ticksRemaining,
     5: bool moving,
-    6: Direction direction
+    6: Direction direction,
+    7: byte owner
 }
 
 enum Disease {
@@ -73,14 +74,15 @@ exception TimeoutException {
 }
 
 struct PlayerState {
-    1:byte bomb_size, // just the buffs, actual size might be different because of diseases
-    2:byte bomb_amount,
+    1:byte bombSize, // just the buffs, actual size might be different because of diseases
+    2:byte bombAmount,
     3:bool foot,
     4:bool chain,
     5:Disease disease,
     6:bool alive,
     7:double x,
-    8:double y
+    8:double y,
+    9:byte playerNumber
 }
 
 struct MapState {
@@ -151,6 +153,7 @@ service BombahService {
 	MoveActionResult move(1: MoveAction moveAction ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 	BombActionResult bomb(1: BombAction bombAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 //	ChainActionResult chainActions(1: ChainAction chainAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+    MapState waitTicks( 1: i32 ticks ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 
     GameInfo joinGame() throws (1:TimeoutException timeOutException);
 
