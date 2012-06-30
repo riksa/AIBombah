@@ -30,10 +30,16 @@ def clientRunnable = new Runnable() {
         BombahService.Client client = new BombahService.Client(protocol);
         log.debug("#$id Joining game")
         def mapState = client.joinGame()
-        log.debug("#$id Joined game $mapState")
+        if( mapState ) {
+            log.debug("#$id Joined game $mapState")
 
-        Thread.sleep( 5000 );
-        log.debug("#$id Done...")
+            def playerId = client.waitForStart()
+            log.debug( "Game started, I am player #"+playerId )
+            log.debug("#$id Joined game $mapState")
+
+            Thread.sleep( 5000 );
+            log.debug("#$id Done...")
+        }
 
         transport.close()
     }

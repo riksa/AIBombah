@@ -11,6 +11,7 @@ import org.riksa.bombah.thrift.MapState
 import org.riksa.bombah.thrift.GameOverException
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
+import org.riksa.bombah.thrift.GameInfo
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,19 +22,11 @@ import org.slf4j.Logger
  */
 class Handler implements BombahService.Iface {
     private static final Logger log = LoggerFactory.getLogger( Handler.class )
-    def game
-
-    def getThreadId = {
-        Thread.currentThread().id
-    }
+    Game game
 
     @Override
     String ping() {
-        def clientId = getThreadId()
-
-        log.debug( "Ping from client $clientId")
-
-        return "pong "+clientId
+        return "pong "
     }
 
     @Override
@@ -52,16 +45,20 @@ class Handler implements BombahService.Iface {
     }
 
     @Override
-    synchronized MapState joinGame() {
-        def clientId = getThreadId()
-        log.debug( "joinGame from $clientId")
+    synchronized GameInfo joinGame() {
 
         if( !game )
             game = createGame()
 
-        game.join( clientId )
+        if( game.join() ) {
+            return game.gameInfo
+        }
 
-        return game.mapState
+    }
+
+    @Override
+    byte waitForStart() {
+        game.waitForStart()
     }
 
     synchronized Game createGame() {

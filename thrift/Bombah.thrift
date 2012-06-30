@@ -84,9 +84,10 @@ struct GameInfo {
     1: byte mapWidth,
     2: byte mapHeight,
     3: byte playerIndex,
-    4: list<Coordinate> startingPositions,
-    5: i32 ticksTotal,
-    6: i32 ticksPerSecond
+    4: list<Tile> tiles,
+    5: list<Coordinate> startingPositions,
+    6: i32 ticksTotal,
+    7: i32 ticksPerSecond
 }
 
 /**
@@ -137,7 +138,11 @@ service BombahService {
 //	ChainActionResult chainActions(1: ChainAction chainAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 
     GameInfo joinGame() throws (1:TimeoutException timeOutException);
-    void waitForStart() throws (1:TimeoutException timeOutException);
+
+    /**
+     * returns the index of your bomberman
+     */
+    byte waitForStart() throws (1:TimeoutException timeOutException);
 
 	MapState getMapState();
 
