@@ -112,5 +112,7 @@ service BombahService {
 	ControllerResult controllerEvent(1:ControllerState controllerState) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 	MoveActionResult move(1: MoveAction moveAction ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 	BombActionResult bomb(1: BombAction bombAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+//	ChainActionResult chainActions(1: ChainAction chainAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+	MapState getMapState();
 
 }

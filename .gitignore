@@ -13,3 +13,5 @@ target
 .idea/workspace.xml
 /out
 
+
+/GroovyServer/gen-java

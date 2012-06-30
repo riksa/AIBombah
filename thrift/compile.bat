@@ -1,1 +1,1 @@
-thrift-0.8.0 -gen java -out ..\GroovyServer\src Bombah.thrift
+thrift-0.8.0 -gen java -o ..\GroovyServer Bombah.thrift
