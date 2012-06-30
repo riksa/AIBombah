@@ -84,7 +84,9 @@ struct GameInfo {
     1: byte mapWidth,
     2: byte mapHeight,
     3: byte playerIndex,
-    4: list<Coordinate> startingPositions
+    4: list<Coordinate> startingPositions,
+    5: i32 ticksTotal,
+    6: i32 ticksPerSecond
 }
 
 /**
@@ -134,7 +136,9 @@ service BombahService {
 	BombActionResult bomb(1: BombAction bombAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 //	ChainActionResult chainActions(1: ChainAction chainAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 
-    MapState joinGame() throws (1:TimeoutException timeOutException);
+    GameInfo joinGame() throws (1:TimeoutException timeOutException);
+    void waitForStart() throws (1:TimeoutException timeOutException);
+
 	MapState getMapState();
 
 }
