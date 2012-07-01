@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory
 import java.util.logging.LogManager
 import org.riksa.bombah.thrift.GameOverException
 import org.riksa.bombah.server.SimpleObserver
+import org.riksa.bombah.thrift.MoveAction
+import org.riksa.bombah.thrift.Direction
+import org.riksa.bombah.thrift.BombAction
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,6 +41,22 @@ def clientRunnable = new Runnable() {
             def playerId = client.waitForStart()
             log.debug( "Game started, I am player #"+playerId )
             log.debug("#$id Joined game $mapState")
+
+            client.move( new MoveAction( direction: Direction.N ))    // 10
+            5.times {
+                client.move( new MoveAction( direction: Direction.N ))
+                client.bomb( new BombAction(chainBombs: false) )          // 150
+                client.move( new MoveAction( direction: Direction.S ))
+                client.move( new MoveAction( direction: Direction.S ))
+                client.move( new MoveAction( direction: Direction.E ))
+                client.move( new MoveAction( direction: Direction.E ))
+                client.waitTicks(100)
+                client.bomb( new BombAction(chainBombs: false) )          // 150
+                client.move( new MoveAction( direction: Direction.W ))
+                client.move( new MoveAction( direction: Direction.W ))
+                client.move( new MoveAction( direction: Direction.N ))    // 10
+                client.waitTicks(100)
+            }
 
             Thread.sleep( 5000 );
             log.debug("#$id Done...")

@@ -42,7 +42,7 @@ class Handler implements BombahService.Iface {
         this.controllerState = new ControllerState( directionPadDown: true, direction: moveAction.direction, key1Down: false, key2Down: false )
         game.waitTicks( Constants.TICKS_PER_TILE );
         this.controllerState.directionPadDown = false
-        return new MoveActionResult( playerState: game.getPlayerState(), mapState: game.mapState )
+        return new MoveActionResult( myState: game.getCurrentPlayer(), mapState: game.mapState )
     }
 
     @Override

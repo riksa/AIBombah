@@ -30,12 +30,13 @@ class Game {
     def slots
     AtomicLong waiting
     GameInfo gameInfo
-    def players = new ArrayList<PlayerState>()
-    def List playerIds = new ArrayList()
+    def players = new Vector<PlayerState>()
+    def playerIds = new Vector()
     def tick
     Timer timer
-    List<BombState> bombs = []
+    def bombs = new Vector<BombState>()
     MapState mapState = new MapState()
+    def sleepers = []
 
     public Game() {
         id = idGenerator.incrementAndGet()
@@ -74,24 +75,24 @@ class Game {
 
         playerIds.add(clientId)
         def player = new PlayerState(
-                        bombSize: 2,
-                        bombAmount: 1,
-                        foot: false,
-                        chain: false,
-                        disease: Disease.NONE,
-                        alive: true,
-                        x: startingPosition.x,
-                        y: startingPosition.y,
-                        playerNumber: getPlayerIdx(clientId) )
+                bombSize: 2,
+                bombAmount: 1,
+                foot: false,
+                chain: false,
+                disease: Disease.NONE,
+                alive: true,
+                x: startingPosition.x,
+                y: startingPosition.y,
+                playerNumber: getPlayerIdx(clientId))
 
-        players.add( player )
+        players.add(player)
         log.debug("Client joined $clientId")
         return true
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        def rate = 1 // Constants.TICKS_PER_SECOND
-        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate )
+        def rate = 10 * Constants.TICKS_PER_SECOND
+        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
         if (asciiArt.length() != width * height) {
             log.error("Map is not $width X $height")
@@ -140,70 +141,53 @@ class Game {
             startGame()
         } else {
             // WAIT
+            waitTick()
         }
 
         return getPlayerIdx(getClientId())
     }
 
     synchronized void tick() throws GameOverException {
+        synchronized (sleepers) {
+            sleepers.each {
+                it.interrupt()
+            }
+            sleepers.clear()
+        }
+
         def time = System.currentTimeMillis()
         tick++
-        bombs.each {
-            it.blastSize = getPlayer( it.owner ).bombSize
+        bombs.iterator().each {
+            it.blastSize = getPlayer(it.owner).bombSize
             it.ticksRemaining--
-            if( it.moving ) {
+            if (it.moving) {
                 // TODO
             }
         }
 
-        mapState.ticksRemaining = gameInfo.ticksTotal - tick
-        mapState.bombs = this.bombs
-        mapState.players = this.players
-        mapState.tiles = gameInfo.tiles
+        mapState = new MapState(
+                ticksRemaining: gameInfo.ticksTotal - tick,
+                bombs: this.bombs,
+                players: this.players,
+                tiles: gameInfo.tiles )
+        // inefficient
+
+//        mapState.ticksRemaining = gameInfo.ticksTotal - tick
+//        mapState.bombs = this.bombs
+//        mapState.players = this.players
+//        mapState.tiles = gameInfo.tiles
         // TODO: tiles
         // TODO: move players
 
         log.debug("Tick #$tick, time = $time")
         if (tick >= gameInfo.ticksTotal)
-            // TODO
+        // TODO
             throw new GameOverException()
     }
 
-//    def gameRunnable = new Runnable() {
-//        @Override
-//        void run() {
-//            def running = true
-//            while( running ) {
-//                try {
-//                    Thread.sleep( 1000l )
-//                    log.error( "Noone woke me up and I died :(")
-//                    running = false
-//                } catch( InterruptedException ie ) {
-//                    tick()
-//                }
-//            }
-//        }
-//    }
-
     void startGame() {
-//        def final gameThread = new Thread( gameRunnable )
-//        gameThread.start()
 
         final long sleepTime = 1000l / gameInfo.ticksPerSecond
-//        def tickerRunnable = new Runnable() {
-//            @Override
-//            void run() {
-//                def running = true
-//                while( running ) {
-//                    try {
-//                        Thread.sleep( sleepTime );
-//                        gameThread.interrupt()
-//                    } catch( InterruptedException ie ) {
-//                        running = false
-//                    }
-//                }
-//            }
-//        }
 
         if (timer)
             timer.cancel()
@@ -216,7 +200,7 @@ class Game {
                 def now = System.currentTimeMillis()
                 def delta = now - previousExecution
                 previousExecution = now
-                log.debug("delta = $delta")
+//                log.debug("delta = $delta")
                 try {
                     tick()
                 } catch (GameOverException e) {
@@ -229,39 +213,53 @@ class Game {
         timer = new Timer()
         timer.scheduleAtFixedRate(timerTask, 0, sleepTime)
 
-//        tickerThread = new Thread( tickerRunnable );
-//        tickerThread.start()
-
     }
 
     void waitTicks(int ticks) {
-        int currentTick = tick
-        final long sleepTime = 1000l / gameInfo.ticksPerSecond
-        while (tick < currentTick + ticks) {
-            Thread.sleep(sleepTime)
+//        int currentTick = tick
+//        final long sleepTime = 1000l / gameInfo.ticksPerSecond
+//        while (tick < currentTick + ticks) {
+//            Thread.sleep(sleepTime)
+//        }
+        ticks.times {
+            waitTick()
         }
+    }
+
+    void waitTick() {
+        synchronized (sleepers) {
+            sleepers.add(Thread.currentThread())
+        }
+
+        try {
+            Thread.sleep(3 * 60 * 1000)
+        } catch (InterruptedException e) {
+//            log.debug("waitTick completed")
+        }
+
     }
 
     BombActionResult bomb(BombAction bombAction) {
         def playerState = getCurrentPlayer()
         def ticks = Constants.TICKS_BOMB
-        if( playerState.disease == Disease.FAST_BOMB ) {
+        if (playerState.disease == Disease.FAST_BOMB) {
             ticks >> 1
         }
-        if( playerState.disease == Disease.SLOW_BOMB ) {
+        if (playerState.disease == Disease.SLOW_BOMB) {
             ticks << 1
         }
 
         def bomb = new BombState(
                 blastSize: playerState.bombSize,
-                xCoordinate: Math.round( playerState.x ),
-                yCoordinate: Math.round( playerState.y ),
+                xCoordinate: Math.round(playerState.x),
+                yCoordinate: Math.round(playerState.y),
                 ticksRemaining: ticks,
                 moving: false,
                 direction: Direction.E,
                 owner: playerState.playerNumber
         )
         bombs.add(bomb)
+        return new BombActionResult(myState: getCurrentPlayer(), mapState: mapState)
     }
 
     int getPlayerIdx(clientId) {
@@ -269,10 +267,10 @@ class Game {
     }
 
     PlayerState getCurrentPlayer() {
-        return getPlayer( getPlayerIdx( getClientId() ) )
+        return getPlayer(getPlayerIdx(getClientId()))
     }
 
-    PlayerState getPlayer( def playerIdx ) {
+    PlayerState getPlayer(def playerIdx) {
         return players.get(playerIdx)
     }
 
