@@ -1,4 +1,4 @@
 AIBombah
 ========
 
-Simple GRAILS backend orchestrating AI clients playing Bomberman
+Simple GROOVY backend orchestrating AI clients playing Bomberman. 
