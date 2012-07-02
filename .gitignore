@@ -15,3 +15,5 @@ target
 
 
 /GroovyServer/gen-java
+/thrift/thrift
+/thrift/thrift*.exe
