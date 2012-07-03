@@ -29,40 +29,45 @@ def clientRunnable = new Runnable() {
     void run() {
         def transport = new TSocket(HOST, PORT);
         transport.open();
+        try {
+            TProtocol protocol = new TBinaryProtocol(transport);
+            def id = Thread.currentThread().id
+            BombahService.Client client = new BombahService.Client(protocol);
+            log.debug("#$id Joining game")
+            def mapState = client.joinGame()
+            if( mapState ) {
+                log.debug("#$id Joined game $mapState")
 
-        TProtocol protocol = new TBinaryProtocol(transport);
-        def id = Thread.currentThread().id
-        BombahService.Client client = new BombahService.Client(protocol);
-        log.debug("#$id Joining game")
-        def mapState = client.joinGame()
-        if( mapState ) {
-            log.debug("#$id Joined game $mapState")
+                def playerId = client.waitForStart()
+                log.debug( "Game started, I am player #"+playerId )
+                log.debug("#$id Joined game $mapState")
 
-            def playerId = client.waitForStart()
-            log.debug( "Game started, I am player #"+playerId )
-            log.debug("#$id Joined game $mapState")
-
-            client.move( new MoveAction( direction: Direction.N ))    // 10
-            50.times {
-                client.move( new MoveAction( direction: Direction.N ))
-                client.bomb( new BombAction(chainBombs: false) )          // 150
-                client.move( new MoveAction( direction: Direction.S ))
-                client.move( new MoveAction( direction: Direction.S ))
-                client.move( new MoveAction( direction: Direction.E ))
-                client.move( new MoveAction( direction: Direction.E ))
-                client.waitTicks(100)
-                client.bomb( new BombAction(chainBombs: false) )          // 150
-                client.move( new MoveAction( direction: Direction.W ))
-                client.move( new MoveAction( direction: Direction.W ))
                 client.move( new MoveAction( direction: Direction.N ))    // 10
-                client.waitTicks(100)
-            }
+                50.times {
+                    client.move( new MoveAction( direction: Direction.N ))
+                    client.bomb( new BombAction(chainBombs: false) )          // 150
+                    client.move( new MoveAction( direction: Direction.S ))
+                    client.move( new MoveAction( direction: Direction.S ))
+                    client.move( new MoveAction( direction: Direction.E ))
+                    client.move( new MoveAction( direction: Direction.E ))
+                    client.waitTicks(100)
+                    client.bomb( new BombAction(chainBombs: false) )          // 150
+                    client.move( new MoveAction( direction: Direction.W ))
+                    client.move( new MoveAction( direction: Direction.W ))
+                    client.move( new MoveAction( direction: Direction.N ))    // 10
+                    client.waitTicks(100)
+                }
 
-            Thread.sleep( 5000 );
-            log.debug("#$id Done...")
+                log.debug("#$id Done...")
+            }
+        } catch( GameOverException e ) {
+            log.debug("Game Over")
+        } finally {
+            if( transport ) {
+                transport.close()
+            }
         }
 
-        transport.close()
     }
 }
 

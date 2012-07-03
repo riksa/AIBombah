@@ -6,6 +6,7 @@ import org.apache.thrift.protocol.TBinaryProtocol
 import org.riksa.bombah.thrift.BombahService
 import org.slf4j.LoggerFactory
 import org.riksa.bombah.thrift.Tile
+import org.riksa.bombah.thrift.GameOverException
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,7 +18,7 @@ import org.riksa.bombah.thrift.Tile
 class SimpleObserver {
 //    def log = LoggerFactory.getLogger( SimpleObserver.class )
     def timer = new Timer()
-    long SLEEP_TIME = 1000/1
+    long SLEEP_TIME = 1000 / 1
     def transport
     def mapWidth = 13
     def artMap = [:] //[ Tile.BUFF_BOMB: "o", Tile.BUFF_CHAIN: "8", Tile.BUFF_FLAME: "*"]
@@ -25,15 +26,15 @@ class SimpleObserver {
     SimpleObserver(String host, int port) {
         transport = new TSocket(host, port);
 
-        artMap.put( Tile.NONE, " " )
-        artMap.put( Tile.BUFF_BOMB, "o" )
-        artMap.put( Tile.BUFF_FLAME, "^" )
-        artMap.put( Tile.BUFF_CHAIN, "8" )
-        artMap.put( Tile.BUFF_FOOT, "l" )
-        artMap.put( Tile.DEBUFF, "?" )
-        artMap.put( Tile.FIRE, "*" )
-        artMap.put( Tile.I_GREY, "X" )
-        artMap.put( Tile.D_GREY, "x" )
+        artMap.put(Tile.NONE, " ")
+        artMap.put(Tile.BUFF_BOMB, "o")
+        artMap.put(Tile.BUFF_FLAME, "^")
+        artMap.put(Tile.BUFF_CHAIN, "8")
+        artMap.put(Tile.BUFF_FOOT, "l")
+        artMap.put(Tile.DEBUFF, "?")
+        artMap.put(Tile.FIRE, "*")
+        artMap.put(Tile.I_GREY, "X")
+        artMap.put(Tile.D_GREY, "x")
     }
 
     void start() {
@@ -48,37 +49,32 @@ class SimpleObserver {
             void run() {
                 try {
                     def mapState = client.getMapState()
-                    if( mapState ) {
-                        println( "Ticks remaining: ${mapState.ticksRemaining}")
+                    if (mapState) {
+                        println("Ticks remaining: ${mapState.ticksRemaining}")
                         mapState.players.eachWithIndex {
                             it, idx ->
-                            println( " Player #$idx : $it")
+                            println(" Player #$idx : $it")
                         }
                         StringBuilder stringBuilder = new StringBuilder()
                         mapState.tiles.eachWithIndex {
                             it, idx ->
-                            if( idx % mapWidth == 0 )
+                            if (idx % mapWidth == 0)
                                 stringBuilder.append("\n")
 
-                            stringBuilder.append( artMap.get( it ) )
+                            stringBuilder.append(artMap.get(it))
                         }
-                        println( stringBuilder.toString() )
-                        if( mapState.ticksRemaining <= 0 ) {
-                            timer.cancel()
-                            println "Game over"
-                            timer.cancel()
-                        }
+                        println(stringBuilder.toString())
                     }
-                } catch (Exception e) {
+                } catch (GameOverException e) {
                     println "Game over"
-                    e.printStackTrace()
                     timer.cancel()
                 }
 
             }
         }
 
-        timer.scheduleAtFixedRate(timerTask, 0, SLEEP_TIME )
+        client.waitForStart()
+        timer.scheduleAtFixedRate(timerTask, 0, SLEEP_TIME)
     }
 
     void stop() {

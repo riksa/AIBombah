@@ -17,6 +17,8 @@ import org.riksa.bombah.thrift.Disease
 import org.riksa.bombah.thrift.Direction
 import org.riksa.bombah.thrift.ControllerState
 import org.riksa.bombah.thrift.MoveActionResult
+import sun.font.CreatedFontTracker
+import org.apache.http.impl.conn.tsccm.WaitingThread
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,6 +41,9 @@ class Game {
     def bombs = new Vector<BombState>()
     MapState mapState
     def sleepers = []
+    enum GameState { CREATED, RUNNING, FINISHED }
+    GameState gameState
+
 
     public Game() {
         id = idGenerator.incrementAndGet()
@@ -61,6 +66,7 @@ class Game {
         currentTick = 0
         slots = 4
         mapState = new MapState(ticksRemaining: gameInfo.ticksTotal)
+        gameState = GameState.CREATED
     }
 
     def getClientId = {
@@ -68,6 +74,10 @@ class Game {
     }
 
     synchronized boolean join() {
+        if( gameState == GameState.FINISHED ) {
+            throw new GameOverException()
+        }
+
         if (players.size() >= slots) {
             log.debug("Game is full")
             return false
@@ -197,6 +207,8 @@ class Game {
         if (timer)
             timer.cancel()
 
+        gameState = GameState.RUNNING
+
         def timerTask = new TimerTask() {
             def previousExecution = System.currentTimeMillis()
 
@@ -210,14 +222,22 @@ class Game {
                     tick()
                 } catch (GameOverException e) {
                     log.debug("Game over")
-                    timer.cancel()
-                    timer = null
+                    stopGame();
                 }
             }
         }
         timer = new Timer()
         timer.scheduleAtFixedRate(timerTask, 0, sleepTime)
 
+    }
+
+    void stopGame() {
+        if( timer ) {
+            timer.cancel()
+        }
+        timer = null
+
+        gameState = GameState.FINISHED
     }
 
     void waitTicks(int ticks) {
@@ -234,6 +254,9 @@ class Game {
     void waitTick() {
         final now = currentTick;
         while (currentTick == now) {
+            if( gameState == GameState.FINISHED ) {
+                throw new GameOverException()
+            }
             Thread.yield()
         }
 //        log.debug("waitTick completed")
@@ -250,6 +273,10 @@ class Game {
     }
 
     BombActionResult bomb(BombAction bombAction) {
+        if( gameState == GameState.FINISHED ) {
+            throw new GameOverException()
+        }
+
         def playerState = getCurrentPlayer()
         def ticks = Constants.TICKS_BOMB
         if (playerState.disease == Disease.FAST_BOMB) {
@@ -285,6 +312,9 @@ class Game {
     }
 
     MoveActionResult controllerEvent(ControllerState controllerState) {
+        if( gameState == GameState.FINISHED ) {
+            throw new GameOverException()
+        }
         return new MoveActionResult(myState: getCurrentPlayer(), mapState: mapState)
     }
 }

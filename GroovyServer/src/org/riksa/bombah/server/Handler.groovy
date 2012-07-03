@@ -60,7 +60,7 @@ class Handler implements BombahService.Iface {
     @Override
     synchronized GameInfo joinGame() {
 
-        if( !game )
+        if( !game || game.gameState == Game.GameState.FINISHED )
             game = createGame()
 
         if( game.join() ) {
@@ -71,6 +71,9 @@ class Handler implements BombahService.Iface {
 
     @Override
     byte waitForStart() {
+        while( !game ) {
+            Thread.yield()
+        }
         game.waitForStart()
     }
 
@@ -80,8 +83,11 @@ class Handler implements BombahService.Iface {
 
     @Override
     MapState getMapState() {
-        if( game )
+        if( game && game.gameState != Game.GameState.FINISHED ) {
             return game.mapState
-        return new MapState()
+        }
+
+        // TODO: GameOverException to thrift
+        throw new GameOverException()
     }
 }
