@@ -30,6 +30,8 @@ FileInputStream fis =  new FileInputStream("logging.properties");
 LogManager.getLogManager().readConfiguration(fis);
 def log = LoggerFactory.getLogger( getClass() )
 
+TServer server
+
 try {
     Handler handler = new Handler();
     BombahService.Processor processor = new BombahService.Processor(handler);
@@ -38,11 +40,13 @@ try {
 //    TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
 
     // Use this for a multithreaded server
-     TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
+    server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
 
     System.out.println("Starting the simple server...");
     server.serve();
 } catch (Exception e) {
-    e.printStackTrace();
+    log.error( "Server error", e)
+    if( server ) server.stop()
 }
+
 

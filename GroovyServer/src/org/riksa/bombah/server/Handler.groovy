@@ -24,7 +24,6 @@ import org.riksa.bombah.thrift.Constants
 class Handler implements BombahService.Iface {
     private static final Logger log = LoggerFactory.getLogger( Handler.class )
     Game game
-    ControllerState controllerState
 
     @Override
     String ping() {
@@ -33,16 +32,18 @@ class Handler implements BombahService.Iface {
 
     @Override
     ControllerResult controllerEvent(ControllerState controllerState) {
-        this.controllerState = controllerState;
-        return new ControllerResult()
     }
 
     @Override
     MoveActionResult move(MoveAction moveAction) {
-        this.controllerState = new ControllerState( directionPadDown: true, direction: moveAction.direction, key1Down: false, key2Down: false )
+        ControllerState controllerState = new ControllerState( directionPadDown: true, direction: moveAction.direction, key1Down: false, key2Down: false )
+        def clientId = game.getClientId()
+        log.debug( "$clientId move started ${game.currentTick}" )
+        game.controllerEvent(controllerState);
         game.waitTicks( Constants.TICKS_PER_TILE );
-        this.controllerState.directionPadDown = false
-        return new MoveActionResult( myState: game.getCurrentPlayer(), mapState: game.mapState )
+        controllerState.directionPadDown = false
+        log.debug( "$clientId move finished ${game.currentTick}" )
+        return game.controllerEvent(controllerState);
     }
 
     @Override

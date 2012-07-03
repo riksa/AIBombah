@@ -15,6 +15,8 @@ import org.riksa.bombah.thrift.BombState
 import org.riksa.bombah.thrift.PlayerState
 import org.riksa.bombah.thrift.Disease
 import org.riksa.bombah.thrift.Direction
+import org.riksa.bombah.thrift.ControllerState
+import org.riksa.bombah.thrift.MoveActionResult
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,10 +34,10 @@ class Game {
     GameInfo gameInfo
     def players = new Vector<PlayerState>()
     def playerIds = new Vector()
-    def tick
+    def currentTick
     Timer timer
     def bombs = new Vector<BombState>()
-    MapState mapState = new MapState()
+    MapState mapState
     def sleepers = []
 
     public Game() {
@@ -56,9 +58,9 @@ class Game {
         )
         players.clear()
         waiting = new AtomicLong(0)
-        tick = 0
+        currentTick = 0
         slots = 4
-        mapState.ticksRemaining = gameInfo.ticksTotal
+        mapState = new MapState(ticksRemaining: gameInfo.ticksTotal)
     }
 
     def getClientId = {
@@ -91,7 +93,7 @@ class Game {
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        def rate = 10 * Constants.TICKS_PER_SECOND
+        def rate = Constants.TICKS_PER_SECOND*10
         GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
         if (asciiArt.length() != width * height) {
@@ -148,6 +150,37 @@ class Game {
     }
 
     synchronized void tick() throws GameOverException {
+        def time = System.currentTimeMillis()
+        currentTick++
+        synchronized (bombs) {
+            bombs.each {
+                it.blastSize = getPlayer(it.owner).bombSize
+                it.ticksRemaining--
+                if (it.moving) {
+                    // TODO
+                }
+            }
+        }
+
+        mapState = new MapState(
+                ticksRemaining: gameInfo.ticksTotal - currentTick,
+                bombs: bombs.clone(), // wasted, TODO
+                players: players.clone(),
+                tiles: gameInfo.tiles.clone() )
+        // inefficient
+
+//        mapState.ticksRemaining = gameInfo.ticksTotal - currentTick
+//        mapState.bombs = this.bombs
+//        mapState.players = this.players
+//        mapState.tiles = gameInfo.tiles
+        // TODO: tiles
+        // TODO: move players
+
+//        log.debug("Tick #$currentTick, time = $time")
+        if (currentTick >= gameInfo.ticksTotal)
+        // TODO
+            throw new GameOverException()
+
         synchronized (sleepers) {
             sleepers.each {
                 it.interrupt()
@@ -155,34 +188,6 @@ class Game {
             sleepers.clear()
         }
 
-        def time = System.currentTimeMillis()
-        tick++
-        bombs.iterator().each {
-            it.blastSize = getPlayer(it.owner).bombSize
-            it.ticksRemaining--
-            if (it.moving) {
-                // TODO
-            }
-        }
-
-        mapState = new MapState(
-                ticksRemaining: gameInfo.ticksTotal - tick,
-                bombs: this.bombs,
-                players: this.players,
-                tiles: gameInfo.tiles )
-        // inefficient
-
-//        mapState.ticksRemaining = gameInfo.ticksTotal - tick
-//        mapState.bombs = this.bombs
-//        mapState.players = this.players
-//        mapState.tiles = gameInfo.tiles
-        // TODO: tiles
-        // TODO: move players
-
-        log.debug("Tick #$tick, time = $time")
-        if (tick >= gameInfo.ticksTotal)
-        // TODO
-            throw new GameOverException()
     }
 
     void startGame() {
@@ -216,9 +221,9 @@ class Game {
     }
 
     void waitTicks(int ticks) {
-//        int currentTick = tick
+//        int currentTick = currentTick
 //        final long sleepTime = 1000l / gameInfo.ticksPerSecond
-//        while (tick < currentTick + ticks) {
+//        while (currentTick < currentTick + ticks) {
 //            Thread.sleep(sleepTime)
 //        }
         ticks.times {
@@ -227,15 +232,20 @@ class Game {
     }
 
     void waitTick() {
-        synchronized (sleepers) {
-            sleepers.add(Thread.currentThread())
+        final now = currentTick;
+        while (currentTick == now) {
+            Thread.yield()
         }
-
-        try {
-            Thread.sleep(3 * 60 * 1000)
-        } catch (InterruptedException e) {
-//            log.debug("waitTick completed")
-        }
+//        log.debug("waitTick completed")
+//        synchronized (sleepers) {
+//            sleepers.add(Thread.currentThread())
+//        }
+//
+//        try {
+//            Thread.sleep(3 * 60 * 1000)
+//        } catch (InterruptedException e) {
+////            log.debug("waitTick completed")
+//        }
 
     }
 
@@ -274,4 +284,7 @@ class Game {
         return players.get(playerIdx)
     }
 
+    MoveActionResult controllerEvent(ControllerState controllerState) {
+        return new MoveActionResult(myState: getCurrentPlayer(), mapState: mapState)
+    }
 }

@@ -43,7 +43,7 @@ def clientRunnable = new Runnable() {
             log.debug("#$id Joined game $mapState")
 
             client.move( new MoveAction( direction: Direction.N ))    // 10
-            5.times {
+            50.times {
                 client.move( new MoveAction( direction: Direction.N ))
                 client.bomb( new BombAction(chainBombs: false) )          // 150
                 client.move( new MoveAction( direction: Direction.S ))

@@ -63,12 +63,18 @@ class SimpleObserver {
                             stringBuilder.append( artMap.get( it ) )
                         }
                         println( stringBuilder.toString() )
+                        if( mapState.ticksRemaining <= 0 ) {
+                            timer.cancel()
+                            println "Game over"
+                            timer.cancel()
+                        }
                     }
                 } catch (Exception e) {
                     println "Game over"
                     e.printStackTrace()
                     timer.cancel()
                 }
+
             }
         }
 
