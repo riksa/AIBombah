@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/AIBombahServer/AIBombahServer.iml" filepath="$PROJECT_DIR$/AIBombahServer/AIBombahServer.iml" />
       <module fileurl="file://$PROJECT_DIR$/AIBombahServer/AIBombahServer-grailsPlugins.iml" filepath="$PROJECT_DIR$/AIBombahServer/AIBombahServer-grailsPlugins.iml" />
       <module fileurl="file://$PROJECT_DIR$/GroovyServer/GroovyServer.iml" filepath="$PROJECT_DIR$/GroovyServer/GroovyServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/WebGL/WebGL.iml" filepath="$PROJECT_DIR$/WebGL/WebGL.iml" />
     </modules>
   </component>
 </project>

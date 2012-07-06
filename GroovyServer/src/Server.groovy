@@ -7,6 +7,7 @@ import org.riksa.bombah.thrift.BombahService
 import org.apache.thrift.server.TThreadPoolServer
 import java.util.logging.LogManager
 import org.slf4j.LoggerFactory
+import org.apache.thrift.protocol.TJSONProtocol
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,10 +36,11 @@ try {
     BombahService.Processor processor = new BombahService.Processor(handler);
 
     TServerTransport serverTransport = new TServerSocket(PORT);
-//    TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
+    def factory = new TJSONProtocol.Factory()
+//    TServer server = new TSimpleServer(new TServer.Args(serverTransport).protocolFactory(factory).processor(processor));
 
     // Use this for a multithreaded server
-     TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
+     TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).protocolFactory(factory).processor(processor));
 
     System.out.println("Starting the simple server...");
     server.serve();

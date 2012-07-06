@@ -9,6 +9,7 @@ import org.riksa.bombah.server.SimpleObserver
 import org.riksa.bombah.thrift.MoveAction
 import org.riksa.bombah.thrift.Direction
 import org.riksa.bombah.thrift.BombAction
+import org.apache.thrift.protocol.TJSONProtocol
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +31,7 @@ def clientRunnable = new Runnable() {
         def transport = new TSocket(HOST, PORT);
         transport.open();
 
-        TProtocol protocol = new TBinaryProtocol(transport);
+        TProtocol protocol = new TJSONProtocol(transport); //TBinaryProtocol(transport);
         def id = Thread.currentThread().id
         BombahService.Client client = new BombahService.Client(protocol);
         log.debug("#$id Joining game")
