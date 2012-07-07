@@ -55,6 +55,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="AIBombahServer-grailsPlugins" />
+    <orderEntry type="library" name="httpclient-4.2.1" level="project" />
   </component>
 </module>
 
