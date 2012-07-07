@@ -16,6 +16,8 @@
     var program;
     var textures = [];
     var images = [];
+    var playerTextures = [];
+    var playerImages = [];
     var client;
     var gameInfo;
 
@@ -48,7 +50,7 @@
     function startPolling() {
         try {
             gameInfo = client.getGameInfo(-1);
-            console.log( gameInfo );
+            console.log(gameInfo);
             window.setInterval(updateMap, 1000);
         } catch (e) {
 
@@ -59,17 +61,28 @@
         var mapState = client.getMapState(); // TODO: how to async?
 //            console.log( mapState );
         console.log("Ticks remaining " + mapState.ticksRemaining);
-        $.each(mapState.tiles, function (i, t) {
+        // Bombah.thrift
+        // Bombah.thrift
+        $.each(mapState.tiles, function (i, tile) {
             var x = i % gameInfo.mapWidth;
             var y = (i - x) / gameInfo.mapWidth;
-            drawTile(x * 64, y * 64, t);
+            var texture = textures[tile];
+            var image = images[tile];
+            drawTile(x * 64, y * 64, texture, image);
         });
-        $.each(mapState.players, function (i, p) {
-//                console.log( p );
+
+        $.each(mapState.players, function (i, player) {
+            var x = player.x;
+            var y = player.y;
+            console.log(x + ":" + y);
+            var texture = playerTextures[i];
+            var image = playerImages[i];
+            drawTile(x * 64, y * 64, texture, image);
         });
+
     }
 
-    function drawTile(x, y, tile) {
+    function drawTile(x, y, texture, image) {
         gl.useProgram(program);
 
         // look up where the vertex data needs to go.
@@ -89,9 +102,6 @@
         gl.enableVertexAttribArray(texCoordLocation);
         gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
 
-        // Create a texture.
-        var texture = textures[tile];
-        var image = images[tile];
         gl.bindTexture(gl.TEXTURE_2D, texture);
 
         // Set the parameters so we can render any size image.
@@ -116,7 +126,7 @@
         gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
         // Set a rectangle the same size as the image.
-        setRectangle(gl, x, y, x+64, y+64);
+        setRectangle(gl, x, y, 64, 64);
 
         // Draw the rectangle.
         gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -147,16 +157,29 @@
             var image = new Image();
             images.push(image);
             image.onload = function () {
-                handleTextureLoaded(image, texture, i);
+//                handleTextureLoaded(image, texture, i);
             }
             image.src = file;
         });
+
+        for (var i = 0; i < 4; i++) {
+            var file = "images/player_" + i + ".png";
+            console.log("Loading " + file + " as " + i);
+            var texture = gl.createTexture();
+            playerTextures.push(texture);
+            var image = new Image();
+            playerImages.push(image);
+            image.onload = function () {
+//                handleTextureLoaded(image, texture, i);
+            }
+            image.src = file;
+        }
 
     }
 
     function handleTextureLoaded(image, texture, i) {
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, i, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
         gl.generateMipmap(gl.TEXTURE_2D);
