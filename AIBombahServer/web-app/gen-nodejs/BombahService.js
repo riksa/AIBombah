@@ -546,8 +546,12 @@ BombahService_bomb_result.prototype.write = function(output) {
 };
 
 var BombahService_waitTicks_args = function(args) {
+  this.gameId = null;
   this.ticks = null;
   if (args) {
+    if (args.gameId !== undefined) {
+      this.gameId = args.gameId;
+    }
     if (args.ticks !== undefined) {
       this.ticks = args.ticks;
     }
@@ -569,14 +573,18 @@ BombahService_waitTicks_args.prototype.read = function(input) {
     {
       case 1:
       if (ftype == Thrift.Type.I32) {
+        this.gameId = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I32) {
         this.ticks = input.readI32();
       } else {
         input.skip(ftype);
       }
       break;
-      case 0:
-        input.skip(ftype);
-        break;
       default:
         input.skip(ftype);
     }
@@ -588,8 +596,13 @@ BombahService_waitTicks_args.prototype.read = function(input) {
 
 BombahService_waitTicks_args.prototype.write = function(output) {
   output.writeStructBegin('BombahService_waitTicks_args');
+  if (this.gameId) {
+    output.writeFieldBegin('gameId', Thrift.Type.I32, 1);
+    output.writeI32(this.gameId);
+    output.writeFieldEnd();
+  }
   if (this.ticks) {
-    output.writeFieldBegin('ticks', Thrift.Type.I32, 1);
+    output.writeFieldBegin('ticks', Thrift.Type.I32, 2);
     output.writeI32(this.ticks);
     output.writeFieldEnd();
   }
@@ -787,10 +800,184 @@ BombahService_joinGame_result.prototype.write = function(output) {
   return;
 };
 
-var BombahService_waitForStart_args = function(args) {
+var BombahService_getGameInfo_args = function(args) {
+  this.gameId = null;
+  if (args) {
+    if (args.gameId !== undefined) {
+      this.gameId = args.gameId;
+    }
+  }
 };
-BombahService_waitForStart_args.prototype = {};
-BombahService_waitForStart_args.prototype.read = function(input) {
+BombahService_getGameInfo_args.prototype = {};
+BombahService_getGameInfo_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.gameId = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+BombahService_getGameInfo_args.prototype.write = function(output) {
+  output.writeStructBegin('BombahService_getGameInfo_args');
+  if (this.gameId) {
+    output.writeFieldBegin('gameId', Thrift.Type.I32, 1);
+    output.writeI32(this.gameId);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var BombahService_getGameInfo_result = function(args) {
+  this.success = null;
+  this.gameOverException = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+    if (args.gameOverException !== undefined) {
+      this.gameOverException = args.gameOverException;
+    }
+  }
+};
+BombahService_getGameInfo_result.prototype = {};
+BombahService_getGameInfo_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.success = new ttypes.GameInfo();
+        this.success.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.gameOverException = new ttypes.GameOverException();
+        this.gameOverException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+BombahService_getGameInfo_result.prototype.write = function(output) {
+  output.writeStructBegin('BombahService_getGameInfo_result');
+  if (this.success) {
+    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
+    this.success.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.gameOverException) {
+    output.writeFieldBegin('gameOverException', Thrift.Type.STRUCT, 1);
+    this.gameOverException.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var BombahService_debugResetGame_args = function(args) {
+  this.gameId = null;
+  if (args) {
+    if (args.gameId !== undefined) {
+      this.gameId = args.gameId;
+    }
+  }
+};
+BombahService_debugResetGame_args.prototype = {};
+BombahService_debugResetGame_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.gameId = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+BombahService_debugResetGame_args.prototype.write = function(output) {
+  output.writeStructBegin('BombahService_debugResetGame_args');
+  if (this.gameId) {
+    output.writeFieldBegin('gameId', Thrift.Type.I32, 1);
+    output.writeI32(this.gameId);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var BombahService_debugResetGame_result = function(args) {
+};
+BombahService_debugResetGame_result.prototype = {};
+BombahService_debugResetGame_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -808,8 +995,61 @@ BombahService_waitForStart_args.prototype.read = function(input) {
   return;
 };
 
+BombahService_debugResetGame_result.prototype.write = function(output) {
+  output.writeStructBegin('BombahService_debugResetGame_result');
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var BombahService_waitForStart_args = function(args) {
+  this.gameId = null;
+  if (args) {
+    if (args.gameId !== undefined) {
+      this.gameId = args.gameId;
+    }
+  }
+};
+BombahService_waitForStart_args.prototype = {};
+BombahService_waitForStart_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.gameId = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
 BombahService_waitForStart_args.prototype.write = function(output) {
   output.writeStructBegin('BombahService_waitForStart_args');
+  if (this.gameId) {
+    output.writeFieldBegin('gameId', Thrift.Type.I32, 1);
+    output.writeI32(this.gameId);
+    output.writeFieldEnd();
+  }
   output.writeFieldStop();
   output.writeStructEnd();
   return;
@@ -870,6 +1110,12 @@ BombahService_waitForStart_result.prototype.write = function(output) {
 };
 
 var BombahService_getMapState_args = function(args) {
+  this.gameId = null;
+  if (args) {
+    if (args.gameId !== undefined) {
+      this.gameId = args.gameId;
+    }
+  }
 };
 BombahService_getMapState_args.prototype = {};
 BombahService_getMapState_args.prototype.read = function(input) {
@@ -883,7 +1129,21 @@ BombahService_getMapState_args.prototype.read = function(input) {
     if (ftype == Thrift.Type.STOP) {
       break;
     }
-    input.skip(ftype);
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.gameId = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
     input.readFieldEnd();
   }
   input.readStructEnd();
@@ -892,6 +1152,11 @@ BombahService_getMapState_args.prototype.read = function(input) {
 
 BombahService_getMapState_args.prototype.write = function(output) {
   output.writeStructBegin('BombahService_getMapState_args');
+  if (this.gameId) {
+    output.writeFieldBegin('gameId', Thrift.Type.I32, 1);
+    output.writeI32(this.gameId);
+    output.writeFieldEnd();
+  }
   output.writeFieldStop();
   output.writeStructEnd();
   return;
@@ -1128,16 +1393,17 @@ BombahServiceClient.prototype.recv_bomb = function(input,mtype,rseqid) {
   }
   return callback('bomb failed: unknown result');
 };
-BombahServiceClient.prototype.waitTicks = function(ticks, callback) {
+BombahServiceClient.prototype.waitTicks = function(gameId, ticks, callback) {
   this.seqid += 1;
   this._reqs[this.seqid] = callback;
-  this.send_waitTicks(ticks);
+  this.send_waitTicks(gameId, ticks);
 };
 
-BombahServiceClient.prototype.send_waitTicks = function(ticks) {
+BombahServiceClient.prototype.send_waitTicks = function(gameId, ticks) {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('waitTicks', Thrift.MessageType.CALL, this.seqid);
   var args = new BombahService_waitTicks_args();
+  args.gameId = gameId;
   args.ticks = ticks;
   args.write(output);
   output.writeMessageEnd();
@@ -1202,16 +1468,85 @@ BombahServiceClient.prototype.recv_joinGame = function(input,mtype,rseqid) {
   }
   return callback('joinGame failed: unknown result');
 };
-BombahServiceClient.prototype.waitForStart = function(callback) {
+BombahServiceClient.prototype.getGameInfo = function(gameId, callback) {
   this.seqid += 1;
   this._reqs[this.seqid] = callback;
-  this.send_waitForStart();
+  this.send_getGameInfo(gameId);
 };
 
-BombahServiceClient.prototype.send_waitForStart = function() {
+BombahServiceClient.prototype.send_getGameInfo = function(gameId) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('getGameInfo', Thrift.MessageType.CALL, this.seqid);
+  var args = new BombahService_getGameInfo_args();
+  args.gameId = gameId;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+BombahServiceClient.prototype.recv_getGameInfo = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new BombahService_getGameInfo_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.gameOverException) {
+    return callback(result.gameOverException);
+  }
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('getGameInfo failed: unknown result');
+};
+BombahServiceClient.prototype.debugResetGame = function(gameId, callback) {
+  this.seqid += 1;
+  this._reqs[this.seqid] = callback;
+  this.send_debugResetGame(gameId);
+};
+
+BombahServiceClient.prototype.send_debugResetGame = function(gameId) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('debugResetGame', Thrift.MessageType.CALL, this.seqid);
+  var args = new BombahService_debugResetGame_args();
+  args.gameId = gameId;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+BombahServiceClient.prototype.recv_debugResetGame = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new BombahService_debugResetGame_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  callback(null)
+};
+BombahServiceClient.prototype.waitForStart = function(gameId, callback) {
+  this.seqid += 1;
+  this._reqs[this.seqid] = callback;
+  this.send_waitForStart(gameId);
+};
+
+BombahServiceClient.prototype.send_waitForStart = function(gameId) {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('waitForStart', Thrift.MessageType.CALL, this.seqid);
   var args = new BombahService_waitForStart_args();
+  args.gameId = gameId;
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
@@ -1235,16 +1570,17 @@ BombahServiceClient.prototype.recv_waitForStart = function(input,mtype,rseqid) {
   }
   callback(null)
 };
-BombahServiceClient.prototype.getMapState = function(callback) {
+BombahServiceClient.prototype.getMapState = function(gameId, callback) {
   this.seqid += 1;
   this._reqs[this.seqid] = callback;
-  this.send_getMapState();
+  this.send_getMapState(gameId);
 };
 
-BombahServiceClient.prototype.send_getMapState = function() {
+BombahServiceClient.prototype.send_getMapState = function(gameId) {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('getMapState', Thrift.MessageType.CALL, this.seqid);
   var args = new BombahService_getMapState_args();
+  args.gameId = gameId;
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
@@ -1350,7 +1686,7 @@ BombahServiceProcessor.prototype.process_waitTicks = function(seqid, input, outp
   args.read(input);
   input.readMessageEnd();
   var result = new BombahService_waitTicks_result();
-  this._handler.waitTicks(args.ticks, function (success) {
+  this._handler.waitTicks(args.gameId, args.ticks, function (success) {
     result.success = success;
     output.writeMessageBegin("waitTicks", Thrift.MessageType.REPLY, seqid);
     result.write(output);
@@ -1373,12 +1709,40 @@ BombahServiceProcessor.prototype.process_joinGame = function(seqid, input, outpu
   })
 }
 
+BombahServiceProcessor.prototype.process_getGameInfo = function(seqid, input, output) {
+  var args = new BombahService_getGameInfo_args();
+  args.read(input);
+  input.readMessageEnd();
+  var result = new BombahService_getGameInfo_result();
+  this._handler.getGameInfo(args.gameId, function (success) {
+    result.success = success;
+    output.writeMessageBegin("getGameInfo", Thrift.MessageType.REPLY, seqid);
+    result.write(output);
+    output.writeMessageEnd();
+    output.flush();
+  })
+}
+
+BombahServiceProcessor.prototype.process_debugResetGame = function(seqid, input, output) {
+  var args = new BombahService_debugResetGame_args();
+  args.read(input);
+  input.readMessageEnd();
+  var result = new BombahService_debugResetGame_result();
+  this._handler.debugResetGame(args.gameId, function (success) {
+    result.success = success;
+    output.writeMessageBegin("debugResetGame", Thrift.MessageType.REPLY, seqid);
+    result.write(output);
+    output.writeMessageEnd();
+    output.flush();
+  })
+}
+
 BombahServiceProcessor.prototype.process_waitForStart = function(seqid, input, output) {
   var args = new BombahService_waitForStart_args();
   args.read(input);
   input.readMessageEnd();
   var result = new BombahService_waitForStart_result();
-  this._handler.waitForStart(function (success) {
+  this._handler.waitForStart(args.gameId, function (success) {
     result.success = success;
     output.writeMessageBegin("waitForStart", Thrift.MessageType.REPLY, seqid);
     result.write(output);
@@ -1392,7 +1756,7 @@ BombahServiceProcessor.prototype.process_getMapState = function(seqid, input, ou
   args.read(input);
   input.readMessageEnd();
   var result = new BombahService_getMapState_result();
-  this._handler.getMapState(function (success) {
+  this._handler.getMapState(args.gameId, function (success) {
     result.success = success;
     output.writeMessageBegin("getMapState", Thrift.MessageType.REPLY, seqid);
     result.write(output);

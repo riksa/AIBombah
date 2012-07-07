@@ -25,45 +25,64 @@ def log = LoggerFactory.getLogger(getClass())
 //LogManager.getLogManager().readConfiguration(fis);
 
 def clientRunnable = new Runnable() {
+
+    int gameId = -1
+
     @Override
     void run() {
-//        def transport = new TSocket(HOST, PORT);
-        def transport = new THttpClient(url)
-        transport.open();
-
-        TProtocol protocol = new TJSONProtocol(transport); //TBinaryProtocol(transport);
-        def id = Thread.currentThread().id
-        BombahService.Client client = new BombahService.Client(protocol);
-        log.debug("#$id Joining game")
-        def gameInfo = client.joinGame( -1 )
+        def transport = createTransport(url)
+        def client = createClient(transport)
+        log.debug("#Joining game")
+        def gameInfo = client.joinGame(gameId)
         if (gameInfo) {
             def playerId = gameInfo.playerId
-            log.debug("#$id Joined game $gameInfo")
-            client.waitForStart()
-            log.debug("Game started, I am player #" + playerId )
+            log.debug("#Joined game $gameInfo")
+            client.waitForStart(gameId)
+            log.debug("Game started, I am player #" + playerId)
 
             client.move(playerId, new MoveAction(direction: Direction.N))    // 10
-            5.times {
+            500.times {
                 client.move(playerId, new MoveAction(direction: Direction.N))
                 client.bomb(playerId, new BombAction(chainBombs: false))          // 150
                 client.move(playerId, new MoveAction(direction: Direction.S))
                 client.move(playerId, new MoveAction(direction: Direction.S))
                 client.move(playerId, new MoveAction(direction: Direction.E))
                 client.move(playerId, new MoveAction(direction: Direction.E))
-                client.waitTicks(100)
+                client.waitTicks(gameId, 100)
                 client.bomb(playerId, new BombAction(chainBombs: false))          // 150
                 client.move(playerId, new MoveAction(direction: Direction.W))
                 client.move(playerId, new MoveAction(direction: Direction.W))
                 client.move(playerId, new MoveAction(direction: Direction.N))    // 10
-                client.waitTicks(100)
+                client.waitTicks(gameId, 100)
             }
 
             Thread.sleep(5000);
-            log.debug("#$id Done...")
+            log.debug("#Done...")
         }
 
         transport.close()
     }
+}
+
+resetGame(url)
+
+def createTransport( url ) {
+    return new THttpClient(url)
+}
+
+def createClient( transport ) {
+    transport.open();
+
+    TProtocol protocol = new TJSONProtocol(transport); //TBinaryProtocol(transport);
+    return new BombahService.Client(protocol);
+}
+
+def resetGame(url) {
+    def transport = createTransport(url)
+    def client = createClient(transport)
+    transport.open()
+    client.debugResetGame( -1 );
+    transport.close()
 }
 
 4.times {

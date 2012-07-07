@@ -53,7 +53,7 @@ class BombahHandler implements BombahService.Iface {
     }
 
     @Override
-    MapState waitTicks(int ticks) {
+    MapState waitTicks(int gameId, int ticks) {
         game.waitTicks(ticks);
         return game.mapState
     }
@@ -71,7 +71,17 @@ class BombahHandler implements BombahService.Iface {
     }
 
     @Override
-    void waitForStart() {
+    GameInfo getGameInfo(int gameId) {
+        return game.gameInfo
+    }
+
+    @Override
+    void debugResetGame(int gameId) {
+        runningGame = createGame()
+    }
+
+    @Override
+    void waitForStart(int gameId) {
 //        if( !game ) {
 //            return -1;
 //        }
@@ -83,7 +93,7 @@ class BombahHandler implements BombahService.Iface {
     }
 
     @Override
-    MapState getMapState() {
+    MapState getMapState(int gameId) {
         if (game)
             return game.mapState
         return new MapState()

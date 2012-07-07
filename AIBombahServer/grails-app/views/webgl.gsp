@@ -13,6 +13,7 @@
         var gl;
         var textures = [];
         var client;
+        var mapInfo;
 
         $(document).ready(function () {
             canvas = document.getElementById("canvas");
@@ -38,12 +39,23 @@
         }
 
         function startPolling() {
-            window.setInterval( updateMap, 5000 );
+            try {
+                mapInfo = client.getGameInfo( -1 );
+                window.setInterval( updateMap, 1000 );
+            } catch (e) {
+
+            }
         }
 
         function updateMap() {
             var mapState = client.getMapState(); // TODO: how to async?
+//            console.log( mapState );
             console.log( "Ticks remaining "+mapState.ticksRemaining);
+            $.each( mapState.tiles, function(i, t) {
+            });
+            $.each( mapState.players, function(i, p) {
+//                console.log( p );
+            });
         }
 
         function loadTextures() {

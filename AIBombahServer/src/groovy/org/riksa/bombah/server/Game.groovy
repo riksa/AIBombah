@@ -88,7 +88,7 @@ class Game {
 
     GameInfo loadMap(def width, def height, String asciiArt) {
         def rate = Constants.TICKS_PER_SECOND
-        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
+        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 30 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
         if (asciiArt.length() != width * height) {
             log.error("Map is not $width X $height")
