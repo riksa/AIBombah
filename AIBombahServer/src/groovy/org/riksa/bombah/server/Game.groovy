@@ -4,20 +4,8 @@ import org.slf4j.LoggerFactory
 
 import java.util.concurrent.atomic.AtomicLong
 
-import thrift.Constants
-import thrift.ControllerState
-import thrift.Tile
-import thrift.MoveActionResult
-import thrift.BombState
-import thrift.MapState
-import thrift.BombAction
-import thrift.Disease
-import thrift.Direction
-import thrift.PlayerState
-import thrift.Coordinate
-import thrift.GameInfo
-import thrift.BombActionResult
-import thrift.GameOverException
+import org.riksa.bombah.thrift.*
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,19 +16,20 @@ import thrift.GameOverException
  */
 class Game {
     def log = LoggerFactory.getLogger(getClass())
-    static AtomicLong idGenerator = new AtomicLong()
+    static AtomicInteger idGenerator = new AtomicInteger()
     def id
     def slots
     AtomicLong waiting
     GameInfo gameInfo
-    def players = new Vector<PlayerState>()
-    def playerIds = new Vector()
+    def players = []
     def currentTick
     Timer timer
     def bombs = new Vector<BombState>()
     MapState mapState
-    def sleepers = []
-    enum GameState { CREATED, RUNNING, FINISHED }
+//    def sleepers = []
+    enum GameState {
+        CREATED, RUNNING, FINISHED
+    }
     GameState gameState
 
 
@@ -68,23 +57,19 @@ class Game {
         gameState = GameState.CREATED
     }
 
-    def getClientId = {
-        Thread.currentThread().id
-    }
-
-    synchronized boolean join() {
-        if( gameState == GameState.FINISHED ) {
+    synchronized int join() {
+        if (gameState == GameState.FINISHED) {
             throw new GameOverException()
         }
 
         if (players.size() >= slots) {
             log.debug("Game is full")
-            return false
+            return -1
         }
-        def clientId = getClientId();
+        def playerId = idGenerator.incrementAndGet()
         def startingPosition = gameInfo.startingPositions.get(players.size())
+        log.debug("Added $playerId as $startingPosition")
 
-        playerIds.add(clientId)
         def player = new PlayerState(
                 bombSize: 2,
                 bombAmount: 1,
@@ -94,15 +79,15 @@ class Game {
                 alive: true,
                 x: startingPosition.x,
                 y: startingPosition.y,
-                playerNumber: getPlayerIdx(clientId))
+                playerId: playerId)
 
+//        players.put( playerId, player)
         players.add(player)
-        log.debug("Client joined $clientId")
-        return true
+        return playerId
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        def rate = Constants.TICKS_PER_SECOND*10
+        def rate = Constants.TICKS_PER_SECOND
         GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
         if (asciiArt.length() != width * height) {
@@ -112,9 +97,9 @@ class Game {
 
         asciiArt.each {
             if (it == 'x')
-                gameInfo.addToTiles(Tile.D_GREY)
+                gameInfo.addToTiles(Tile.DESTRUCTIBLE)
             else if (it == 'O')
-                gameInfo.addToTiles(Tile.I_GREY)
+                gameInfo.addToTiles(Tile.INDESTRUCTIBLE)
             else
                 gameInfo.addToTiles(Tile.NONE)
         }
@@ -147,20 +132,16 @@ class Game {
         }
     }
 
-    byte waitForStart() {
+    void waitForStart() {
         if (waiting.incrementAndGet() == slots) {
             startGame()
-        } else {
-            // WAIT
-            waitTick()
         }
-
-        return getPlayerIdx(getClientId())
+        log.debug("Players waiting $waiting/$slots")
+        waitTick()
     }
 
     synchronized void tick() throws GameOverException {
         def time = System.currentTimeMillis()
-        currentTick++
         synchronized (bombs) {
             bombs.each {
                 it.blastSize = getPlayer(it.owner).bombSize
@@ -175,7 +156,7 @@ class Game {
                 ticksRemaining: gameInfo.ticksTotal - currentTick,
                 bombs: bombs.clone(), // wasted, TODO
                 players: players.clone(),
-                tiles: gameInfo.tiles.clone() )
+                tiles: gameInfo.tiles.clone())
         // inefficient
 
 //        mapState.ticksRemaining = gameInfo.ticksTotal - currentTick
@@ -186,17 +167,19 @@ class Game {
         // TODO: move players
 
 //        log.debug("Tick #$currentTick, time = $time")
+
         if (currentTick >= gameInfo.ticksTotal)
         // TODO
             throw new GameOverException()
 
-        synchronized (sleepers) {
-            sleepers.each {
-                it.interrupt()
-            }
-            sleepers.clear()
-        }
+//        synchronized (sleepers) {
+//            sleepers.each {
+//                it.interrupt()
+//            }
+//            sleepers.clear()
+//        }
 
+        currentTick++
     }
 
     void startGame() {
@@ -231,7 +214,7 @@ class Game {
     }
 
     void stopGame() {
-        if( timer ) {
+        if (timer) {
             timer.cancel()
         }
         timer = null
@@ -253,7 +236,7 @@ class Game {
     void waitTick() {
         final now = currentTick;
         while (currentTick == now) {
-            if( gameState == GameState.FINISHED ) {
+            if (gameState == GameState.FINISHED) {
                 throw new GameOverException()
             }
             Thread.yield()
@@ -271,12 +254,12 @@ class Game {
 
     }
 
-    BombActionResult bomb(BombAction bombAction) {
-        if( gameState == GameState.FINISHED ) {
+    BombActionResult bomb(playerId, BombAction bombAction) {
+        if (gameState == GameState.FINISHED) {
             throw new GameOverException()
         }
 
-        def playerState = getCurrentPlayer()
+        def playerState = getPlayer(playerId)
         def ticks = Constants.TICKS_BOMB
         if (playerState.disease == Disease.FAST_BOMB) {
             ticks >> 1
@@ -292,28 +275,22 @@ class Game {
                 ticksRemaining: ticks,
                 moving: false,
                 direction: Direction.E,
-                owner: playerState.playerNumber
+                owner: playerState.playerId
         )
         bombs.add(bomb)
-        return new BombActionResult(myState: getCurrentPlayer(), mapState: mapState)
+        return new BombActionResult(myState: playerState, mapState: mapState)
     }
 
-    int getPlayerIdx(clientId) {
-        playerIds.indexOf(clientId)
+    PlayerState getPlayer(def playerId) {
+        players.find {
+            it.playerId == playerId
+        }
     }
 
-    PlayerState getCurrentPlayer() {
-        return getPlayer(getPlayerIdx(getClientId()))
-    }
-
-    PlayerState getPlayer(def playerIdx) {
-        return players.get(playerIdx)
-    }
-
-    MoveActionResult controllerEvent(ControllerState controllerState) {
-        if( gameState == GameState.FINISHED ) {
+    MoveActionResult controllerEvent(playerId, ControllerState controllerState) {
+        if (gameState == GameState.FINISHED) {
             throw new GameOverException()
         }
-        return new MoveActionResult(myState: getCurrentPlayer(), mapState: mapState)
+        return new MoveActionResult(myState: getPlayer(playerId), mapState: mapState)
     }
 }

@@ -89,8 +89,12 @@ BombahService_ping_result.prototype.write = function(output) {
 };
 
 BombahService_controllerEvent_args = function(args) {
+  this.playerId = null;
   this.controllerState = null;
   if (args) {
+    if (args.playerId !== undefined) {
+      this.playerId = args.playerId;
+    }
     if (args.controllerState !== undefined) {
       this.controllerState = args.controllerState;
     }
@@ -111,6 +115,13 @@ BombahService_controllerEvent_args.prototype.read = function(input) {
     switch (fid)
     {
       case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.playerId = input.readI32().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
       if (ftype == Thrift.Type.STRUCT) {
         this.controllerState = new ControllerState();
         this.controllerState.read(input);
@@ -118,9 +129,6 @@ BombahService_controllerEvent_args.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 0:
-        input.skip(ftype);
-        break;
       default:
         input.skip(ftype);
     }
@@ -132,8 +140,13 @@ BombahService_controllerEvent_args.prototype.read = function(input) {
 
 BombahService_controllerEvent_args.prototype.write = function(output) {
   output.writeStructBegin('BombahService_controllerEvent_args');
+  if (this.playerId) {
+    output.writeFieldBegin('playerId', Thrift.Type.I32, 1);
+    output.writeI32(this.playerId);
+    output.writeFieldEnd();
+  }
   if (this.controllerState) {
-    output.writeFieldBegin('controllerState', Thrift.Type.STRUCT, 1);
+    output.writeFieldBegin('controllerState', Thrift.Type.STRUCT, 2);
     this.controllerState.write(output);
     output.writeFieldEnd();
   }
@@ -228,8 +241,12 @@ BombahService_controllerEvent_result.prototype.write = function(output) {
 };
 
 BombahService_move_args = function(args) {
+  this.playerId = null;
   this.moveAction = null;
   if (args) {
+    if (args.playerId !== undefined) {
+      this.playerId = args.playerId;
+    }
     if (args.moveAction !== undefined) {
       this.moveAction = args.moveAction;
     }
@@ -250,6 +267,13 @@ BombahService_move_args.prototype.read = function(input) {
     switch (fid)
     {
       case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.playerId = input.readI32().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
       if (ftype == Thrift.Type.STRUCT) {
         this.moveAction = new MoveAction();
         this.moveAction.read(input);
@@ -257,9 +281,6 @@ BombahService_move_args.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 0:
-        input.skip(ftype);
-        break;
       default:
         input.skip(ftype);
     }
@@ -271,8 +292,13 @@ BombahService_move_args.prototype.read = function(input) {
 
 BombahService_move_args.prototype.write = function(output) {
   output.writeStructBegin('BombahService_move_args');
+  if (this.playerId) {
+    output.writeFieldBegin('playerId', Thrift.Type.I32, 1);
+    output.writeI32(this.playerId);
+    output.writeFieldEnd();
+  }
   if (this.moveAction) {
-    output.writeFieldBegin('moveAction', Thrift.Type.STRUCT, 1);
+    output.writeFieldBegin('moveAction', Thrift.Type.STRUCT, 2);
     this.moveAction.write(output);
     output.writeFieldEnd();
   }
@@ -367,8 +393,12 @@ BombahService_move_result.prototype.write = function(output) {
 };
 
 BombahService_bomb_args = function(args) {
+  this.playerId = null;
   this.bombAction = null;
   if (args) {
+    if (args.playerId !== undefined) {
+      this.playerId = args.playerId;
+    }
     if (args.bombAction !== undefined) {
       this.bombAction = args.bombAction;
     }
@@ -389,6 +419,13 @@ BombahService_bomb_args.prototype.read = function(input) {
     switch (fid)
     {
       case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.playerId = input.readI32().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
       if (ftype == Thrift.Type.STRUCT) {
         this.bombAction = new BombAction();
         this.bombAction.read(input);
@@ -396,9 +433,6 @@ BombahService_bomb_args.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 0:
-        input.skip(ftype);
-        break;
       default:
         input.skip(ftype);
     }
@@ -410,8 +444,13 @@ BombahService_bomb_args.prototype.read = function(input) {
 
 BombahService_bomb_args.prototype.write = function(output) {
   output.writeStructBegin('BombahService_bomb_args');
+  if (this.playerId) {
+    output.writeFieldBegin('playerId', Thrift.Type.I32, 1);
+    output.writeI32(this.playerId);
+    output.writeFieldEnd();
+  }
   if (this.bombAction) {
-    output.writeFieldBegin('bombAction', Thrift.Type.STRUCT, 1);
+    output.writeFieldBegin('bombAction', Thrift.Type.STRUCT, 2);
     this.bombAction.write(output);
     output.writeFieldEnd();
   }
@@ -560,14 +599,10 @@ BombahService_waitTicks_args.prototype.write = function(output) {
 
 BombahService_waitTicks_result = function(args) {
   this.success = null;
-  this.youAreDead = null;
   this.gameOver = null;
   if (args) {
     if (args.success !== undefined) {
       this.success = args.success;
-    }
-    if (args.youAreDead !== undefined) {
-      this.youAreDead = args.youAreDead;
     }
     if (args.gameOver !== undefined) {
       this.gameOver = args.gameOver;
@@ -598,14 +633,6 @@ BombahService_waitTicks_result.prototype.read = function(input) {
       break;
       case 1:
       if (ftype == Thrift.Type.STRUCT) {
-        this.youAreDead = new YouAreDeadException();
-        this.youAreDead.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 2:
-      if (ftype == Thrift.Type.STRUCT) {
         this.gameOver = new GameOverException();
         this.gameOver.read(input);
       } else {
@@ -628,13 +655,8 @@ BombahService_waitTicks_result.prototype.write = function(output) {
     this.success.write(output);
     output.writeFieldEnd();
   }
-  if (this.youAreDead) {
-    output.writeFieldBegin('youAreDead', Thrift.Type.STRUCT, 1);
-    this.youAreDead.write(output);
-    output.writeFieldEnd();
-  }
   if (this.gameOver) {
-    output.writeFieldBegin('gameOver', Thrift.Type.STRUCT, 2);
+    output.writeFieldBegin('gameOver', Thrift.Type.STRUCT, 1);
     this.gameOver.write(output);
     output.writeFieldEnd();
   }
@@ -644,6 +666,12 @@ BombahService_waitTicks_result.prototype.write = function(output) {
 };
 
 BombahService_joinGame_args = function(args) {
+  this.gameId = null;
+  if (args) {
+    if (args.gameId !== undefined) {
+      this.gameId = args.gameId;
+    }
+  }
 };
 BombahService_joinGame_args.prototype = {};
 BombahService_joinGame_args.prototype.read = function(input) {
@@ -657,7 +685,21 @@ BombahService_joinGame_args.prototype.read = function(input) {
     if (ftype == Thrift.Type.STOP) {
       break;
     }
-    input.skip(ftype);
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.gameId = input.readI32().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
     input.readFieldEnd();
   }
   input.readStructEnd();
@@ -666,6 +708,11 @@ BombahService_joinGame_args.prototype.read = function(input) {
 
 BombahService_joinGame_args.prototype.write = function(output) {
   output.writeStructBegin('BombahService_joinGame_args');
+  if (this.gameId) {
+    output.writeFieldBegin('gameId', Thrift.Type.I32, 1);
+    output.writeI32(this.gameId);
+    output.writeFieldEnd();
+  }
   output.writeFieldStop();
   output.writeStructEnd();
   return;
@@ -768,12 +815,8 @@ BombahService_waitForStart_args.prototype.write = function(output) {
 };
 
 BombahService_waitForStart_result = function(args) {
-  this.success = null;
   this.timeOutException = null;
   if (args) {
-    if (args.success !== undefined) {
-      this.success = args.success;
-    }
     if (args.timeOutException !== undefined) {
       this.timeOutException = args.timeOutException;
     }
@@ -793,13 +836,6 @@ BombahService_waitForStart_result.prototype.read = function(input) {
     }
     switch (fid)
     {
-      case 0:
-      if (ftype == Thrift.Type.BYTE) {
-        this.success = input.readByte().value;
-      } else {
-        input.skip(ftype);
-      }
-      break;
       case 1:
       if (ftype == Thrift.Type.STRUCT) {
         this.timeOutException = new TimeoutException();
@@ -808,6 +844,9 @@ BombahService_waitForStart_result.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
+      case 0:
+        input.skip(ftype);
+        break;
       default:
         input.skip(ftype);
     }
@@ -819,11 +858,6 @@ BombahService_waitForStart_result.prototype.read = function(input) {
 
 BombahService_waitForStart_result.prototype.write = function(output) {
   output.writeStructBegin('BombahService_waitForStart_result');
-  if (this.success) {
-    output.writeFieldBegin('success', Thrift.Type.BYTE, 0);
-    output.writeByte(this.success);
-    output.writeFieldEnd();
-  }
   if (this.timeOutException) {
     output.writeFieldBegin('timeOutException', Thrift.Type.STRUCT, 1);
     this.timeOutException.write(output);
@@ -864,9 +898,13 @@ BombahService_getMapState_args.prototype.write = function(output) {
 
 BombahService_getMapState_result = function(args) {
   this.success = null;
+  this.gameOver = null;
   if (args) {
     if (args.success !== undefined) {
       this.success = args.success;
+    }
+    if (args.gameOver !== undefined) {
+      this.gameOver = args.gameOver;
     }
   }
 };
@@ -892,9 +930,14 @@ BombahService_getMapState_result.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 0:
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.gameOver = new GameOverException();
+        this.gameOver.read(input);
+      } else {
         input.skip(ftype);
-        break;
+      }
+      break;
       default:
         input.skip(ftype);
     }
@@ -909,6 +952,11 @@ BombahService_getMapState_result.prototype.write = function(output) {
   if (this.success) {
     output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
     this.success.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.gameOver) {
+    output.writeFieldBegin('gameOver', Thrift.Type.STRUCT, 1);
+    this.gameOver.write(output);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -961,20 +1009,21 @@ BombahServiceClient.prototype.recv_ping = function() {
   }
   throw 'ping failed: unknown result';
 };
-BombahServiceClient.prototype.controllerEvent = function(controllerState, callback) {
+BombahServiceClient.prototype.controllerEvent = function(playerId, controllerState, callback) {
   if (callback === undefined) {
-    this.send_controllerEvent(controllerState);
+    this.send_controllerEvent(playerId, controllerState);
     return this.recv_controllerEvent();
   } else {
-    var postData = this.send_controllerEvent(controllerState, true);
+    var postData = this.send_controllerEvent(playerId, controllerState, true);
     return this.output.getTransport()
       .jqRequest(this, postData, arguments, this.recv_controllerEvent);
   }
 };
 
-BombahServiceClient.prototype.send_controllerEvent = function(controllerState, callback) {
+BombahServiceClient.prototype.send_controllerEvent = function(playerId, controllerState, callback) {
   this.output.writeMessageBegin('controllerEvent', Thrift.MessageType.CALL, this.seqid);
   var args = new BombahService_controllerEvent_args();
+  args.playerId = playerId;
   args.controllerState = controllerState;
   args.write(this.output);
   this.output.writeMessageEnd();
@@ -1007,20 +1056,21 @@ BombahServiceClient.prototype.recv_controllerEvent = function() {
   }
   throw 'controllerEvent failed: unknown result';
 };
-BombahServiceClient.prototype.move = function(moveAction, callback) {
+BombahServiceClient.prototype.move = function(playerId, moveAction, callback) {
   if (callback === undefined) {
-    this.send_move(moveAction);
+    this.send_move(playerId, moveAction);
     return this.recv_move();
   } else {
-    var postData = this.send_move(moveAction, true);
+    var postData = this.send_move(playerId, moveAction, true);
     return this.output.getTransport()
       .jqRequest(this, postData, arguments, this.recv_move);
   }
 };
 
-BombahServiceClient.prototype.send_move = function(moveAction, callback) {
+BombahServiceClient.prototype.send_move = function(playerId, moveAction, callback) {
   this.output.writeMessageBegin('move', Thrift.MessageType.CALL, this.seqid);
   var args = new BombahService_move_args();
+  args.playerId = playerId;
   args.moveAction = moveAction;
   args.write(this.output);
   this.output.writeMessageEnd();
@@ -1053,20 +1103,21 @@ BombahServiceClient.prototype.recv_move = function() {
   }
   throw 'move failed: unknown result';
 };
-BombahServiceClient.prototype.bomb = function(bombAction, callback) {
+BombahServiceClient.prototype.bomb = function(playerId, bombAction, callback) {
   if (callback === undefined) {
-    this.send_bomb(bombAction);
+    this.send_bomb(playerId, bombAction);
     return this.recv_bomb();
   } else {
-    var postData = this.send_bomb(bombAction, true);
+    var postData = this.send_bomb(playerId, bombAction, true);
     return this.output.getTransport()
       .jqRequest(this, postData, arguments, this.recv_bomb);
   }
 };
 
-BombahServiceClient.prototype.send_bomb = function(bombAction, callback) {
+BombahServiceClient.prototype.send_bomb = function(playerId, bombAction, callback) {
   this.output.writeMessageBegin('bomb', Thrift.MessageType.CALL, this.seqid);
   var args = new BombahService_bomb_args();
+  args.playerId = playerId;
   args.bombAction = bombAction;
   args.write(this.output);
   this.output.writeMessageEnd();
@@ -1134,9 +1185,6 @@ BombahServiceClient.prototype.recv_waitTicks = function() {
   result.read(this.input);
   this.input.readMessageEnd();
 
-  if (null !== result.youAreDead) {
-    throw result.youAreDead;
-  }
   if (null !== result.gameOver) {
     throw result.gameOver;
   }
@@ -1145,20 +1193,21 @@ BombahServiceClient.prototype.recv_waitTicks = function() {
   }
   throw 'waitTicks failed: unknown result';
 };
-BombahServiceClient.prototype.joinGame = function(callback) {
+BombahServiceClient.prototype.joinGame = function(gameId, callback) {
   if (callback === undefined) {
-    this.send_joinGame();
+    this.send_joinGame(gameId);
     return this.recv_joinGame();
   } else {
-    var postData = this.send_joinGame(true);
+    var postData = this.send_joinGame(gameId, true);
     return this.output.getTransport()
       .jqRequest(this, postData, arguments, this.recv_joinGame);
   }
 };
 
-BombahServiceClient.prototype.send_joinGame = function(callback) {
+BombahServiceClient.prototype.send_joinGame = function(gameId, callback) {
   this.output.writeMessageBegin('joinGame', Thrift.MessageType.CALL, this.seqid);
   var args = new BombahService_joinGame_args();
+  args.gameId = gameId;
   args.write(this.output);
   this.output.writeMessageEnd();
   return this.output.getTransport().flush(callback);
@@ -1190,7 +1239,7 @@ BombahServiceClient.prototype.recv_joinGame = function() {
 BombahServiceClient.prototype.waitForStart = function(callback) {
   if (callback === undefined) {
     this.send_waitForStart();
-    return this.recv_waitForStart();
+    this.recv_waitForStart();
   } else {
     var postData = this.send_waitForStart(true);
     return this.output.getTransport()
@@ -1224,10 +1273,7 @@ BombahServiceClient.prototype.recv_waitForStart = function() {
   if (null !== result.timeOutException) {
     throw result.timeOutException;
   }
-  if (null !== result.success) {
-    return result.success;
-  }
-  throw 'waitForStart failed: unknown result';
+  return;
 };
 BombahServiceClient.prototype.getMapState = function(callback) {
   if (callback === undefined) {
@@ -1263,6 +1309,9 @@ BombahServiceClient.prototype.recv_getMapState = function() {
   result.read(this.input);
   this.input.readMessageEnd();
 
+  if (null !== result.gameOver) {
+    throw result.gameOver;
+  }
   if (null !== result.success) {
     return result.success;
   }

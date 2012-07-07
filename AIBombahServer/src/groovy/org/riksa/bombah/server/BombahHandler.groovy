@@ -2,16 +2,7 @@ package org.riksa.bombah.server
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import thrift.BombahService
-import thrift.ControllerState
-import thrift.ControllerResult
-import thrift.MoveActionResult
-import thrift.MoveAction
-import thrift.Constants
-import thrift.BombActionResult
-import thrift.BombAction
-import thrift.MapState
-import thrift.GameInfo
+import org.riksa.bombah.thrift.*
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,8 +13,18 @@ import thrift.GameInfo
  */
 class BombahHandler implements BombahService.Iface {
     private static final Logger log = LoggerFactory.getLogger(BombahHandler.class)
-    Game game
+    Game runningGame
     ControllerState controllerState
+
+    synchronized Game getGame() {
+        if( !runningGame ) {
+            runningGame = createGame();
+        }
+        if( runningGame.gameState == Game.GameState.FINISHED ) {
+            runningGame = createGame();
+        }
+        return runningGame
+    }
 
     @Override
     String ping() {
@@ -31,22 +32,24 @@ class BombahHandler implements BombahService.Iface {
     }
 
     @Override
-    ControllerResult controllerEvent(ControllerState controllerState) {
+    ControllerResult controllerEvent(int playerId, ControllerState controllerState) {
         this.controllerState = controllerState;
         return new ControllerResult()
     }
 
     @Override
-    MoveActionResult move(MoveAction moveAction) {
-        this.controllerState = new ControllerState(directionPadDown: true, direction: moveAction.direction, key1Down: false, key2Down: false)
+    MoveActionResult move(int playerId, MoveAction moveAction) {
+        def controllerState = new ControllerState(directionPadDown: true, direction: moveAction.direction, key1Down: false, key2Down: false)
+        game.controllerEvent( playerId, controllerState )
         game.waitTicks(Constants.TICKS_PER_TILE);
-        this.controllerState.directionPadDown = false
-        return new MoveActionResult(myState: game.getCurrentPlayer(), mapState: game.mapState)
+        controllerState.directionPadDown = false
+        game.controllerEvent( playerId, controllerState )
+        return new MoveActionResult(myState: game.getPlayer(playerId), mapState: game.mapState)
     }
 
     @Override
-    BombActionResult bomb(BombAction bombAction) {
-        return game.bomb(bombAction);
+    BombActionResult bomb(int playerId, BombAction bombAction) {
+        return game.bomb( playerId, bombAction);
     }
 
     @Override
@@ -56,19 +59,22 @@ class BombahHandler implements BombahService.Iface {
     }
 
     @Override
-    synchronized GameInfo joinGame() {
-
-        if (!game)
-            game = createGame()
-
-        if (game.join()) {
-            return game.gameInfo
+    synchronized GameInfo joinGame(int gameId) {
+        def playerId = game.join()
+        if (playerId > 0 ) {
+            def info = game.gameInfo
+            info.playerId = playerId
+            return info
+        } else{
+            throw new GameOverException()
         }
-
     }
 
     @Override
-    byte waitForStart() {
+    void waitForStart() {
+//        if( !game ) {
+//            return -1;
+//        }
         game.waitForStart()
     }
 

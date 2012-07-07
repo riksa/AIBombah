@@ -22,8 +22,8 @@ Tile = {
 'BUFF_FOOT' : 4,
 'DEBUFF' : 5,
 'FIRE' : 6,
-'I_GREY' : 7,
-'D_GREY' : 8
+'INDESTRUCTIBLE' : 7,
+'DESTRUCTIBLE' : 8
 };
 Disease = {
 'NONE' : 0,
@@ -122,8 +122,8 @@ BombState.prototype.read = function(input) {
       }
       break;
       case 7:
-      if (ftype == Thrift.Type.BYTE) {
-        this.owner = input.readByte().value;
+      if (ftype == Thrift.Type.I32) {
+        this.owner = input.readI32().value;
       } else {
         input.skip(ftype);
       }
@@ -170,8 +170,8 @@ BombState.prototype.write = function(output) {
     output.writeFieldEnd();
   }
   if (this.owner) {
-    output.writeFieldBegin('owner', Thrift.Type.BYTE, 7);
-    output.writeByte(this.owner);
+    output.writeFieldBegin('owner', Thrift.Type.I32, 7);
+    output.writeI32(this.owner);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -275,7 +275,7 @@ PlayerState = function(args) {
   this.alive = null;
   this.x = null;
   this.y = null;
-  this.playerNumber = null;
+  this.playerId = null;
   if (args) {
     if (args.bombSize !== undefined) {
       this.bombSize = args.bombSize;
@@ -301,8 +301,8 @@ PlayerState = function(args) {
     if (args.y !== undefined) {
       this.y = args.y;
     }
-    if (args.playerNumber !== undefined) {
-      this.playerNumber = args.playerNumber;
+    if (args.playerId !== undefined) {
+      this.playerId = args.playerId;
     }
   }
 };
@@ -377,8 +377,8 @@ PlayerState.prototype.read = function(input) {
       }
       break;
       case 9:
-      if (ftype == Thrift.Type.BYTE) {
-        this.playerNumber = input.readByte().value;
+      if (ftype == Thrift.Type.I32) {
+        this.playerId = input.readI32().value;
       } else {
         input.skip(ftype);
       }
@@ -434,9 +434,9 @@ PlayerState.prototype.write = function(output) {
     output.writeDouble(this.y);
     output.writeFieldEnd();
   }
-  if (this.playerNumber) {
-    output.writeFieldBegin('playerNumber', Thrift.Type.BYTE, 9);
-    output.writeByte(this.playerNumber);
+  if (this.playerId) {
+    output.writeFieldBegin('playerId', Thrift.Type.I32, 9);
+    output.writeI32(this.playerId);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -679,20 +679,18 @@ Coordinate.prototype.write = function(output) {
 GameInfo = function(args) {
   this.mapWidth = null;
   this.mapHeight = null;
-  this.playerIndex = null;
   this.tiles = null;
   this.startingPositions = null;
   this.ticksTotal = null;
   this.ticksPerSecond = null;
+  this.gameId = null;
+  this.playerId = null;
   if (args) {
     if (args.mapWidth !== undefined) {
       this.mapWidth = args.mapWidth;
     }
     if (args.mapHeight !== undefined) {
       this.mapHeight = args.mapHeight;
-    }
-    if (args.playerIndex !== undefined) {
-      this.playerIndex = args.playerIndex;
     }
     if (args.tiles !== undefined) {
       this.tiles = args.tiles;
@@ -705,6 +703,12 @@ GameInfo = function(args) {
     }
     if (args.ticksPerSecond !== undefined) {
       this.ticksPerSecond = args.ticksPerSecond;
+    }
+    if (args.gameId !== undefined) {
+      this.gameId = args.gameId;
+    }
+    if (args.playerId !== undefined) {
+      this.playerId = args.playerId;
     }
   }
 };
@@ -737,13 +741,6 @@ GameInfo.prototype.read = function(input) {
       }
       break;
       case 3:
-      if (ftype == Thrift.Type.BYTE) {
-        this.playerIndex = input.readByte().value;
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 4:
       if (ftype == Thrift.Type.LIST) {
         var _size24 = 0;
         var _rtmp328;
@@ -763,7 +760,7 @@ GameInfo.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 5:
+      case 4:
       if (ftype == Thrift.Type.LIST) {
         var _size31 = 0;
         var _rtmp335;
@@ -784,16 +781,30 @@ GameInfo.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 6:
+      case 5:
       if (ftype == Thrift.Type.I32) {
         this.ticksTotal = input.readI32().value;
       } else {
         input.skip(ftype);
       }
       break;
-      case 7:
+      case 6:
       if (ftype == Thrift.Type.I32) {
         this.ticksPerSecond = input.readI32().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 7:
+      if (ftype == Thrift.Type.I32) {
+        this.gameId = input.readI32().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 8:
+      if (ftype == Thrift.Type.I32) {
+        this.playerId = input.readI32().value;
       } else {
         input.skip(ftype);
       }
@@ -819,13 +830,8 @@ GameInfo.prototype.write = function(output) {
     output.writeByte(this.mapHeight);
     output.writeFieldEnd();
   }
-  if (this.playerIndex) {
-    output.writeFieldBegin('playerIndex', Thrift.Type.BYTE, 3);
-    output.writeByte(this.playerIndex);
-    output.writeFieldEnd();
-  }
   if (this.tiles) {
-    output.writeFieldBegin('tiles', Thrift.Type.LIST, 4);
+    output.writeFieldBegin('tiles', Thrift.Type.LIST, 3);
     output.writeListBegin(Thrift.Type.I32, this.tiles.length);
     for (var iter38 in this.tiles)
     {
@@ -839,7 +845,7 @@ GameInfo.prototype.write = function(output) {
     output.writeFieldEnd();
   }
   if (this.startingPositions) {
-    output.writeFieldBegin('startingPositions', Thrift.Type.LIST, 5);
+    output.writeFieldBegin('startingPositions', Thrift.Type.LIST, 4);
     output.writeListBegin(Thrift.Type.STRUCT, this.startingPositions.length);
     for (var iter39 in this.startingPositions)
     {
@@ -853,13 +859,23 @@ GameInfo.prototype.write = function(output) {
     output.writeFieldEnd();
   }
   if (this.ticksTotal) {
-    output.writeFieldBegin('ticksTotal', Thrift.Type.I32, 6);
+    output.writeFieldBegin('ticksTotal', Thrift.Type.I32, 5);
     output.writeI32(this.ticksTotal);
     output.writeFieldEnd();
   }
   if (this.ticksPerSecond) {
-    output.writeFieldBegin('ticksPerSecond', Thrift.Type.I32, 7);
+    output.writeFieldBegin('ticksPerSecond', Thrift.Type.I32, 6);
     output.writeI32(this.ticksPerSecond);
+    output.writeFieldEnd();
+  }
+  if (this.gameId) {
+    output.writeFieldBegin('gameId', Thrift.Type.I32, 7);
+    output.writeI32(this.gameId);
+    output.writeFieldEnd();
+  }
+  if (this.playerId) {
+    output.writeFieldBegin('playerId', Thrift.Type.I32, 8);
+    output.writeI32(this.playerId);
     output.writeFieldEnd();
   }
   output.writeFieldStop();

@@ -12,6 +12,7 @@
         var canvas;
         var gl;
         var textures = [];
+        var client;
 
         $(document).ready(function () {
             canvas = document.getElementById("canvas");
@@ -26,12 +27,23 @@
 
             var transport = new Thrift.Transport(url);
             var protocol = new Thrift.Protocol(transport);
-            var client = new BombahServiceClient(protocol);
+            client = new BombahServiceClient(protocol);
 
             console.log( "Waiting for match to start");
+//            client.waitTicks(1);
 //            client.waitForStart();
-//            console.log( "Match started!");
-            console.log( client.getMapState() );
+            console.log( "Match started!");
+
+            startPolling();
+        }
+
+        function startPolling() {
+            window.setInterval( updateMap, 5000 );
+        }
+
+        function updateMap() {
+            var mapState = client.getMapState(); // TODO: how to async?
+            console.log( "Ticks remaining "+mapState.ticksRemaining);
         }
 
         function loadTextures() {

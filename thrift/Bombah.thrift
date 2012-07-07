@@ -35,8 +35,8 @@ enum Tile {
     DEBUFF = 5,
     FIRE = 6,
 
-    I_GREY = 7, // Indestructible grey brick
-    D_GREY = 8, // Destructible grey brick
+    INDESTRUCTIBLE = 7, // Indestructible grey brick
+    DESTRUCTIBLE = 8, // Destructible grey brick
 
     // TODO:
 }
@@ -48,7 +48,7 @@ struct BombState {
     4: byte ticksRemaining,
     5: bool moving,
     6: Direction direction,
-    7: byte owner
+    7: i32 owner
 }
 
 enum Disease {
@@ -82,7 +82,7 @@ struct PlayerState {
     6:bool alive,
     7:double x,
     8:double y,
-    9:byte playerNumber
+    9:i32 playerId
 }
 
 struct MapState {
@@ -100,11 +100,12 @@ struct Coordinate {
 struct GameInfo {
     1: byte mapWidth,
     2: byte mapHeight,
-    3: byte playerIndex,
-    4: list<Tile> tiles,
-    5: list<Coordinate> startingPositions,
-    6: i32 ticksTotal,
-    7: i32 ticksPerSecond
+    3: list<Tile> tiles,
+    4: list<Coordinate> startingPositions,
+    5: i32 ticksTotal,
+    6: i32 ticksPerSecond,
+	7: i32 gameId,
+	8: i32 playerId
 }
 
 /**
@@ -149,19 +150,16 @@ service BombahService {
 	/**
 	 * Event from controller
 	 */
-	ControllerResult controllerEvent(1:ControllerState controllerState) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
-	MoveActionResult move(1: MoveAction moveAction ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
-	BombActionResult bomb(1: BombAction bombAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
-//	ChainActionResult chainActions(1: ChainAction chainAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
-    MapState waitTicks( 1: i32 ticks ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+	ControllerResult controllerEvent(1: i32 playerId, 2:ControllerState controllerState) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+	MoveActionResult move(1: i32 playerId, 2: MoveAction moveAction ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+	BombActionResult bomb(1: i32 playerId, 2: BombAction bombAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+//	ChainActionResult chainActions(1: i32 playerId, 2: ChainAction chainAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 
-    GameInfo joinGame() throws (1:TimeoutException timeOutException);
+    MapState waitTicks( 1: i32 ticks ) throws (1: GameOverException gameOver);
+    GameInfo joinGame( 1:i32 gameId) throws (1:TimeoutException timeOutException);
 
-    /**
-     * returns the index of your bomberman
-     */
-    byte waitForStart() throws (1:TimeoutException timeOutException);
+    void waitForStart() throws (1:TimeoutException timeOutException);
 
-	MapState getMapState();
+	MapState getMapState() throws (1: GameOverException gameOver);
 
 }

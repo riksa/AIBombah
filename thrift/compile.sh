@@ -1,4 +1,4 @@
 #!/bin/sh
-thrift -gen java -o ../GroovyServer Bombah.thrift
-thrift -gen js:jquery -o ../WebGL Bombah.thrift
-thrift -gen js:node -o ../WebGL Bombah.thrift
+thrift -gen java --out ../AIBombahServer/src/java Bombah.thrift
+thrift -gen js:jquery -o ../AIBombahServer/web-app Bombah.thrift
+thrift -gen js:node -o ../AIBombahServer/web-app Bombah.thrift
