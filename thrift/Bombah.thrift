@@ -7,7 +7,7 @@ const i32 TICKS_PER_SECOND = 50
 /**
  * movement takes 5 ticks / tile
  */
-const i32 TICKS_PER_TILE   = 10
+const i32 TICKS_PER_TILE   = 20
 /**
  * normal bomb explodes in 150 ticks (3s)
  * fast bomb in half that time

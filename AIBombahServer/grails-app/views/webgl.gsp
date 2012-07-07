@@ -51,7 +51,11 @@
         try {
             gameInfo = client.getGameInfo(-1);
             console.log(gameInfo);
-            window.setInterval(updateMap, 1000);
+//            while( true ) {
+//                updateMap();
+//                client.waitTicks(10);
+//            }
+              window.setInterval(updateMap, 10);
         } catch (e) {
 
         }

@@ -380,6 +380,520 @@
          height="260"
          width="260" />
     </pattern>
+    <linearGradient
+       id="linearGradient8700-8">
+      <stop
+         id="stop8702-8"
+         offset="0"
+         style="stop-color:#ff00ff;stop-opacity:1;" />
+      <stop
+         id="stop8704-2"
+         offset="1"
+         style="stop-color:#ff005d;stop-opacity:1;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient8700-9">
+      <stop
+         id="stop8702-4"
+         offset="0"
+         style="stop-color:#ff00ff;stop-opacity:1;" />
+      <stop
+         id="stop8704-6"
+         offset="1"
+         style="stop-color:#ff005d;stop-opacity:1;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient8700-1">
+      <stop
+         id="stop8702-2"
+         offset="0"
+         style="stop-color:#ff00ff;stop-opacity:1;" />
+      <stop
+         id="stop8704-1"
+         offset="1"
+         style="stop-color:#ff005d;stop-opacity:1;" />
+    </linearGradient>
+    <filter
+       id="filter4249"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4251"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4253"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4255"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4257"
+         in2="SourceGraphic"
+         operator="in"
+         k2="1"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4259" />
+      <feColorMatrix
+         id="feColorMatrix4261"
+         values="1"
+         in="fbSourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4263"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4265"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4267"
+         in2="fbSourceGraphic"
+         operator="in"
+         k2="1"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4280"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4282"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4284"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4286"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4288"
+         in2="SourceGraphic"
+         operator="in"
+         k2="1"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4280-9"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4282-8"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4284-3"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4286-8"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4288-6"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <linearGradient
+       id="linearGradient8700-9-8">
+      <stop
+         id="stop8702-4-6"
+         offset="0"
+         style="stop-color:#ff00ff;stop-opacity:1;" />
+      <stop
+         id="stop8704-6-6"
+         offset="1"
+         style="stop-color:#ff005d;stop-opacity:1;" />
+    </linearGradient>
+    <filter
+       id="filter4280-2"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4282-7"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4284-5"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4286-7"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4288-8"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <linearGradient
+       id="linearGradient8700-9-7">
+      <stop
+         id="stop8702-4-8"
+         offset="0"
+         style="stop-color:#ff00ff;stop-opacity:1;" />
+      <stop
+         id="stop8704-6-0"
+         offset="1"
+         style="stop-color:#ff005d;stop-opacity:1;" />
+    </linearGradient>
+    <filter
+       id="filter4280-9-6"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4282-8-7"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4284-3-8"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4286-8-7"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4288-6-8"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4454"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4456"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4458"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4460"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4462"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4464"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4466"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4468"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4470"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4472"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4280-9-8"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4282-8-9"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4284-3-0"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4286-8-0"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4288-6-0"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4454-7"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4456-2"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4458-5"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4460-5"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4462-2"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4464-1"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4466-4"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4468-8"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4470-6"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4472-4"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4280-9-5"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4282-8-5"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4284-3-1"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4286-8-5"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4288-6-5"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4454-8"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4456-4"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4458-0"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4460-54"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4462-7"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
+    <filter
+       id="filter4464-2"
+       inkscape:label="Colorize"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Blend image or object with a flood color and set lightness and contrast"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4466-1"
+         values="1"
+         in="SourceGraphic"
+         type="saturate"
+         result="result2" />
+      <feFlood
+         id="feFlood4468-4"
+         flood-color="rgb(254,102,0)"
+         flood-opacity="1"
+         result="result1" />
+      <feBlend
+         id="feBlend4470-9"
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3" />
+      <feComposite
+         id="feComposite4472-9"
+         in2="SourceGraphic"
+         operator="in"
+         result="result4" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -389,8 +903,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.6289063"
-     inkscape:cx="-14.616613"
-     inkscape:cy="30.986821"
+     inkscape:cx="-24.249729"
+     inkscape:cy="53.032031"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -418,7 +932,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -2615,6 +3129,178 @@
          height="64"
          width="64"
          id="rect2991-0-77"
+         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    </g>
+    <g
+       id="g4830">
+      <g
+         transform="translate(-48,8.666667)"
+         id="g4730">
+        <path
+           inkscape:connector-curvature="0"
+           id="path4614-3"
+           d="m -60.000001,-13.333333 12,-12.444444 12,12.444444"
+           style="fill:none;stroke:#ff00ff;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4616-64"
+           d="m -48.000001,-25.777777 0,-24.888889"
+           style="fill:none;stroke:#ff00ff;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4618-4"
+           d="m -64.000001,-38.222222 16,-6.222222 16,6.222222"
+           style="fill:none;stroke:#ff00ff;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           transform="matrix(1,0,0,0.77777778,64,-0.888889)"
+           d="m -100,-76 c 0,6.627417 -5.37258,12 -12,12 -6.62742,0 -12,-5.372583 -12,-12 0,-6.627417 5.37258,-12 12,-12 6.62742,0 12,5.372583 12,12 z"
+           sodipodi:ry="12"
+           sodipodi:rx="12"
+           sodipodi:cy="-76"
+           sodipodi:cx="-112"
+           id="path4620-1"
+           style="fill:none;stroke:#ff00ff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           sodipodi:type="arc" />
+      </g>
+      <rect
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\1.png"
+         ry="0"
+         y="-64"
+         x="-128"
+         height="64"
+         width="64"
+         id="rect2991-0-47"
+         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    </g>
+    <g
+       id="g4838">
+      <g
+         transform="translate(112,21.333332)"
+         id="g4748">
+        <path
+           inkscape:connector-curvature="0"
+           id="path4614"
+           d="m -156,-26.222221 12,-12.444444 12,12.444444"
+           style="fill:none;stroke:#ff0000;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4616"
+           d="m -144,-38.666665 0,-24.888889"
+           style="fill:none;stroke:#ff0000;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4618"
+           d="m -160,-51.11111 16,-6.222222 16,6.222222"
+           style="fill:none;stroke:#ff0000;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           transform="matrix(1,0,0,0.77777778,-32,-13.777777)"
+           d="m -100,-76 c 0,6.627417 -5.37258,12 -12,12 -6.62742,0 -12,-5.372583 -12,-12 0,-6.627417 5.37258,-12 12,-12 6.62742,0 12,5.372583 12,12 z"
+           sodipodi:ry="12"
+           sodipodi:rx="12"
+           sodipodi:cy="-76"
+           sodipodi:cx="-112"
+           id="path4620"
+           style="fill:none;stroke:#ff0000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           sodipodi:type="arc" />
+      </g>
+      <rect
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\1.png"
+         ry="0"
+         y="-64"
+         x="-64"
+         height="64"
+         width="64"
+         id="rect2991-0-8"
+         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    </g>
+    <g
+       id="g4846">
+      <g
+         transform="translate(120,51.333332)"
+         id="g4742">
+        <path
+           inkscape:connector-curvature="0"
+           id="path4614-7"
+           d="m -96,-55.999994 12,-12.44444 12,12.44444"
+           style="fill:none;stroke:#00ff00;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4616-6"
+           d="m -84,-68.444434 0,-24.88889"
+           style="fill:none;stroke:#00ff00;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4618-7"
+           d="m -100,-80.888884 16,-6.22222 16,6.22222"
+           style="fill:none;stroke:#00ff00;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           transform="matrix(1,0,0,0.77777778,28,-43.555554)"
+           d="m -100,-76 c 0,6.627417 -5.37258,12 -12,12 -6.62742,0 -12,-5.372583 -12,-12 0,-6.627417 5.37258,-12 12,-12 6.62742,0 12,5.372583 12,12 z"
+           sodipodi:ry="12"
+           sodipodi:rx="12"
+           sodipodi:cy="-76"
+           sodipodi:cx="-112"
+           id="path4620-8"
+           style="fill:none;stroke:#00ff00;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           sodipodi:type="arc" />
+      </g>
+      <rect
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\1.png"
+         ry="0"
+         y="-64"
+         x="0"
+         height="64"
+         width="64"
+         id="rect2991-0-81"
+         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    </g>
+    <g
+       id="g4822">
+      <g
+         transform="translate(44,34.666665)"
+         id="g4736">
+        <path
+           inkscape:connector-curvature="0"
+           id="path4614-9"
+           d="m 40,-41.333327 12,-12.44444 12,12.44444"
+           style="fill:none;stroke:#00ffff;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4616-5"
+           d="m 52,-53.777767 0,-24.88889"
+           style="fill:none;stroke:#00ffff;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4618-5"
+           d="m 36,-66.222217 16,-6.22222 16,6.22222"
+           style="fill:none;stroke:#00ffff;stroke-width:0.88191712px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           transform="matrix(1,0,0,0.77777778,164,-28.888887)"
+           d="m -100,-76 c 0,6.627417 -5.37258,12 -12,12 -6.62742,0 -12,-5.372583 -12,-12 0,-6.627417 5.37258,-12 12,-12 6.62742,0 12,5.372583 12,12 z"
+           sodipodi:ry="12"
+           sodipodi:rx="12"
+           sodipodi:cy="-76"
+           sodipodi:cx="-112"
+           id="path4620-7"
+           style="fill:none;stroke:#00ffff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           sodipodi:type="arc" />
+      </g>
+      <rect
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\1.png"
+         ry="0"
+         y="-64"
+         x="64"
+         height="64"
+         width="64"
+         id="rect2991-0-5"
          style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none" />
     </g>
   </g>

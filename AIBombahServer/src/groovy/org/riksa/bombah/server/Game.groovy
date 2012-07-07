@@ -26,6 +26,8 @@ class Game {
     Timer timer
     def bombs = new Vector<BombState>()
     MapState mapState
+    final def controllers = [:]
+
 //    def sleepers = []
     enum GameState {
         CREATED, RUNNING, FINISHED
@@ -165,6 +167,46 @@ class Game {
 //        mapState.tiles = gameInfo.tiles
         // TODO: tiles
         // TODO: move players
+//        struct ControllerState {
+//            1: bool directionPadDown, // Direction pad pressed to direction
+//            2: Direction direction,
+//            3: bool key1Down, // Drop bomb pressed
+//            4: bool key2Down  // Stop bomb pressed
+//        }
+
+        synchronized ( controllers ) {
+            players.each {
+                def playerId = it.playerId
+                def controller = controllers.get(playerId)
+                if( controller ) {
+                    if( controller.key1Down ) {
+                        log.debug( "$playerId dropped bomb" )
+                        // TODO
+                    }
+                    if( controller.directionPadDown ) {
+                        log.debug( "$playerId moving to direction ${controller.direction}" )
+                        double step = 1d/Constants.TICKS_PER_TILE
+
+                        switch( controller.direction ) {
+                            case Direction.N:
+                                it.x += step
+                                break;
+                            case Direction.E:
+                                it.y += step
+                                break;
+                            case Direction.W:
+                                it.y -= step
+                                break;
+                            case Direction.S:
+                                it.x -= step
+                                break;
+                        }
+                        // TODO
+                    }
+                }
+
+            }
+        }
 
 //        log.debug("Tick #$currentTick, time = $time")
 
@@ -288,9 +330,7 @@ class Game {
     }
 
     MoveActionResult controllerEvent(playerId, ControllerState controllerState) {
-        if (gameState == GameState.FINISHED) {
-            throw new GameOverException()
-        }
+            controllers.put( playerId, controllerState );
         return new MoveActionResult(myState: getPlayer(playerId), mapState: mapState)
     }
 }
