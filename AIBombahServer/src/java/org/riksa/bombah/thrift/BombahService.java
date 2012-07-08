@@ -47,6 +47,8 @@ public class BombahService {
 
     public MapState waitTicks(int gameId, int ticks) throws GameOverException, org.apache.thrift.TException;
 
+    public MapState waitForTick(int gameId, int tick) throws GameOverException, org.apache.thrift.TException;
+
     public GameInfo joinGame(int gameId) throws TimeoutException, org.apache.thrift.TException;
 
     public GameInfo getGameInfo(int gameId) throws GameOverException, org.apache.thrift.TException;
@@ -70,6 +72,8 @@ public class BombahService {
     public void bomb(int playerId, BombAction bombAction, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.bomb_call> resultHandler) throws org.apache.thrift.TException;
 
     public void waitTicks(int gameId, int ticks, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.waitTicks_call> resultHandler) throws org.apache.thrift.TException;
+
+    public void waitForTick(int gameId, int tick, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.waitForTick_call> resultHandler) throws org.apache.thrift.TException;
 
     public void joinGame(int gameId, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.joinGame_call> resultHandler) throws org.apache.thrift.TException;
 
@@ -240,6 +244,33 @@ public class BombahService {
         throw result.gameOver;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "waitTicks failed: unknown result");
+    }
+
+    public MapState waitForTick(int gameId, int tick) throws GameOverException, org.apache.thrift.TException
+    {
+      send_waitForTick(gameId, tick);
+      return recv_waitForTick();
+    }
+
+    public void send_waitForTick(int gameId, int tick) throws org.apache.thrift.TException
+    {
+      waitForTick_args args = new waitForTick_args();
+      args.setGameId(gameId);
+      args.setTick(tick);
+      sendBase("waitForTick", args);
+    }
+
+    public MapState recv_waitForTick() throws GameOverException, org.apache.thrift.TException
+    {
+      waitForTick_result result = new waitForTick_result();
+      receiveBase(result, "waitForTick");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.gameOver != null) {
+        throw result.gameOver;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "waitForTick failed: unknown result");
     }
 
     public GameInfo joinGame(int gameId) throws TimeoutException, org.apache.thrift.TException
@@ -550,6 +581,41 @@ public class BombahService {
       }
     }
 
+    public void waitForTick(int gameId, int tick, org.apache.thrift.async.AsyncMethodCallback<waitForTick_call> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      waitForTick_call method_call = new waitForTick_call(gameId, tick, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class waitForTick_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private int gameId;
+      private int tick;
+      public waitForTick_call(int gameId, int tick, org.apache.thrift.async.AsyncMethodCallback<waitForTick_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.gameId = gameId;
+        this.tick = tick;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("waitForTick", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        waitForTick_args args = new waitForTick_args();
+        args.setGameId(gameId);
+        args.setTick(tick);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public MapState getResult() throws GameOverException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_waitForTick();
+      }
+    }
+
     public void joinGame(int gameId, org.apache.thrift.async.AsyncMethodCallback<joinGame_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       joinGame_call method_call = new joinGame_call(gameId, resultHandler, this, ___protocolFactory, ___transport);
@@ -728,6 +794,7 @@ public class BombahService {
       processMap.put("move", new move());
       processMap.put("bomb", new bomb());
       processMap.put("waitTicks", new waitTicks());
+      processMap.put("waitForTick", new waitForTick());
       processMap.put("joinGame", new joinGame());
       processMap.put("getGameInfo", new getGameInfo());
       processMap.put("debugResetGame", new debugResetGame());
@@ -831,6 +898,26 @@ public class BombahService {
         waitTicks_result result = new waitTicks_result();
         try {
           result.success = iface.waitTicks(args.gameId, args.ticks);
+        } catch (GameOverException gameOver) {
+          result.gameOver = gameOver;
+        }
+        return result;
+      }
+    }
+
+    private static class waitForTick<I extends Iface> extends org.apache.thrift.ProcessFunction<I, waitForTick_args> {
+      public waitForTick() {
+        super("waitForTick");
+      }
+
+      protected waitForTick_args getEmptyArgsInstance() {
+        return new waitForTick_args();
+      }
+
+      protected waitForTick_result getResult(I iface, waitForTick_args args) throws org.apache.thrift.TException {
+        waitForTick_result result = new waitForTick_result();
+        try {
+          result.success = iface.waitForTick(args.gameId, args.tick);
         } catch (GameOverException gameOver) {
           result.gameOver = gameOver;
         }
@@ -5476,6 +5563,909 @@ public class BombahService {
 
   }
 
+  public static class waitForTick_args implements org.apache.thrift.TBase<waitForTick_args, waitForTick_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("waitForTick_args");
+
+    private static final org.apache.thrift.protocol.TField GAME_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gameId", org.apache.thrift.protocol.TType.I32, (short)1);
+    private static final org.apache.thrift.protocol.TField TICK_FIELD_DESC = new org.apache.thrift.protocol.TField("tick", org.apache.thrift.protocol.TType.I32, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new waitForTick_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new waitForTick_argsTupleSchemeFactory());
+    }
+
+    public int gameId; // required
+    public int tick; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      GAME_ID((short)1, "gameId"),
+      TICK((short)2, "tick");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // GAME_ID
+            return GAME_ID;
+          case 2: // TICK
+            return TICK;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __GAMEID_ISSET_ID = 0;
+    private static final int __TICK_ISSET_ID = 1;
+    private BitSet __isset_bit_vector = new BitSet(2);
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.GAME_ID, new org.apache.thrift.meta_data.FieldMetaData("gameId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.TICK, new org.apache.thrift.meta_data.FieldMetaData("tick", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(waitForTick_args.class, metaDataMap);
+    }
+
+    public waitForTick_args() {
+    }
+
+    public waitForTick_args(
+      int gameId,
+      int tick)
+    {
+      this();
+      this.gameId = gameId;
+      setGameIdIsSet(true);
+      this.tick = tick;
+      setTickIsSet(true);
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public waitForTick_args(waitForTick_args other) {
+      __isset_bit_vector.clear();
+      __isset_bit_vector.or(other.__isset_bit_vector);
+      this.gameId = other.gameId;
+      this.tick = other.tick;
+    }
+
+    public waitForTick_args deepCopy() {
+      return new waitForTick_args(this);
+    }
+
+    @Override
+    public void clear() {
+      setGameIdIsSet(false);
+      this.gameId = 0;
+      setTickIsSet(false);
+      this.tick = 0;
+    }
+
+    public int getGameId() {
+      return this.gameId;
+    }
+
+    public waitForTick_args setGameId(int gameId) {
+      this.gameId = gameId;
+      setGameIdIsSet(true);
+      return this;
+    }
+
+    public void unsetGameId() {
+      __isset_bit_vector.clear(__GAMEID_ISSET_ID);
+    }
+
+    /** Returns true if field gameId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGameId() {
+      return __isset_bit_vector.get(__GAMEID_ISSET_ID);
+    }
+
+    public void setGameIdIsSet(boolean value) {
+      __isset_bit_vector.set(__GAMEID_ISSET_ID, value);
+    }
+
+    public int getTick() {
+      return this.tick;
+    }
+
+    public waitForTick_args setTick(int tick) {
+      this.tick = tick;
+      setTickIsSet(true);
+      return this;
+    }
+
+    public void unsetTick() {
+      __isset_bit_vector.clear(__TICK_ISSET_ID);
+    }
+
+    /** Returns true if field tick is set (has been assigned a value) and false otherwise */
+    public boolean isSetTick() {
+      return __isset_bit_vector.get(__TICK_ISSET_ID);
+    }
+
+    public void setTickIsSet(boolean value) {
+      __isset_bit_vector.set(__TICK_ISSET_ID, value);
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case GAME_ID:
+        if (value == null) {
+          unsetGameId();
+        } else {
+          setGameId((Integer)value);
+        }
+        break;
+
+      case TICK:
+        if (value == null) {
+          unsetTick();
+        } else {
+          setTick((Integer)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case GAME_ID:
+        return Integer.valueOf(getGameId());
+
+      case TICK:
+        return Integer.valueOf(getTick());
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case GAME_ID:
+        return isSetGameId();
+      case TICK:
+        return isSetTick();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof waitForTick_args)
+        return this.equals((waitForTick_args)that);
+      return false;
+    }
+
+    public boolean equals(waitForTick_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_gameId = true;
+      boolean that_present_gameId = true;
+      if (this_present_gameId || that_present_gameId) {
+        if (!(this_present_gameId && that_present_gameId))
+          return false;
+        if (this.gameId != that.gameId)
+          return false;
+      }
+
+      boolean this_present_tick = true;
+      boolean that_present_tick = true;
+      if (this_present_tick || that_present_tick) {
+        if (!(this_present_tick && that_present_tick))
+          return false;
+        if (this.tick != that.tick)
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(waitForTick_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      waitForTick_args typedOther = (waitForTick_args)other;
+
+      lastComparison = Boolean.valueOf(isSetGameId()).compareTo(typedOther.isSetGameId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGameId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gameId, typedOther.gameId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetTick()).compareTo(typedOther.isSetTick());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetTick()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tick, typedOther.tick);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("waitForTick_args(");
+      boolean first = true;
+
+      sb.append("gameId:");
+      sb.append(this.gameId);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("tick:");
+      sb.append(this.tick);
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bit_vector = new BitSet(1);
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class waitForTick_argsStandardSchemeFactory implements SchemeFactory {
+      public waitForTick_argsStandardScheme getScheme() {
+        return new waitForTick_argsStandardScheme();
+      }
+    }
+
+    private static class waitForTick_argsStandardScheme extends StandardScheme<waitForTick_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, waitForTick_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // GAME_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.gameId = iprot.readI32();
+                struct.setGameIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // TICK
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.tick = iprot.readI32();
+                struct.setTickIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, waitForTick_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldBegin(GAME_ID_FIELD_DESC);
+        oprot.writeI32(struct.gameId);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(TICK_FIELD_DESC);
+        oprot.writeI32(struct.tick);
+        oprot.writeFieldEnd();
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class waitForTick_argsTupleSchemeFactory implements SchemeFactory {
+      public waitForTick_argsTupleScheme getScheme() {
+        return new waitForTick_argsTupleScheme();
+      }
+    }
+
+    private static class waitForTick_argsTupleScheme extends TupleScheme<waitForTick_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, waitForTick_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetGameId()) {
+          optionals.set(0);
+        }
+        if (struct.isSetTick()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetGameId()) {
+          oprot.writeI32(struct.gameId);
+        }
+        if (struct.isSetTick()) {
+          oprot.writeI32(struct.tick);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, waitForTick_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.gameId = iprot.readI32();
+          struct.setGameIdIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.tick = iprot.readI32();
+          struct.setTickIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class waitForTick_result implements org.apache.thrift.TBase<waitForTick_result, waitForTick_result._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("waitForTick_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField GAME_OVER_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOver", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new waitForTick_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new waitForTick_resultTupleSchemeFactory());
+    }
+
+    public MapState success; // required
+    public GameOverException gameOver; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      GAME_OVER((short)1, "gameOver");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // GAME_OVER
+            return GAME_OVER;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, MapState.class)));
+      tmpMap.put(_Fields.GAME_OVER, new org.apache.thrift.meta_data.FieldMetaData("gameOver", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(waitForTick_result.class, metaDataMap);
+    }
+
+    public waitForTick_result() {
+    }
+
+    public waitForTick_result(
+      MapState success,
+      GameOverException gameOver)
+    {
+      this();
+      this.success = success;
+      this.gameOver = gameOver;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public waitForTick_result(waitForTick_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new MapState(other.success);
+      }
+      if (other.isSetGameOver()) {
+        this.gameOver = new GameOverException(other.gameOver);
+      }
+    }
+
+    public waitForTick_result deepCopy() {
+      return new waitForTick_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.gameOver = null;
+    }
+
+    public MapState getSuccess() {
+      return this.success;
+    }
+
+    public waitForTick_result setSuccess(MapState success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public GameOverException getGameOver() {
+      return this.gameOver;
+    }
+
+    public waitForTick_result setGameOver(GameOverException gameOver) {
+      this.gameOver = gameOver;
+      return this;
+    }
+
+    public void unsetGameOver() {
+      this.gameOver = null;
+    }
+
+    /** Returns true if field gameOver is set (has been assigned a value) and false otherwise */
+    public boolean isSetGameOver() {
+      return this.gameOver != null;
+    }
+
+    public void setGameOverIsSet(boolean value) {
+      if (!value) {
+        this.gameOver = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((MapState)value);
+        }
+        break;
+
+      case GAME_OVER:
+        if (value == null) {
+          unsetGameOver();
+        } else {
+          setGameOver((GameOverException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case GAME_OVER:
+        return getGameOver();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case GAME_OVER:
+        return isSetGameOver();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof waitForTick_result)
+        return this.equals((waitForTick_result)that);
+      return false;
+    }
+
+    public boolean equals(waitForTick_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_gameOver = true && this.isSetGameOver();
+      boolean that_present_gameOver = true && that.isSetGameOver();
+      if (this_present_gameOver || that_present_gameOver) {
+        if (!(this_present_gameOver && that_present_gameOver))
+          return false;
+        if (!this.gameOver.equals(that.gameOver))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(waitForTick_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      waitForTick_result typedOther = (waitForTick_result)other;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetGameOver()).compareTo(typedOther.isSetGameOver());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGameOver()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gameOver, typedOther.gameOver);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("waitForTick_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("gameOver:");
+      if (this.gameOver == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gameOver);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class waitForTick_resultStandardSchemeFactory implements SchemeFactory {
+      public waitForTick_resultStandardScheme getScheme() {
+        return new waitForTick_resultStandardScheme();
+      }
+    }
+
+    private static class waitForTick_resultStandardScheme extends StandardScheme<waitForTick_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, waitForTick_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new MapState();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // GAME_OVER
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.gameOver = new GameOverException();
+                struct.gameOver.read(iprot);
+                struct.setGameOverIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, waitForTick_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.gameOver != null) {
+          oprot.writeFieldBegin(GAME_OVER_FIELD_DESC);
+          struct.gameOver.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class waitForTick_resultTupleSchemeFactory implements SchemeFactory {
+      public waitForTick_resultTupleScheme getScheme() {
+        return new waitForTick_resultTupleScheme();
+      }
+    }
+
+    private static class waitForTick_resultTupleScheme extends TupleScheme<waitForTick_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, waitForTick_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetGameOver()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetGameOver()) {
+          struct.gameOver.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, waitForTick_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.success = new MapState();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.gameOver = new GameOverException();
+          struct.gameOver.read(iprot);
+          struct.setGameOverIsSet(true);
+        }
+      }
+    }
+
+  }
+
   public static class joinGame_args implements org.apache.thrift.TBase<joinGame_args, joinGame_args._Fields>, java.io.Serializable, Cloneable   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("joinGame_args");
 
@@ -7354,8 +8344,6 @@ public class BombahService {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
-        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-        __isset_bit_vector = new BitSet(1);
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);

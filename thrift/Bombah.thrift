@@ -45,7 +45,7 @@ struct BombState {
     1: byte blastSize,
     2: double xCoordinate,
     3: double yCoordinate,
-    4: byte ticksRemaining,
+    4: i32 ticksRemaining,
     5: bool moving,
     6: Direction direction,
     7: i32 owner
@@ -89,7 +89,7 @@ struct MapState {
     1: list<Tile> tiles,
     2: list<BombState> bombs,
     3: list<PlayerState> players,
-    4: i32 ticksRemaining,
+    4: i32 currentTick,
 }
 
 struct Coordinate {
@@ -157,6 +157,7 @@ service BombahService {
 
 // GameId not used yet, for future use. Just use -1...
     MapState waitTicks( 1:i32 gameId, 2: i32 ticks ) throws (1: GameOverException gameOver);
+    MapState waitForTick( 1:i32 gameId, 2: i32 tick ) throws (1: GameOverException gameOver);
     GameInfo joinGame( 1:i32 gameId) throws (1:TimeoutException timeOutException);
 	GameInfo getGameInfo(1:i32 gameId) throws (1:GameOverException gameOverException);
 	void debugResetGame(1:i32 gameId);

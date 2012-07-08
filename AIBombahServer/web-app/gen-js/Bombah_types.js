@@ -101,8 +101,8 @@ BombState.prototype.read = function(input) {
       }
       break;
       case 4:
-      if (ftype == Thrift.Type.BYTE) {
-        this.ticksRemaining = input.readByte().value;
+      if (ftype == Thrift.Type.I32) {
+        this.ticksRemaining = input.readI32().value;
       } else {
         input.skip(ftype);
       }
@@ -155,8 +155,8 @@ BombState.prototype.write = function(output) {
     output.writeFieldEnd();
   }
   if (this.ticksRemaining) {
-    output.writeFieldBegin('ticksRemaining', Thrift.Type.BYTE, 4);
-    output.writeByte(this.ticksRemaining);
+    output.writeFieldBegin('ticksRemaining', Thrift.Type.I32, 4);
+    output.writeI32(this.ticksRemaining);
     output.writeFieldEnd();
   }
   if (this.moving) {
@@ -448,7 +448,7 @@ MapState = function(args) {
   this.tiles = null;
   this.bombs = null;
   this.players = null;
-  this.ticksRemaining = null;
+  this.currentTick = null;
   if (args) {
     if (args.tiles !== undefined) {
       this.tiles = args.tiles;
@@ -459,8 +459,8 @@ MapState = function(args) {
     if (args.players !== undefined) {
       this.players = args.players;
     }
-    if (args.ticksRemaining !== undefined) {
-      this.ticksRemaining = args.ticksRemaining;
+    if (args.currentTick !== undefined) {
+      this.currentTick = args.currentTick;
     }
   }
 };
@@ -542,7 +542,7 @@ MapState.prototype.read = function(input) {
       break;
       case 4:
       if (ftype == Thrift.Type.I32) {
-        this.ticksRemaining = input.readI32().value;
+        this.currentTick = input.readI32().value;
       } else {
         input.skip(ftype);
       }
@@ -600,9 +600,9 @@ MapState.prototype.write = function(output) {
     output.writeListEnd();
     output.writeFieldEnd();
   }
-  if (this.ticksRemaining) {
-    output.writeFieldBegin('ticksRemaining', Thrift.Type.I32, 4);
-    output.writeI32(this.ticksRemaining);
+  if (this.currentTick) {
+    output.writeFieldBegin('currentTick', Thrift.Type.I32, 4);
+    output.writeI32(this.currentTick);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -1292,5 +1292,5 @@ BombActionResult.prototype.write = function(output) {
 };
 
 TICKS_PER_SECOND = 50;
-TICKS_PER_TILE = 10;
+TICKS_PER_TILE = 20;
 TICKS_BOMB = 150;

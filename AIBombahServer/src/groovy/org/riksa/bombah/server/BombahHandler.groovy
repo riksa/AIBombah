@@ -40,8 +40,8 @@ class BombahHandler implements BombahService.Iface {
     @Override
     MoveActionResult move(int playerId, MoveAction moveAction) {
         def controllerState = new ControllerState(directionPadDown: true, direction: moveAction.direction, key1Down: false, key2Down: false)
-        game.controllerEvent( playerId, controllerState )
-        game.waitTicks(Constants.TICKS_PER_TILE);
+        def moveResult = game.controllerEvent( playerId, controllerState )
+        game.waitForTick(moveResult.mapState.currentTick+Constants.TICKS_PER_TILE);
         controllerState.directionPadDown = false
         game.controllerEvent( playerId, controllerState )
         return new MoveActionResult(myState: game.getPlayer(playerId), mapState: game.mapState)
@@ -54,7 +54,13 @@ class BombahHandler implements BombahService.Iface {
 
     @Override
     MapState waitTicks(int gameId, int ticks) {
-        game.waitTicks(ticks);
+        def tick = game.mapState.currentTick+ticks
+        return waitForTick( gameId, tick )
+    }
+
+    @Override
+    MapState waitForTick(int gameId, int tick) {
+        game.waitForTick(tick);
         return game.mapState
     }
 
@@ -62,7 +68,7 @@ class BombahHandler implements BombahService.Iface {
     synchronized GameInfo joinGame(int gameId) {
         def playerId = game.join()
         if (playerId > 0 ) {
-            def info = game.gameInfo
+            def info = game.gameInfo.clone()
             info.playerId = playerId
             return info
         } else{

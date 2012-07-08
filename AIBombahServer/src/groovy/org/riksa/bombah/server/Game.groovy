@@ -55,7 +55,7 @@ class Game {
         waiting = new AtomicLong(0)
         currentTick = 0
         slots = 4
-        mapState = new MapState(ticksRemaining: gameInfo.ticksTotal)
+        mapState = new MapState(currentTick: 0)
         gameState = GameState.CREATED
     }
 
@@ -155,7 +155,7 @@ class Game {
         }
 
         mapState = new MapState(
-                ticksRemaining: gameInfo.ticksTotal - currentTick,
+                currentTick: currentTick,
                 bombs: bombs.clone(), // wasted, TODO
                 players: players.clone(),
                 tiles: gameInfo.tiles.clone())
@@ -225,6 +225,7 @@ class Game {
     }
 
     void startGame() {
+        log.debug("Starting game #${gameInfo.gameId}")
 
         final long sleepTime = 1000l / gameInfo.ticksPerSecond
 
@@ -264,15 +265,20 @@ class Game {
         gameState = GameState.FINISHED
     }
 
-    void waitTicks(int ticks) {
-//        int currentTick = currentTick
-//        final long sleepTime = 1000l / gameInfo.ticksPerSecond
-//        while (currentTick < currentTick + ticks) {
-//            Thread.sleep(sleepTime)
+//    void waitTicks(int ticks) {
+//        ticks.times {
+//            waitTick()
 //        }
-        ticks.times {
-            waitTick()
+//    }
+
+    GameState waitForTick(int i) {
+        while (currentTick < i) {
+            if (gameState == GameState.FINISHED) {
+                throw new GameOverException()
+            }
+            Thread.yield()
         }
+        return gameState
     }
 
     void waitTick() {

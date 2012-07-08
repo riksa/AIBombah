@@ -33,7 +33,7 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
   private static final org.apache.thrift.protocol.TField TILES_FIELD_DESC = new org.apache.thrift.protocol.TField("tiles", org.apache.thrift.protocol.TType.LIST, (short)1);
   private static final org.apache.thrift.protocol.TField BOMBS_FIELD_DESC = new org.apache.thrift.protocol.TField("bombs", org.apache.thrift.protocol.TType.LIST, (short)2);
   private static final org.apache.thrift.protocol.TField PLAYERS_FIELD_DESC = new org.apache.thrift.protocol.TField("players", org.apache.thrift.protocol.TType.LIST, (short)3);
-  private static final org.apache.thrift.protocol.TField TICKS_REMAINING_FIELD_DESC = new org.apache.thrift.protocol.TField("ticksRemaining", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField CURRENT_TICK_FIELD_DESC = new org.apache.thrift.protocol.TField("currentTick", org.apache.thrift.protocol.TType.I32, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -44,14 +44,14 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
   public List<Tile> tiles; // required
   public List<BombState> bombs; // required
   public List<PlayerState> players; // required
-  public int ticksRemaining; // required
+  public int currentTick; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     TILES((short)1, "tiles"),
     BOMBS((short)2, "bombs"),
     PLAYERS((short)3, "players"),
-    TICKS_REMAINING((short)4, "ticksRemaining");
+    CURRENT_TICK((short)4, "currentTick");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -72,8 +72,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
           return BOMBS;
         case 3: // PLAYERS
           return PLAYERS;
-        case 4: // TICKS_REMAINING
-          return TICKS_REMAINING;
+        case 4: // CURRENT_TICK
+          return CURRENT_TICK;
         default:
           return null;
       }
@@ -114,7 +114,7 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
   }
 
   // isset id assignments
-  private static final int __TICKSREMAINING_ISSET_ID = 0;
+  private static final int __CURRENTTICK_ISSET_ID = 0;
   private BitSet __isset_bit_vector = new BitSet(1);
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -128,7 +128,7 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     tmpMap.put(_Fields.PLAYERS, new org.apache.thrift.meta_data.FieldMetaData("players", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PlayerState.class))));
-    tmpMap.put(_Fields.TICKS_REMAINING, new org.apache.thrift.meta_data.FieldMetaData("ticksRemaining", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.CURRENT_TICK, new org.apache.thrift.meta_data.FieldMetaData("currentTick", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(MapState.class, metaDataMap);
@@ -141,14 +141,14 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     List<Tile> tiles,
     List<BombState> bombs,
     List<PlayerState> players,
-    int ticksRemaining)
+    int currentTick)
   {
     this();
     this.tiles = tiles;
     this.bombs = bombs;
     this.players = players;
-    this.ticksRemaining = ticksRemaining;
-    setTicksRemainingIsSet(true);
+    this.currentTick = currentTick;
+    setCurrentTickIsSet(true);
   }
 
   /**
@@ -178,7 +178,7 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       }
       this.players = __this__players;
     }
-    this.ticksRemaining = other.ticksRemaining;
+    this.currentTick = other.currentTick;
   }
 
   public MapState deepCopy() {
@@ -190,8 +190,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     this.tiles = null;
     this.bombs = null;
     this.players = null;
-    setTicksRemainingIsSet(false);
-    this.ticksRemaining = 0;
+    setCurrentTickIsSet(false);
+    this.currentTick = 0;
   }
 
   public int getTilesSize() {
@@ -311,27 +311,27 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     }
   }
 
-  public int getTicksRemaining() {
-    return this.ticksRemaining;
+  public int getCurrentTick() {
+    return this.currentTick;
   }
 
-  public MapState setTicksRemaining(int ticksRemaining) {
-    this.ticksRemaining = ticksRemaining;
-    setTicksRemainingIsSet(true);
+  public MapState setCurrentTick(int currentTick) {
+    this.currentTick = currentTick;
+    setCurrentTickIsSet(true);
     return this;
   }
 
-  public void unsetTicksRemaining() {
-    __isset_bit_vector.clear(__TICKSREMAINING_ISSET_ID);
+  public void unsetCurrentTick() {
+    __isset_bit_vector.clear(__CURRENTTICK_ISSET_ID);
   }
 
-  /** Returns true if field ticksRemaining is set (has been assigned a value) and false otherwise */
-  public boolean isSetTicksRemaining() {
-    return __isset_bit_vector.get(__TICKSREMAINING_ISSET_ID);
+  /** Returns true if field currentTick is set (has been assigned a value) and false otherwise */
+  public boolean isSetCurrentTick() {
+    return __isset_bit_vector.get(__CURRENTTICK_ISSET_ID);
   }
 
-  public void setTicksRemainingIsSet(boolean value) {
-    __isset_bit_vector.set(__TICKSREMAINING_ISSET_ID, value);
+  public void setCurrentTickIsSet(boolean value) {
+    __isset_bit_vector.set(__CURRENTTICK_ISSET_ID, value);
   }
 
   public void setFieldValue(_Fields field, Object value) {
@@ -360,11 +360,11 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       }
       break;
 
-    case TICKS_REMAINING:
+    case CURRENT_TICK:
       if (value == null) {
-        unsetTicksRemaining();
+        unsetCurrentTick();
       } else {
-        setTicksRemaining((Integer)value);
+        setCurrentTick((Integer)value);
       }
       break;
 
@@ -382,8 +382,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     case PLAYERS:
       return getPlayers();
 
-    case TICKS_REMAINING:
-      return Integer.valueOf(getTicksRemaining());
+    case CURRENT_TICK:
+      return Integer.valueOf(getCurrentTick());
 
     }
     throw new IllegalStateException();
@@ -402,8 +402,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       return isSetBombs();
     case PLAYERS:
       return isSetPlayers();
-    case TICKS_REMAINING:
-      return isSetTicksRemaining();
+    case CURRENT_TICK:
+      return isSetCurrentTick();
     }
     throw new IllegalStateException();
   }
@@ -448,12 +448,12 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
         return false;
     }
 
-    boolean this_present_ticksRemaining = true;
-    boolean that_present_ticksRemaining = true;
-    if (this_present_ticksRemaining || that_present_ticksRemaining) {
-      if (!(this_present_ticksRemaining && that_present_ticksRemaining))
+    boolean this_present_currentTick = true;
+    boolean that_present_currentTick = true;
+    if (this_present_currentTick || that_present_currentTick) {
+      if (!(this_present_currentTick && that_present_currentTick))
         return false;
-      if (this.ticksRemaining != that.ticksRemaining)
+      if (this.currentTick != that.currentTick)
         return false;
     }
 
@@ -503,12 +503,12 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetTicksRemaining()).compareTo(typedOther.isSetTicksRemaining());
+    lastComparison = Boolean.valueOf(isSetCurrentTick()).compareTo(typedOther.isSetCurrentTick());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetTicksRemaining()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ticksRemaining, typedOther.ticksRemaining);
+    if (isSetCurrentTick()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.currentTick, typedOther.currentTick);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -557,8 +557,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("ticksRemaining:");
-    sb.append(this.ticksRemaining);
+    sb.append("currentTick:");
+    sb.append(this.currentTick);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -660,10 +660,10 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // TICKS_REMAINING
+          case 4: // CURRENT_TICK
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.ticksRemaining = iprot.readI32();
-              struct.setTicksRemainingIsSet(true);
+              struct.currentTick = iprot.readI32();
+              struct.setCurrentTickIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -719,8 +719,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
         }
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(TICKS_REMAINING_FIELD_DESC);
-      oprot.writeI32(struct.ticksRemaining);
+      oprot.writeFieldBegin(CURRENT_TICK_FIELD_DESC);
+      oprot.writeI32(struct.currentTick);
       oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -749,7 +749,7 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       if (struct.isSetPlayers()) {
         optionals.set(2);
       }
-      if (struct.isSetTicksRemaining()) {
+      if (struct.isSetCurrentTick()) {
         optionals.set(3);
       }
       oprot.writeBitSet(optionals, 4);
@@ -780,8 +780,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
           }
         }
       }
-      if (struct.isSetTicksRemaining()) {
-        oprot.writeI32(struct.ticksRemaining);
+      if (struct.isSetCurrentTick()) {
+        oprot.writeI32(struct.currentTick);
       }
     }
 
@@ -831,8 +831,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
         struct.setPlayersIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.ticksRemaining = iprot.readI32();
-        struct.setTicksRemainingIsSet(true);
+        struct.currentTick = iprot.readI32();
+        struct.setCurrentTickIsSet(true);
       }
     }
   }

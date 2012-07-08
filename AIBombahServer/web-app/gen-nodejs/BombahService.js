@@ -679,6 +679,140 @@ BombahService_waitTicks_result.prototype.write = function(output) {
   return;
 };
 
+var BombahService_waitForTick_args = function(args) {
+  this.gameId = null;
+  this.tick = null;
+  if (args) {
+    if (args.gameId !== undefined) {
+      this.gameId = args.gameId;
+    }
+    if (args.tick !== undefined) {
+      this.tick = args.tick;
+    }
+  }
+};
+BombahService_waitForTick_args.prototype = {};
+BombahService_waitForTick_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.gameId = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I32) {
+        this.tick = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+BombahService_waitForTick_args.prototype.write = function(output) {
+  output.writeStructBegin('BombahService_waitForTick_args');
+  if (this.gameId) {
+    output.writeFieldBegin('gameId', Thrift.Type.I32, 1);
+    output.writeI32(this.gameId);
+    output.writeFieldEnd();
+  }
+  if (this.tick) {
+    output.writeFieldBegin('tick', Thrift.Type.I32, 2);
+    output.writeI32(this.tick);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var BombahService_waitForTick_result = function(args) {
+  this.success = null;
+  this.gameOver = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+    if (args.gameOver !== undefined) {
+      this.gameOver = args.gameOver;
+    }
+  }
+};
+BombahService_waitForTick_result.prototype = {};
+BombahService_waitForTick_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.success = new ttypes.MapState();
+        this.success.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.gameOver = new ttypes.GameOverException();
+        this.gameOver.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+BombahService_waitForTick_result.prototype.write = function(output) {
+  output.writeStructBegin('BombahService_waitForTick_result');
+  if (this.success) {
+    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
+    this.success.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.gameOver) {
+    output.writeFieldBegin('gameOver', Thrift.Type.STRUCT, 1);
+    this.gameOver.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 var BombahService_joinGame_args = function(args) {
   this.gameId = null;
   if (args) {
@@ -1431,6 +1565,44 @@ BombahServiceClient.prototype.recv_waitTicks = function(input,mtype,rseqid) {
   }
   return callback('waitTicks failed: unknown result');
 };
+BombahServiceClient.prototype.waitForTick = function(gameId, tick, callback) {
+  this.seqid += 1;
+  this._reqs[this.seqid] = callback;
+  this.send_waitForTick(gameId, tick);
+};
+
+BombahServiceClient.prototype.send_waitForTick = function(gameId, tick) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('waitForTick', Thrift.MessageType.CALL, this.seqid);
+  var args = new BombahService_waitForTick_args();
+  args.gameId = gameId;
+  args.tick = tick;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+BombahServiceClient.prototype.recv_waitForTick = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new BombahService_waitForTick_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.gameOver) {
+    return callback(result.gameOver);
+  }
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('waitForTick failed: unknown result');
+};
 BombahServiceClient.prototype.joinGame = function(gameId, callback) {
   this.seqid += 1;
   this._reqs[this.seqid] = callback;
@@ -1689,6 +1861,20 @@ BombahServiceProcessor.prototype.process_waitTicks = function(seqid, input, outp
   this._handler.waitTicks(args.gameId, args.ticks, function (success) {
     result.success = success;
     output.writeMessageBegin("waitTicks", Thrift.MessageType.REPLY, seqid);
+    result.write(output);
+    output.writeMessageEnd();
+    output.flush();
+  })
+}
+
+BombahServiceProcessor.prototype.process_waitForTick = function(seqid, input, output) {
+  var args = new BombahService_waitForTick_args();
+  args.read(input);
+  input.readMessageEnd();
+  var result = new BombahService_waitForTick_result();
+  this._handler.waitForTick(args.gameId, args.tick, function (success) {
+    result.success = success;
+    output.writeMessageBegin("waitForTick", Thrift.MessageType.REPLY, seqid);
     result.write(output);
     output.writeMessageEnd();
     output.flush();

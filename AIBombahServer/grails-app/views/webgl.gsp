@@ -55,7 +55,7 @@
 //                updateMap();
 //                client.waitTicks(10);
 //            }
-              window.setInterval(updateMap, 10);
+              window.setInterval(updateMap, 50);
         } catch (e) {
 
         }
@@ -64,7 +64,7 @@
     function updateMap() {
         var mapState = client.getMapState(); // TODO: how to async?
 //            console.log( mapState );
-        console.log("Ticks remaining " + mapState.ticksRemaining);
+        console.log("Tick # " + mapState.currentTick);
         // Bombah.thrift
         // Bombah.thrift
         $.each(mapState.tiles, function (i, tile) {

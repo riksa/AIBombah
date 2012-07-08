@@ -33,7 +33,7 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
   private static final org.apache.thrift.protocol.TField BLAST_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("blastSize", org.apache.thrift.protocol.TType.BYTE, (short)1);
   private static final org.apache.thrift.protocol.TField X_COORDINATE_FIELD_DESC = new org.apache.thrift.protocol.TField("xCoordinate", org.apache.thrift.protocol.TType.DOUBLE, (short)2);
   private static final org.apache.thrift.protocol.TField Y_COORDINATE_FIELD_DESC = new org.apache.thrift.protocol.TField("yCoordinate", org.apache.thrift.protocol.TType.DOUBLE, (short)3);
-  private static final org.apache.thrift.protocol.TField TICKS_REMAINING_FIELD_DESC = new org.apache.thrift.protocol.TField("ticksRemaining", org.apache.thrift.protocol.TType.BYTE, (short)4);
+  private static final org.apache.thrift.protocol.TField TICKS_REMAINING_FIELD_DESC = new org.apache.thrift.protocol.TField("ticksRemaining", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField MOVING_FIELD_DESC = new org.apache.thrift.protocol.TField("moving", org.apache.thrift.protocol.TType.BOOL, (short)5);
   private static final org.apache.thrift.protocol.TField DIRECTION_FIELD_DESC = new org.apache.thrift.protocol.TField("direction", org.apache.thrift.protocol.TType.I32, (short)6);
   private static final org.apache.thrift.protocol.TField OWNER_FIELD_DESC = new org.apache.thrift.protocol.TField("owner", org.apache.thrift.protocol.TType.I32, (short)7);
@@ -47,7 +47,7 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
   public byte blastSize; // required
   public double xCoordinate; // required
   public double yCoordinate; // required
-  public byte ticksRemaining; // required
+  public int ticksRemaining; // required
   public boolean moving; // required
   /**
    * 
@@ -154,7 +154,7 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
     tmpMap.put(_Fields.Y_COORDINATE, new org.apache.thrift.meta_data.FieldMetaData("yCoordinate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
     tmpMap.put(_Fields.TICKS_REMAINING, new org.apache.thrift.meta_data.FieldMetaData("ticksRemaining", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.MOVING, new org.apache.thrift.meta_data.FieldMetaData("moving", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.DIRECTION, new org.apache.thrift.meta_data.FieldMetaData("direction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -172,7 +172,7 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
     byte blastSize,
     double xCoordinate,
     double yCoordinate,
-    byte ticksRemaining,
+    int ticksRemaining,
     boolean moving,
     Direction direction,
     int owner)
@@ -300,11 +300,11 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
     __isset_bit_vector.set(__YCOORDINATE_ISSET_ID, value);
   }
 
-  public byte getTicksRemaining() {
+  public int getTicksRemaining() {
     return this.ticksRemaining;
   }
 
-  public BombState setTicksRemaining(byte ticksRemaining) {
+  public BombState setTicksRemaining(int ticksRemaining) {
     this.ticksRemaining = ticksRemaining;
     setTicksRemainingIsSet(true);
     return this;
@@ -431,7 +431,7 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
       if (value == null) {
         unsetTicksRemaining();
       } else {
-        setTicksRemaining((Byte)value);
+        setTicksRemaining((Integer)value);
       }
       break;
 
@@ -474,7 +474,7 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
       return Double.valueOf(getYCoordinate());
 
     case TICKS_REMAINING:
-      return Byte.valueOf(getTicksRemaining());
+      return Integer.valueOf(getTicksRemaining());
 
     case MOVING:
       return Boolean.valueOf(isMoving());
@@ -796,8 +796,8 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
             }
             break;
           case 4: // TICKS_REMAINING
-            if (schemeField.type == org.apache.thrift.protocol.TType.BYTE) {
-              struct.ticksRemaining = iprot.readByte();
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.ticksRemaining = iprot.readI32();
               struct.setTicksRemainingIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -852,7 +852,7 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
       oprot.writeDouble(struct.yCoordinate);
       oprot.writeFieldEnd();
       oprot.writeFieldBegin(TICKS_REMAINING_FIELD_DESC);
-      oprot.writeByte(struct.ticksRemaining);
+      oprot.writeI32(struct.ticksRemaining);
       oprot.writeFieldEnd();
       oprot.writeFieldBegin(MOVING_FIELD_DESC);
       oprot.writeBool(struct.moving);
@@ -915,7 +915,7 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
         oprot.writeDouble(struct.yCoordinate);
       }
       if (struct.isSetTicksRemaining()) {
-        oprot.writeByte(struct.ticksRemaining);
+        oprot.writeI32(struct.ticksRemaining);
       }
       if (struct.isSetMoving()) {
         oprot.writeBool(struct.moving);
@@ -945,7 +945,7 @@ public class BombState implements org.apache.thrift.TBase<BombState, BombState._
         struct.setYCoordinateIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.ticksRemaining = iprot.readByte();
+        struct.ticksRemaining = iprot.readI32();
         struct.setTicksRemainingIsSet(true);
       }
       if (incoming.get(4)) {
