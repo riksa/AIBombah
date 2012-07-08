@@ -239,12 +239,11 @@ class Game {
 
             @Override
             void run() {
-                def now = System.currentTimeMillis()
-                def delta = now - previousExecution
-                previousExecution = now
-//                log.debug("delta = $delta")
+                def timeAllowed = 1000l*1000l*1000l/Constants.TICKS_PER_SECOND // max ns we have for one tick (without overhead)
                 try {
-                    tick()
+                    def timeSpent = time({tick()})
+                    double capacity = (100d * (double)timeSpent) / (double)timeAllowed
+                    log.debug( "CPU capacity $timeSpent/$timeAllowed (@ ${capacity}%)")
                 } catch (GameOverException e) {
                     log.debug("Game over")
                     stopGame();
@@ -254,6 +253,14 @@ class Game {
         timer = new Timer()
         timer.scheduleAtFixedRate(timerTask, 0, sleepTime)
 
+    }
+
+    def time(Closure closure) {
+        def now = System.nanoTime()
+        closure.call()
+        def spent = System.nanoTime()-now
+//        log.debug( "Execution took ${spent}ns (${spent/1000000}ms)")
+        return spent
     }
 
     void stopGame() {
