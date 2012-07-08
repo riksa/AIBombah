@@ -40,10 +40,36 @@ class BombahHandler implements BombahService.Iface {
     @Override
     MoveActionResult move(int playerId, MoveAction moveAction) {
         def controllerState = new ControllerState(directionPadDown: true, direction: moveAction.direction, key1Down: false, key2Down: false)
-        def moveResult = game.controllerEvent( playerId, controllerState )
-        game.waitForTick(moveResult.mapState.currentTick+Constants.TICKS_PER_TILE);
+        def done = false
+        def currentState = game.controllerEvent( playerId, controllerState ).myState
+        def step = 1d / Constants.TICKS_PER_TILE
+        if( game.canMove( currentState.x, currentState.y, moveAction.direction, step ) ) {
+            Coordinate targetTile = game.getTileCoordinate( currentState.x, currentState.y, moveAction.direction )
+
+            def oldX = currentState.x
+            def oldY = currentState.y
+            while( !done ) {
+                game.waitTick()
+                currentState = game.getPlayer(playerId)
+                if( Math.abs(oldX - currentState.x)  < 0.001d && Math.abs(oldY - currentState.y) < 0.001d ) {
+                    // no longer moving, for whatever reason
+                    log.debug( "Not moving, $currentState")
+                    done = true
+                } else {
+                    log.debug( "Moving towards $targetTile at $currentState")
+                    if( Math.abs(targetTile.x - currentState.x)  < 0.001d && Math.abs(targetTile.y - currentState.y) < 0.001d ) {
+                        log.debug("Arrived at $targetTile $currentState")
+                        done = true
+                    }
+                }
+
+                oldX = currentState.x
+                oldY = currentState.y
+            }
+        }
         controllerState.directionPadDown = false
         game.controllerEvent( playerId, controllerState )
+
         return new MoveActionResult(myState: game.getPlayer(playerId), mapState: game.mapState)
     }
 

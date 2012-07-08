@@ -28,6 +28,45 @@ class Game {
     MapState mapState
     final def controllers = [:]
 
+    boolean canMove(double x, double y, Direction direction, double step) {
+//        def currentLocation = getTileCoordinate(x, y, null)
+        def half = 0.5d+step
+
+        switch (direction) {
+            case Direction.N:
+                def targetLocation = getTileCoordinate(x, y + half, null)
+                return canMoveTo(targetLocation.x, targetLocation.y)
+            case Direction.E:
+                def targetLocation = getTileCoordinate(x + half, y, null)
+                return canMoveTo(targetLocation.x, targetLocation.y)
+            case Direction.W:
+                def targetLocation = getTileCoordinate(x - half, y, null)
+                return canMoveTo(targetLocation.x, targetLocation.y)
+            case Direction.S:
+                def targetLocation = getTileCoordinate(x, y - half, null)
+                return canMoveTo(targetLocation.x, targetLocation.y)
+            default:
+                return false
+        }
+    }
+
+    Coordinate getTileCoordinate(x, y, direction) {
+        def tileX = Math.round(x)
+        def tileY = Math.round(y)
+        switch (direction) {
+            case Direction.N:
+                return new Coordinate(x: tileX, y: tileY + 1)
+            case Direction.E:
+                return new Coordinate(x: tileX + 1, y: tileY)
+            case Direction.W:
+                return new Coordinate(x: tileX - 1, y: tileY)
+            case Direction.S:
+                return new Coordinate(x: tileX, y: tileY - 1)
+            default:
+                return new Coordinate(x: tileX, y: tileY)
+        }
+    }
+
 //    def sleepers = []
     enum GameState {
         CREATED, RUNNING, FINISHED
@@ -146,15 +185,15 @@ class Game {
 //        def time = System.currentTimeMillis()
         synchronized (bombs) {
             def it = bombs.iterator()
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 def bomb = it.next()
                 bomb.blastSize = getPlayer(bomb.owner).bombSize
                 bomb.ticksRemaining--
                 if (bomb.moving) {
                     // TODO
                 }
-                if( bomb.ticksRemaining <= 0 ) {
-                    log.debug( "Boom $bomb")
+                if (bomb.ticksRemaining <= 0) {
+                    log.debug("Boom $bomb")
                     it.remove()
                 }
             }
@@ -190,37 +229,34 @@ class Game {
 
                         int tileX = Math.round(it.x)
                         int tileY = Math.round(it.y)
-                        def devX =  tileX - it.x
-                        def devY =  tileY - it.y
+                        def devX = tileX - it.x
+                        def devY = tileY - it.y
 
                         // check to see if we are in the middle of a tile
-                        if( (controller.direction == Direction.N || controller.direction == Direction.S) && Math.abs(devX) > step/2d ) {
+                        if ((controller.direction == Direction.N || controller.direction == Direction.S) && Math.abs(devX) > step / 2d) {
                             // Center to tile X first
-                            if( devX < 0 ) it.x -= step
+                            if (devX < 0) it.x -= step
                             else it.x += step
-                        } else if( (controller.direction == Direction.E || controller.direction == Direction.W ) && Math.abs(devY) > step/2d  ) {
+                        } else if ((controller.direction == Direction.E || controller.direction == Direction.W) && Math.abs(devY) > step / 2d) {
                             // Center to tile Y
-                            if( devY < 0 ) it.y -= step
+                            if (devY < 0) it.y -= step
                             else it.y += step
                         } else {
-                            // We are centered, move if possible
-                            switch (controller.direction) {
-                                case Direction.N:
-                                    if( canMoveTo(tileX, tileY+1) )
+                            if (canMove(it.x, it.y, controller.direction, step)) {
+                                switch (controller.direction) {
+                                    case Direction.N:
                                         it.y += step
-                                    break;
-                                case Direction.E:
-                                    if( canMoveTo(tileX+1, tileY) )
+                                        break;
+                                    case Direction.E:
                                         it.x += step
-                                    break;
-                                case Direction.W:
-                                    if( canMoveTo(tileX-1, tileY) )
+                                        break;
+                                    case Direction.W:
                                         it.x -= step
-                                    break;
-                                case Direction.S:
-                                    if( canMoveTo(tileX, tileY-1) )
+                                        break;
+                                    case Direction.S:
                                         it.y -= step
-                                    break;
+                                        break;
+                                }
                             }
                         }
                     }
@@ -238,7 +274,6 @@ class Game {
 //            sleepers.clear()
 //        }
 
-        currentTick++
         if (currentTick >= gameInfo.ticksTotal)
         // TODO
             throw new GameOverException()
@@ -257,29 +292,30 @@ class Game {
 //                players: players,
 //                tiles: gameInfo.tiles)
 
+        currentTick++
     }
 
     boolean canMoveTo(int x, int y) {
-        if( x < 0 || x >= gameInfo.mapWidth ) {
-            log.debug("x out of bounds ($x, $y)" )
+        if (x < 0 || x >= gameInfo.mapWidth) {
+            log.debug("x out of bounds ($x, $y)")
             return false
         }
 
-        if( y < 0 || y >= gameInfo.mapHeight ) {
-            log.debug("x out of bounds ($x, $y)" )
+        if (y < 0 || y >= gameInfo.mapHeight) {
+            log.debug("x out of bounds ($x, $y)")
             return false
         }
 
-        def tile = getTile( x, y )
-        if( tile == Tile.DESTRUCTIBLE || tile == Tile.INDESTRUCTIBLE )
+        def tile = getTile(x, y)
+        if (tile == Tile.DESTRUCTIBLE || tile == Tile.INDESTRUCTIBLE)
             return false
         return true
     }
 
     Tile getTile(int x, int y) {
         int idx = x + y * gameInfo.mapWidth
-        if( idx >= 0 && idx < mapState.getTiles().size() )
-            return mapState.getTiles().get( idx )
+        if (idx >= 0 && idx < mapState.getTiles().size())
+            return mapState.getTiles().get(idx)
     }
 
     void startGame() {
@@ -301,7 +337,7 @@ class Game {
                 try {
                     def timeSpent = time({tick()})
                     double capacity = (100d * (double) timeSpent) / (double) timeAllowed
-                    log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${capacity}%)")
+//                    log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${capacity}%)")
                 } catch (GameOverException e) {
                     log.debug("Game over")
                     stopGame();
@@ -404,4 +440,5 @@ class Game {
         controllers.put(playerId, controllerState);
         return new MoveActionResult(myState: getPlayer(playerId), mapState: mapState)
     }
+
 }

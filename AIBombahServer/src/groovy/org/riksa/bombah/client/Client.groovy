@@ -42,18 +42,24 @@ def clientRunnable = new Runnable() {
 
             client.move(playerId, new MoveAction(direction: Direction.N))    // 10
             500.times {
+                client.waitTicks(gameId, 100)
                 client.move(playerId, new MoveAction(direction: Direction.N))
                 client.bomb(playerId, new BombAction(chainBombs: false))          // 150
+                client.waitTicks(gameId, 100)
                 client.move(playerId, new MoveAction(direction: Direction.S))
+                client.waitTicks(gameId, 100)
                 client.move(playerId, new MoveAction(direction: Direction.S))
+                client.waitTicks(gameId, 100)
                 client.move(playerId, new MoveAction(direction: Direction.E))
+                client.waitTicks(gameId, 100)
                 client.move(playerId, new MoveAction(direction: Direction.E))
                 client.waitTicks(gameId, 100)
                 client.bomb(playerId, new BombAction(chainBombs: false))          // 150
                 client.move(playerId, new MoveAction(direction: Direction.W))
-                client.move(playerId, new MoveAction(direction: Direction.W))
-                client.move(playerId, new MoveAction(direction: Direction.N))    // 10
                 client.waitTicks(gameId, 100)
+                client.move(playerId, new MoveAction(direction: Direction.W))
+                client.waitTicks(gameId, 100)
+                client.move(playerId, new MoveAction(direction: Direction.N))    // 10
             }
 
             Thread.sleep(5000);
