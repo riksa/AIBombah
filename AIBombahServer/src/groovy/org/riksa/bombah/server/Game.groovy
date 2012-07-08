@@ -188,21 +188,41 @@ class Game {
                     if (controller.directionPadDown) {
 //                        log.debug( "$playerId moving to direction ${controller.direction}" )
 
-                        switch (controller.direction) {
-                            case Direction.N:
-                                it.y += step
-                                break;
-                            case Direction.E:
-                                it.x += step
-                                break;
-                            case Direction.W:
-                                it.x -= step
-                                break;
-                            case Direction.S:
-                                it.y -= step
-                                break;
+                        int tileX = Math.round(it.x)
+                        int tileY = Math.round(it.y)
+                        def devX =  tileX - it.x
+                        def devY =  tileY - it.y
+
+                        // check to see if we are in the middle of a tile
+                        if( (controller.direction == Direction.N || controller.direction == Direction.S) && Math.abs(devX) > step/2d ) {
+                            // Center to tile X first
+                            if( devX < 0 ) it.x -= step
+                            else it.x += step
+                        } else if( (controller.direction == Direction.E || controller.direction == Direction.W ) && Math.abs(devY) > step/2d  ) {
+                            // Center to tile Y
+                            if( devY < 0 ) it.y -= step
+                            else it.y += step
+                        } else {
+                            // We are centered, move if possible
+                            switch (controller.direction) {
+                                case Direction.N:
+                                    if( canMoveTo(tileX, tileY+1) )
+                                        it.y += step
+                                    break;
+                                case Direction.E:
+                                    if( canMoveTo(tileX+1, tileY) )
+                                        it.x += step
+                                    break;
+                                case Direction.W:
+                                    if( canMoveTo(tileX-1, tileY) )
+                                        it.x -= step
+                                    break;
+                                case Direction.S:
+                                    if( canMoveTo(tileX, tileY-1) )
+                                        it.y -= step
+                                    break;
+                            }
                         }
-                        // TODO
                     }
                 }
 
@@ -237,6 +257,29 @@ class Game {
 //                players: players,
 //                tiles: gameInfo.tiles)
 
+    }
+
+    boolean canMoveTo(int x, int y) {
+        if( x < 0 || x >= gameInfo.mapWidth ) {
+            log.debug("x out of bounds ($x, $y)" )
+            return false
+        }
+
+        if( y < 0 || y >= gameInfo.mapHeight ) {
+            log.debug("x out of bounds ($x, $y)" )
+            return false
+        }
+
+        def tile = getTile( x, y )
+        if( tile == Tile.DESTRUCTIBLE || tile == Tile.INDESTRUCTIBLE )
+            return false
+        return true
+    }
+
+    Tile getTile(int x, int y) {
+        int idx = x + y * gameInfo.mapWidth
+        if( idx >= 0 && idx < mapState.getTiles().size() )
+            return mapState.getTiles().get( idx )
     }
 
     void startGame() {
