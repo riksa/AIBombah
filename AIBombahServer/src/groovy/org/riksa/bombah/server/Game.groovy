@@ -143,22 +143,23 @@ class Game {
     }
 
     synchronized void tick() throws GameOverException {
-        def time = System.currentTimeMillis()
+//        def time = System.currentTimeMillis()
         synchronized (bombs) {
-            bombs.each {
-                it.blastSize = getPlayer(it.owner).bombSize
-                it.ticksRemaining--
-                if (it.moving) {
+            def it = bombs.iterator()
+            while(it.hasNext()) {
+                def bomb = it.next()
+                bomb.blastSize = getPlayer(bomb.owner).bombSize
+                bomb.ticksRemaining--
+                if (bomb.moving) {
                     // TODO
+                }
+                if( bomb.ticksRemaining <= 0 ) {
+                    log.debug( "Boom $bomb")
+                    it.remove()
                 }
             }
         }
 
-        mapState = new MapState(
-                currentTick: currentTick,
-                bombs: bombs.clone(), // wasted, TODO
-                players: players.clone(),
-                tiles: gameInfo.tiles.clone())
         // inefficient
 
 //        mapState.ticksRemaining = gameInfo.ticksTotal - currentTick
@@ -174,31 +175,31 @@ class Game {
 //            4: bool key2Down  // Stop bomb pressed
 //        }
 
-        synchronized ( controllers ) {
+        synchronized (controllers) {
+            double step = 1d / Constants.TICKS_PER_TILE
             players.each {
                 def playerId = it.playerId
                 def controller = controllers.get(playerId)
-                if( controller ) {
-                    if( controller.key1Down ) {
-                        log.debug( "$playerId dropped bomb" )
+                if (controller) {
+                    if (controller.key1Down) {
+                        log.debug("$playerId dropped bomb")
                         // TODO
                     }
-                    if( controller.directionPadDown ) {
-                        log.debug( "$playerId moving to direction ${controller.direction}" )
-                        double step = 1d/Constants.TICKS_PER_TILE
+                    if (controller.directionPadDown) {
+//                        log.debug( "$playerId moving to direction ${controller.direction}" )
 
-                        switch( controller.direction ) {
+                        switch (controller.direction) {
                             case Direction.N:
-                                it.x += step
-                                break;
-                            case Direction.E:
                                 it.y += step
                                 break;
+                            case Direction.E:
+                                it.x += step
+                                break;
                             case Direction.W:
-                                it.y -= step
+                                it.x -= step
                                 break;
                             case Direction.S:
-                                it.x -= step
+                                it.y -= step
                                 break;
                         }
                         // TODO
@@ -210,10 +211,6 @@ class Game {
 
 //        log.debug("Tick #$currentTick, time = $time")
 
-        if (currentTick >= gameInfo.ticksTotal)
-        // TODO
-            throw new GameOverException()
-
 //        synchronized (sleepers) {
 //            sleepers.each {
 //                it.interrupt()
@@ -222,6 +219,24 @@ class Game {
 //        }
 
         currentTick++
+        if (currentTick >= gameInfo.ticksTotal)
+        // TODO
+            throw new GameOverException()
+        def spent = time {
+            mapState = new MapState(
+                    currentTick: currentTick,
+                    bombs: bombs.clone(), // wasted, TODO
+                    players: players.clone(),
+                    tiles: gameInfo.tiles.clone())
+        }
+
+//        log.debug( "Spent cloning: $spent")
+//        mapState = new MapState(
+//                currentTick: currentTick,
+//                bombs: bombs,
+//                players: players,
+//                tiles: gameInfo.tiles)
+
     }
 
     void startGame() {
@@ -239,11 +254,11 @@ class Game {
 
             @Override
             void run() {
-                def timeAllowed = 1000l*1000l*1000l/Constants.TICKS_PER_SECOND // max ns we have for one tick (without overhead)
+                def timeAllowed = 1000l * 1000l * 1000l / Constants.TICKS_PER_SECOND // max ns we have for one tick (without overhead)
                 try {
                     def timeSpent = time({tick()})
-                    double capacity = (100d * (double)timeSpent) / (double)timeAllowed
-                    log.debug( "CPU capacity $timeSpent/$timeAllowed (@ ${capacity}%)")
+                    double capacity = (100d * (double) timeSpent) / (double) timeAllowed
+                    log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${capacity}%)")
                 } catch (GameOverException e) {
                     log.debug("Game over")
                     stopGame();
@@ -258,7 +273,7 @@ class Game {
     def time(Closure closure) {
         def now = System.nanoTime()
         closure.call()
-        def spent = System.nanoTime()-now
+        def spent = System.nanoTime() - now
 //        log.debug( "Execution took ${spent}ns (${spent/1000000}ms)")
         return spent
     }
@@ -343,7 +358,7 @@ class Game {
     }
 
     MoveActionResult controllerEvent(playerId, ControllerState controllerState) {
-            controllers.put( playerId, controllerState );
+        controllers.put(playerId, controllerState);
         return new MoveActionResult(myState: getPlayer(playerId), mapState: mapState)
     }
 }
