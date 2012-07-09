@@ -6,49 +6,33 @@
  */
 package org.riksa.bombah.thrift;
 
-import org.apache.thrift.scheme.IScheme;
-import org.apache.thrift.scheme.SchemeFactory;
-import org.apache.thrift.scheme.StandardScheme;
-
-import org.apache.thrift.scheme.TupleScheme;
-import org.apache.thrift.protocol.TTupleProtocol;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.EnumSet;
-import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class Constants {
 
-  /**
-   * 50 ticks per second at normal rate
-   */
-  public static final int TICKS_PER_SECOND = 50;
+    /**
+     * 50 ticks per second at normal rate
+     */
+    public static final int TICKS_PER_SECOND = 50;
 
-  /**
-   * movement takes 12 ticks / tile
-   */
-  public static final int TICKS_PER_TILE = 20;
+    /**
+     * movement takes 12 ticks / tile
+     */
+    public static final int TICKS_PER_TILE = 20;
 
-  /**
-   * normal bomb explodes in 150 ticks (3s)
-   * fast bomb in half that time
-   * slow bomb takes double that
-   */
-  public static final int TICKS_BOMB = 150;
+    /**
+     * normal bomb explodes in 150 ticks (3s)
+     * fast bomb in half that time
+     * slow bomb takes double that
+     */
+    public static final int TICKS_BOMB = 150;
 
-  /**
-   * flame is alive for 50 ticks
-   */
-  public static final int TICKS_FLAME = 50;
+    /**
+     * if bomb is in flames, it will explode in 5 ticks
+     */
+    public static final int TICKS_BOMB_IN_FLAMES = 5;
+
+    /**
+     * flame is alive for 50 ticks
+     */
+    public static final int TICKS_FLAME = 50;
 
 }

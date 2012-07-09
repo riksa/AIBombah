@@ -129,8 +129,8 @@ class Game {
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        bombs = new Vector<BombState>(width * height)
-        flames = new Vector<FlameState>(width * height)
+        bombs = new ArrayList<BombState>(width * height)
+        flames = new ArrayList<FlameState>(width * height)
         def rate = Constants.TICKS_PER_SECOND
         GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 30 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
@@ -197,19 +197,17 @@ class Game {
             }
         }
 
-        synchronized (bombs) {
-            def it = bombs.iterator()
-            while (it.hasNext()) {
-                def bomb = it.next()
-                bomb.blastSize = getPlayer(bomb.owner).bombSize
-                bomb.ticksRemaining--
-                if (bomb.moving) {
-                    // TODO
-                }
-                if (bomb.ticksRemaining <= 0) {
-                    it.remove()
-                    explodeBomb(bomb)
-                }
+        def it = bombs.iterator()
+        while (it.hasNext()) {
+            def bomb = it.next()
+            bomb.blastSize = getPlayer(bomb.owner).bombSize
+            bomb.ticksRemaining--
+            if (bomb.moving) {
+                // TODO
+            }
+            if (bomb.ticksRemaining <= 0) {
+                it.remove()
+                explodeBomb(bomb)
             }
         }
 
@@ -343,9 +341,20 @@ class Game {
             killPlayer(it)
         }
 
+        bombs.each {
+            def coordinates = getTileCoordinate(it.xCoordinate, it.yCoordinate, null)
+            if (coordinates.x == x && coordinates.y == y) {
+                it.ticksRemaining = Constants.TICKS_BOMB_IN_FLAMES
+            }
+        }
+
+//        while( bombIt.hasNext() ) {
+//            def bomb = bombIt.next()
+//            bombIt.remove()
+////            explodeBomb(bomb)
+//            }
+
         def tile = getTile(x, y)
-        // TODO: kill player
-        // TODO: explode bombs
         switch (tile) {
             case Tile.BUFF_BOMB:
             case Tile.BUFF_CHAIN:

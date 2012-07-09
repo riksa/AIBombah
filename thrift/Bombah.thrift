@@ -16,6 +16,11 @@ const i32 TICKS_PER_TILE   = 20
 const i32 TICKS_BOMB      = 150
 
 /**
+ * if bomb is in flames, it will explode in 5 ticks
+ */
+const i32 TICKS_BOMB_IN_FLAMES = 5
+
+/**
  * flame is alive for 50 ticks
  */
 const i32 TICKS_FLAME     = 50
@@ -52,6 +57,7 @@ enum Tile {
 	
     INDESTRUCTIBLE = 7, // Indestructible grey brick
     DESTRUCTIBLE = 8, // Destructible grey brick
+	BOMB = 9 // does not appear in MapState.tiles list at the moment
 
     // TODO:
 }

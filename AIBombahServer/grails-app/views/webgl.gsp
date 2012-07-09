@@ -78,6 +78,14 @@
                 drawTile(x * 64, y * 64, texture, image);
             });
 
+            $.each(mapState.bombs, function (i, bomb) {
+                var x = bomb.xCoordinate;
+                var y = bomb.yCoordinate;
+                var texture = textures[Tile.BOMB];
+                var image = images[Tile.BOMB];
+                drawTile(x * 64, y * 64, texture, image);
+            });
+
             $.each(mapState.players, function (i, player) {
                 if (player.alive) {
                     var x = player.x;
