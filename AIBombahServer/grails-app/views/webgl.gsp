@@ -55,7 +55,7 @@
 //                updateMap();
 //                client.waitTicks(10);
 //            }
-              window.setInterval(updateMap, 50);
+            window.setInterval(updateMap, 50);
         } catch (e) {
 
         }
@@ -66,31 +66,35 @@
 //            console.log( mapState );
         // Bombah.thrift
         // Bombah.thrift
-        $.each(mapState.tiles, function (i, tile) {
-            var x = i % gameInfo.mapWidth;
-            var y = (i - x) / gameInfo.mapWidth;
-            var texture = textures[tile];
-            var image = images[tile];
-            drawTile(x * 64, y * 64, texture, image);
-        });
-
-        $.each(mapState.players, function (i, player) {
-            if( player.alive ) {
-                var x = player.x;
-                var y = player.y;
-                var texture = playerTextures[i];
-                var image = playerImages[i];
+        if (mapState.tiles) {
+            $.each(mapState.tiles, function (i, tile) {
+                var x = i % gameInfo.mapWidth;
+                var y = (i - x) / gameInfo.mapWidth;
+                var texture = textures[tile];
+                var image = images[tile];
                 drawTile(x * 64, y * 64, texture, image);
-            }
-        });
+            });
 
-        $.each(mapState.flames, function (i, flame) {
-            var x = flame.coordinate.x;
-            var y = flame.coordinate.y;
-            var texture = textures[Tile.FIRE];
-            var image = images[Tile.FIRE];
-            drawTile(x * 64, y * 64, texture, image);
-        });
+            $.each(mapState.players, function (i, player) {
+                if (player.alive) {
+                    var x = player.x;
+                    var y = player.y;
+                    var texture = playerTextures[i];
+                    var image = playerImages[i];
+                    drawTile(x * 64, y * 64, texture, image);
+                }
+            });
+
+            $.each(mapState.flames, function (i, flame) {
+                var x = flame.coordinate.x;
+                var y = flame.coordinate.y;
+                var texture = textures[Tile.FIRE];
+                var image = images[Tile.FIRE];
+                drawTile(x * 64, y * 64, texture, image);
+            });
+        } else {
+            // Game over
+        }
     }
 
     function drawTile(x, y, texture, image) {
