@@ -2,10 +2,10 @@ package org.riksa.bombah.server
 
 import org.slf4j.LoggerFactory
 
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 import org.riksa.bombah.thrift.*
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,7 +31,7 @@ class Game {
 
     boolean canMove(double x, double y, Direction direction, double step) {
 //        def currentLocation = getTileCoordinate(x, y, null)
-        def half = 0.5d+step
+        def half = 0.5d + step
 
         switch (direction) {
             case Direction.N:
@@ -129,8 +129,8 @@ class Game {
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        bombs = new Vector<BombState>(width*height)
-        flames = new Vector<FlameState>(width*height)
+        bombs = new Vector<BombState>(width * height)
+        flames = new Vector<FlameState>(width * height)
         def rate = Constants.TICKS_PER_SECOND
         GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 30 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
@@ -208,7 +208,7 @@ class Game {
                 }
                 if (bomb.ticksRemaining <= 0) {
                     it.remove()
-                    explodeBomb( bomb )
+                    explodeBomb(bomb)
                 }
             }
         }
@@ -289,14 +289,14 @@ class Game {
 //        }
 
         if (currentTick >= gameInfo.ticksTotal)
-        // TODO
-            throw new GameOverException()
+            endGame()
+
         mapState = new MapState(
                 currentTick: currentTick,
                 bombs: bombs.clone(), // wasted, TODO
                 players: players.clone(),
                 tiles: gameInfo.tiles.clone(),
-                flames: flames.clone() )
+                flames: flames.clone())
 
 //        log.debug( "Spent cloning: $spent")
 //        mapState = new MapState(
@@ -309,54 +309,54 @@ class Game {
     }
 
     def explodeBomb(BombState bomb) {
-        def bombCoordinates = getTileCoordinate( bomb.xCoordinate, bomb.yCoordinate, null)
-        flames.add( new FlameState(coordinate: bombCoordinates, ticksRemaining: Constants.TICKS_FLAME) )
+        def bombCoordinates = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
+        flames.add(new FlameState(coordinate: bombCoordinates, ticksRemaining: Constants.TICKS_FLAME))
 
         def handleTileFlame = {
-            x,y ->
-            flames.add( new FlameState(coordinate: [x:x, y:y], ticksRemaining: Constants.TICKS_FLAME) )
-            return destroyTile( x, y )
+            x, y ->
+            flames.add(new FlameState(coordinate: [x: x, y: y], ticksRemaining: Constants.TICKS_FLAME))
+            return destroyTile(x, y)
         }
-        for( i in 1..bomb.blastSize ) {
-            if( !handleTileFlame(bombCoordinates.x + i,bombCoordinates.y) )
+        for (i in 1..bomb.blastSize) {
+            if (!handleTileFlame(bombCoordinates.x + i, bombCoordinates.y))
                 break;
         }
-        for( i in 1..bomb.blastSize ) {
-            if( !handleTileFlame(bombCoordinates.x - i,bombCoordinates.y) )
+        for (i in 1..bomb.blastSize) {
+            if (!handleTileFlame(bombCoordinates.x - i, bombCoordinates.y))
                 break;
         }
-        for( i in 1..bomb.blastSize ) {
-            if( !handleTileFlame(bombCoordinates.x,bombCoordinates.y + 1) )
+        for (i in 1..bomb.blastSize) {
+            if (!handleTileFlame(bombCoordinates.x, bombCoordinates.y + i))
                 break;
         }
-        for( i in 1..bomb.blastSize ) {
-            if( !handleTileFlame(bombCoordinates.x,bombCoordinates.y - 1) )
+        for (i in 1..bomb.blastSize) {
+            if (!handleTileFlame(bombCoordinates.x, bombCoordinates.y - i))
                 break;
         }
     }
 
     boolean destroyTile(int x, int y) {
         players.grep {
-            def coordinates = getTileCoordinate( it.x, it.y, null )
-            return coordinates.x == x && coordinates.y==y
+            def coordinates = getTileCoordinate(it.x, it.y, null)
+            return coordinates.x == x && coordinates.y == y
         }.each {
-            killPlayer( it )
+            killPlayer(it)
         }
 
-        def tile = getTile( x, y )
+        def tile = getTile(x, y)
         // TODO: kill player
         // TODO: explode bombs
-        switch( tile ) {
+        switch (tile) {
             case Tile.BUFF_BOMB:
             case Tile.BUFF_CHAIN:
             case Tile.BUFF_FLAME:
             case Tile.BUFF_FOOT:
             case Tile.DEBUFF:
-                destroyBuff( x, y )
+                destroyBuff(x, y)
                 return false;
                 break;
             case Tile.DESTRUCTIBLE:
-                destroyDestructable(x,y)
+                destroyDestructable(x, y)
                 return false;
                 break;
             case Tile.INDESTRUCTIBLE:
@@ -370,12 +370,15 @@ class Game {
     }
 
     def killPlayer(PlayerState player) {
-        log.debug( "Player $player died")
+        log.debug("Player $player died")
         player.alive = false
+        if (players.grep() {
+            it.alive
+        }.size() <= 1) stopGame()
     }
 
     def destroyDestructable(int x, int y) {
-        log.debug( "TODO: destroyDestructable ($x, $y)" )
+        log.debug("TODO: destroyDestructable ($x, $y)")
         // TODO
 //        int idx = x + y * gameInfo.mapWidth
 //        if (idx >= 0 && idx < mapState.getTiles().size())
@@ -383,7 +386,7 @@ class Game {
     }
 
     def destroyBuff(int x, int y) {
-        log.debug( "TODO: destroyBuff ($x, $y)" )
+        log.debug("TODO: destroyBuff ($x, $y)")
         // TODO
     }
 
@@ -450,6 +453,8 @@ class Game {
     }
 
     void stopGame() {
+        log.debug("Game over");
+
         if (timer) {
             timer.cancel()
         }
@@ -496,11 +501,13 @@ class Game {
     }
 
     BombActionResult bomb(playerId, BombAction bombAction) {
-        if (gameState == GameState.FINISHED) {
+        if (gameState == GameState.FINISHED)
             throw new GameOverException()
-        }
 
         def playerState = getPlayer(playerId)
+        if (!playerState.alive)
+            throw new YouAreDeadException()
+
         def ticks = Constants.TICKS_BOMB
         if (playerState.disease == Disease.FAST_BOMB) {
             ticks >> 1
@@ -529,6 +536,13 @@ class Game {
     }
 
     MoveActionResult controllerEvent(playerId, ControllerState controllerState) {
+        if (gameState == GameState.FINISHED)
+            throw new GameOverException()
+
+        def playerState = getPlayer(playerId)
+        if (!playerState.alive)
+            throw new YouAreDeadException()
+
         controllers.put(playerId, controllerState);
         return new MoveActionResult(myState: getPlayer(playerId), mapState: mapState)
     }
