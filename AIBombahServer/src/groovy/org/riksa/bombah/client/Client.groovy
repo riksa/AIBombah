@@ -8,6 +8,7 @@ import org.riksa.bombah.thrift.BombahService
 import org.riksa.bombah.thrift.Direction
 import org.riksa.bombah.thrift.MoveAction
 import org.slf4j.LoggerFactory
+import org.riksa.bombah.thrift.Constants
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,26 +41,21 @@ def clientRunnable = new Runnable() {
             client.waitForStart(gameId)
             log.debug("Game started, I am player #" + playerId)
 
-            client.move(playerId, new MoveAction(direction: Direction.N))    // 10
+            client.move(playerId, new MoveAction(direction: Direction.N))
+            client.move(playerId, new MoveAction(direction: Direction.N))
             500.times {
-                client.waitTicks(gameId, 100)
+                client.bomb(playerId, new BombAction(chainBombs: false))
+                client.move(playerId, new MoveAction(direction: Direction.S))
+                client.move(playerId, new MoveAction(direction: Direction.S))
+                client.move(playerId, new MoveAction(direction: Direction.E))
+                client.move(playerId, new MoveAction(direction: Direction.E))
+                client.waitTicks(gameId, Constants.TICKS_BOMB - 4*Constants.TICKS_PER_TILE )
+                client.bomb(playerId, new BombAction(chainBombs: false))
+                client.move(playerId, new MoveAction(direction: Direction.W))
+                client.move(playerId, new MoveAction(direction: Direction.W))
                 client.move(playerId, new MoveAction(direction: Direction.N))
-                client.bomb(playerId, new BombAction(chainBombs: false))          // 150
-                client.waitTicks(gameId, 100)
-                client.move(playerId, new MoveAction(direction: Direction.S))
-                client.waitTicks(gameId, 100)
-                client.move(playerId, new MoveAction(direction: Direction.S))
-                client.waitTicks(gameId, 100)
-                client.move(playerId, new MoveAction(direction: Direction.E))
-                client.waitTicks(gameId, 100)
-                client.move(playerId, new MoveAction(direction: Direction.E))
-                client.waitTicks(gameId, 100)
-                client.bomb(playerId, new BombAction(chainBombs: false))          // 150
-                client.move(playerId, new MoveAction(direction: Direction.W))
-                client.waitTicks(gameId, 100)
-                client.move(playerId, new MoveAction(direction: Direction.W))
-                client.waitTicks(gameId, 100)
-                client.move(playerId, new MoveAction(direction: Direction.N))    // 10
+                client.move(playerId, new MoveAction(direction: Direction.N))
+                client.waitTicks(gameId, Constants.TICKS_BOMB - 4*Constants.TICKS_PER_TILE )
             }
 
             Thread.sleep(5000);
