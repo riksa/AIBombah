@@ -336,6 +336,13 @@ class Game {
     }
 
     boolean destroyTile(int x, int y) {
+        players.grep {
+            def coordinates = getTileCoordinate( it.x, it.y, null )
+            return coordinates.x == x && coordinates.y==y
+        }.each {
+            killPlayer( it )
+        }
+
         def tile = getTile( x, y )
         // TODO: kill player
         // TODO: explode bombs
@@ -357,10 +364,14 @@ class Game {
             case Tile.NONE:
                 return true;
             default:
-                log.warn( "TODO: handle destroyTile of $tile")
-                return false;
+                return false; // tile == null, out of map
         }
 
+    }
+
+    def killPlayer(PlayerState player) {
+        log.debug( "Player $player died")
+        player.alive = false
     }
 
     def destroyDestructable(int x, int y) {
