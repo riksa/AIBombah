@@ -20,9 +20,6 @@ class BombahHandler implements BombahService.Iface {
         if( !runningGame ) {
             runningGame = createGame();
         }
-        if( runningGame.gameState == Game.GameState.FINISHED ) {
-            runningGame = createGame();
-        }
         return runningGame
     }
 
@@ -92,6 +89,10 @@ class BombahHandler implements BombahService.Iface {
 
     @Override
     synchronized GameInfo joinGame(int gameId) {
+        if( !runningGame ||runningGame.gameState == Game.GameState.FINISHED ) {
+            runningGame = createGame();
+        }
+
         def playerId = game.join()
         if (playerId > 0 ) {
             def info = game.gameInfo.clone()
