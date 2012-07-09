@@ -34,6 +34,7 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
   private static final org.apache.thrift.protocol.TField BOMBS_FIELD_DESC = new org.apache.thrift.protocol.TField("bombs", org.apache.thrift.protocol.TType.LIST, (short)2);
   private static final org.apache.thrift.protocol.TField PLAYERS_FIELD_DESC = new org.apache.thrift.protocol.TField("players", org.apache.thrift.protocol.TType.LIST, (short)3);
   private static final org.apache.thrift.protocol.TField CURRENT_TICK_FIELD_DESC = new org.apache.thrift.protocol.TField("currentTick", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField FLAMES_FIELD_DESC = new org.apache.thrift.protocol.TField("flames", org.apache.thrift.protocol.TType.LIST, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -45,13 +46,15 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
   public List<BombState> bombs; // required
   public List<PlayerState> players; // required
   public int currentTick; // required
+  public List<FlameState> flames; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     TILES((short)1, "tiles"),
     BOMBS((short)2, "bombs"),
     PLAYERS((short)3, "players"),
-    CURRENT_TICK((short)4, "currentTick");
+    CURRENT_TICK((short)4, "currentTick"),
+    FLAMES((short)5, "flames");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -74,6 +77,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
           return PLAYERS;
         case 4: // CURRENT_TICK
           return CURRENT_TICK;
+        case 5: // FLAMES
+          return FLAMES;
         default:
           return null;
       }
@@ -130,6 +135,9 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PlayerState.class))));
     tmpMap.put(_Fields.CURRENT_TICK, new org.apache.thrift.meta_data.FieldMetaData("currentTick", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.FLAMES, new org.apache.thrift.meta_data.FieldMetaData("flames", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, FlameState.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(MapState.class, metaDataMap);
   }
@@ -141,7 +149,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     List<Tile> tiles,
     List<BombState> bombs,
     List<PlayerState> players,
-    int currentTick)
+    int currentTick,
+    List<FlameState> flames)
   {
     this();
     this.tiles = tiles;
@@ -149,6 +158,7 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     this.players = players;
     this.currentTick = currentTick;
     setCurrentTickIsSet(true);
+    this.flames = flames;
   }
 
   /**
@@ -179,6 +189,13 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       this.players = __this__players;
     }
     this.currentTick = other.currentTick;
+    if (other.isSetFlames()) {
+      List<FlameState> __this__flames = new ArrayList<FlameState>();
+      for (FlameState other_element : other.flames) {
+        __this__flames.add(new FlameState(other_element));
+      }
+      this.flames = __this__flames;
+    }
   }
 
   public MapState deepCopy() {
@@ -192,6 +209,7 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     this.players = null;
     setCurrentTickIsSet(false);
     this.currentTick = 0;
+    this.flames = null;
   }
 
   public int getTilesSize() {
@@ -334,6 +352,45 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     __isset_bit_vector.set(__CURRENTTICK_ISSET_ID, value);
   }
 
+  public int getFlamesSize() {
+    return (this.flames == null) ? 0 : this.flames.size();
+  }
+
+  public java.util.Iterator<FlameState> getFlamesIterator() {
+    return (this.flames == null) ? null : this.flames.iterator();
+  }
+
+  public void addToFlames(FlameState elem) {
+    if (this.flames == null) {
+      this.flames = new ArrayList<FlameState>();
+    }
+    this.flames.add(elem);
+  }
+
+  public List<FlameState> getFlames() {
+    return this.flames;
+  }
+
+  public MapState setFlames(List<FlameState> flames) {
+    this.flames = flames;
+    return this;
+  }
+
+  public void unsetFlames() {
+    this.flames = null;
+  }
+
+  /** Returns true if field flames is set (has been assigned a value) and false otherwise */
+  public boolean isSetFlames() {
+    return this.flames != null;
+  }
+
+  public void setFlamesIsSet(boolean value) {
+    if (!value) {
+      this.flames = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TILES:
@@ -368,6 +425,14 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       }
       break;
 
+    case FLAMES:
+      if (value == null) {
+        unsetFlames();
+      } else {
+        setFlames((List<FlameState>)value);
+      }
+      break;
+
     }
   }
 
@@ -384,6 +449,9 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
 
     case CURRENT_TICK:
       return Integer.valueOf(getCurrentTick());
+
+    case FLAMES:
+      return getFlames();
 
     }
     throw new IllegalStateException();
@@ -404,6 +472,8 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       return isSetPlayers();
     case CURRENT_TICK:
       return isSetCurrentTick();
+    case FLAMES:
+      return isSetFlames();
     }
     throw new IllegalStateException();
   }
@@ -454,6 +524,15 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       if (!(this_present_currentTick && that_present_currentTick))
         return false;
       if (this.currentTick != that.currentTick)
+        return false;
+    }
+
+    boolean this_present_flames = true && this.isSetFlames();
+    boolean that_present_flames = true && that.isSetFlames();
+    if (this_present_flames || that_present_flames) {
+      if (!(this_present_flames && that_present_flames))
+        return false;
+      if (!this.flames.equals(that.flames))
         return false;
     }
 
@@ -513,6 +592,16 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetFlames()).compareTo(typedOther.isSetFlames());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetFlames()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.flames, typedOther.flames);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -559,6 +648,14 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
     if (!first) sb.append(", ");
     sb.append("currentTick:");
     sb.append(this.currentTick);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("flames:");
+    if (this.flames == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.flames);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -668,6 +765,25 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 5: // FLAMES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
+                struct.flames = new ArrayList<FlameState>(_list9.size);
+                for (int _i10 = 0; _i10 < _list9.size; ++_i10)
+                {
+                  FlameState _elem11; // required
+                  _elem11 = new FlameState();
+                  _elem11.read(iprot);
+                  struct.flames.add(_elem11);
+                }
+                iprot.readListEnd();
+              }
+              struct.setFlamesIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -687,9 +803,9 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
         oprot.writeFieldBegin(TILES_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.tiles.size()));
-          for (Tile _iter9 : struct.tiles)
+          for (Tile _iter12 : struct.tiles)
           {
-            oprot.writeI32(_iter9.getValue());
+            oprot.writeI32(_iter12.getValue());
           }
           oprot.writeListEnd();
         }
@@ -699,9 +815,9 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
         oprot.writeFieldBegin(BOMBS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.bombs.size()));
-          for (BombState _iter10 : struct.bombs)
+          for (BombState _iter13 : struct.bombs)
           {
-            _iter10.write(oprot);
+            _iter13.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -711,9 +827,9 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
         oprot.writeFieldBegin(PLAYERS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.players.size()));
-          for (PlayerState _iter11 : struct.players)
+          for (PlayerState _iter14 : struct.players)
           {
-            _iter11.write(oprot);
+            _iter14.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -722,6 +838,18 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       oprot.writeFieldBegin(CURRENT_TICK_FIELD_DESC);
       oprot.writeI32(struct.currentTick);
       oprot.writeFieldEnd();
+      if (struct.flames != null) {
+        oprot.writeFieldBegin(FLAMES_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.flames.size()));
+          for (FlameState _iter15 : struct.flames)
+          {
+            _iter15.write(oprot);
+          }
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -752,80 +880,92 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       if (struct.isSetCurrentTick()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetFlames()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetTiles()) {
         {
           oprot.writeI32(struct.tiles.size());
-          for (Tile _iter12 : struct.tiles)
+          for (Tile _iter16 : struct.tiles)
           {
-            oprot.writeI32(_iter12.getValue());
+            oprot.writeI32(_iter16.getValue());
           }
         }
       }
       if (struct.isSetBombs()) {
         {
           oprot.writeI32(struct.bombs.size());
-          for (BombState _iter13 : struct.bombs)
+          for (BombState _iter17 : struct.bombs)
           {
-            _iter13.write(oprot);
+            _iter17.write(oprot);
           }
         }
       }
       if (struct.isSetPlayers()) {
         {
           oprot.writeI32(struct.players.size());
-          for (PlayerState _iter14 : struct.players)
+          for (PlayerState _iter18 : struct.players)
           {
-            _iter14.write(oprot);
+            _iter18.write(oprot);
           }
         }
       }
       if (struct.isSetCurrentTick()) {
         oprot.writeI32(struct.currentTick);
       }
+      if (struct.isSetFlames()) {
+        {
+          oprot.writeI32(struct.flames.size());
+          for (FlameState _iter19 : struct.flames)
+          {
+            _iter19.write(oprot);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, MapState struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TList _list15 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-          struct.tiles = new ArrayList<Tile>(_list15.size);
-          for (int _i16 = 0; _i16 < _list15.size; ++_i16)
+          org.apache.thrift.protocol.TList _list20 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+          struct.tiles = new ArrayList<Tile>(_list20.size);
+          for (int _i21 = 0; _i21 < _list20.size; ++_i21)
           {
-            Tile _elem17; // required
-            _elem17 = Tile.findByValue(iprot.readI32());
-            struct.tiles.add(_elem17);
+            Tile _elem22; // required
+            _elem22 = Tile.findByValue(iprot.readI32());
+            struct.tiles.add(_elem22);
           }
         }
         struct.setTilesIsSet(true);
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.bombs = new ArrayList<BombState>(_list18.size);
-          for (int _i19 = 0; _i19 < _list18.size; ++_i19)
+          org.apache.thrift.protocol.TList _list23 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.bombs = new ArrayList<BombState>(_list23.size);
+          for (int _i24 = 0; _i24 < _list23.size; ++_i24)
           {
-            BombState _elem20; // required
-            _elem20 = new BombState();
-            _elem20.read(iprot);
-            struct.bombs.add(_elem20);
+            BombState _elem25; // required
+            _elem25 = new BombState();
+            _elem25.read(iprot);
+            struct.bombs.add(_elem25);
           }
         }
         struct.setBombsIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.players = new ArrayList<PlayerState>(_list21.size);
-          for (int _i22 = 0; _i22 < _list21.size; ++_i22)
+          org.apache.thrift.protocol.TList _list26 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.players = new ArrayList<PlayerState>(_list26.size);
+          for (int _i27 = 0; _i27 < _list26.size; ++_i27)
           {
-            PlayerState _elem23; // required
-            _elem23 = new PlayerState();
-            _elem23.read(iprot);
-            struct.players.add(_elem23);
+            PlayerState _elem28; // required
+            _elem28 = new PlayerState();
+            _elem28.read(iprot);
+            struct.players.add(_elem28);
           }
         }
         struct.setPlayersIsSet(true);
@@ -833,6 +973,20 @@ public class MapState implements org.apache.thrift.TBase<MapState, MapState._Fie
       if (incoming.get(3)) {
         struct.currentTick = iprot.readI32();
         struct.setCurrentTickIsSet(true);
+      }
+      if (incoming.get(4)) {
+        {
+          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.flames = new ArrayList<FlameState>(_list29.size);
+          for (int _i30 = 0; _i30 < _list29.size; ++_i30)
+          {
+            FlameState _elem31; // required
+            _elem31 = new FlameState();
+            _elem31.read(iprot);
+            struct.flames.add(_elem31);
+          }
+        }
+        struct.setFlamesIsSet(true);
       }
     }
   }

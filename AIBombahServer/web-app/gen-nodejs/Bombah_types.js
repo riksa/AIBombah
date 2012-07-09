@@ -180,6 +180,88 @@ BombState.prototype.write = function(output) {
   return;
 };
 
+var FlameState = module.exports.FlameState = function(args) {
+  this.xCoordinate = null;
+  this.yCoordinate = null;
+  this.ticksRemaining = null;
+  if (args) {
+    if (args.xCoordinate !== undefined) {
+      this.xCoordinate = args.xCoordinate;
+    }
+    if (args.yCoordinate !== undefined) {
+      this.yCoordinate = args.yCoordinate;
+    }
+    if (args.ticksRemaining !== undefined) {
+      this.ticksRemaining = args.ticksRemaining;
+    }
+  }
+};
+FlameState.prototype = {};
+FlameState.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.BYTE) {
+        this.xCoordinate = input.readByte();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.BYTE) {
+        this.yCoordinate = input.readByte();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.I32) {
+        this.ticksRemaining = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+FlameState.prototype.write = function(output) {
+  output.writeStructBegin('FlameState');
+  if (this.xCoordinate) {
+    output.writeFieldBegin('xCoordinate', Thrift.Type.BYTE, 1);
+    output.writeByte(this.xCoordinate);
+    output.writeFieldEnd();
+  }
+  if (this.yCoordinate) {
+    output.writeFieldBegin('yCoordinate', Thrift.Type.BYTE, 2);
+    output.writeByte(this.yCoordinate);
+    output.writeFieldEnd();
+  }
+  if (this.ticksRemaining) {
+    output.writeFieldBegin('ticksRemaining', Thrift.Type.I32, 3);
+    output.writeI32(this.ticksRemaining);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 var GameOverException = module.exports.GameOverException = function(args) {
   Thrift.TException.call(this, "GameOverException")
   this.name = "GameOverException"
@@ -456,6 +538,7 @@ var MapState = module.exports.MapState = function(args) {
   this.bombs = null;
   this.players = null;
   this.currentTick = null;
+  this.flames = null;
   if (args) {
     if (args.tiles !== undefined) {
       this.tiles = args.tiles;
@@ -468,6 +551,9 @@ var MapState = module.exports.MapState = function(args) {
     }
     if (args.currentTick !== undefined) {
       this.currentTick = args.currentTick;
+    }
+    if (args.flames !== undefined) {
+      this.flames = args.flames;
     }
   }
 };
@@ -554,6 +640,27 @@ MapState.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
+      case 5:
+      if (ftype == Thrift.Type.LIST) {
+        var _size21 = 0;
+        var _rtmp325;
+        this.flames = [];
+        var _etype24 = 0;
+        _rtmp325 = input.readListBegin();
+        _etype24 = _rtmp325.etype;
+        _size21 = _rtmp325.size;
+        for (var _i26 = 0; _i26 < _size21; ++_i26)
+        {
+          var elem27 = null;
+          elem27 = new ttypes.FlameState();
+          elem27.read(input);
+          this.flames.push(elem27);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
       default:
         input.skip(ftype);
     }
@@ -568,12 +675,12 @@ MapState.prototype.write = function(output) {
   if (this.tiles) {
     output.writeFieldBegin('tiles', Thrift.Type.LIST, 1);
     output.writeListBegin(Thrift.Type.I32, this.tiles.length);
-    for (var iter21 in this.tiles)
+    for (var iter28 in this.tiles)
     {
-      if (this.tiles.hasOwnProperty(iter21))
+      if (this.tiles.hasOwnProperty(iter28))
       {
-        iter21 = this.tiles[iter21];
-        output.writeI32(iter21);
+        iter28 = this.tiles[iter28];
+        output.writeI32(iter28);
       }
     }
     output.writeListEnd();
@@ -582,12 +689,12 @@ MapState.prototype.write = function(output) {
   if (this.bombs) {
     output.writeFieldBegin('bombs', Thrift.Type.LIST, 2);
     output.writeListBegin(Thrift.Type.STRUCT, this.bombs.length);
-    for (var iter22 in this.bombs)
+    for (var iter29 in this.bombs)
     {
-      if (this.bombs.hasOwnProperty(iter22))
+      if (this.bombs.hasOwnProperty(iter29))
       {
-        iter22 = this.bombs[iter22];
-        iter22.write(output);
+        iter29 = this.bombs[iter29];
+        iter29.write(output);
       }
     }
     output.writeListEnd();
@@ -596,12 +703,12 @@ MapState.prototype.write = function(output) {
   if (this.players) {
     output.writeFieldBegin('players', Thrift.Type.LIST, 3);
     output.writeListBegin(Thrift.Type.STRUCT, this.players.length);
-    for (var iter23 in this.players)
+    for (var iter30 in this.players)
     {
-      if (this.players.hasOwnProperty(iter23))
+      if (this.players.hasOwnProperty(iter30))
       {
-        iter23 = this.players[iter23];
-        iter23.write(output);
+        iter30 = this.players[iter30];
+        iter30.write(output);
       }
     }
     output.writeListEnd();
@@ -610,6 +717,20 @@ MapState.prototype.write = function(output) {
   if (this.currentTick) {
     output.writeFieldBegin('currentTick', Thrift.Type.I32, 4);
     output.writeI32(this.currentTick);
+    output.writeFieldEnd();
+  }
+  if (this.flames) {
+    output.writeFieldBegin('flames', Thrift.Type.LIST, 5);
+    output.writeListBegin(Thrift.Type.STRUCT, this.flames.length);
+    for (var iter31 in this.flames)
+    {
+      if (this.flames.hasOwnProperty(iter31))
+      {
+        iter31 = this.flames[iter31];
+        iter31.write(output);
+      }
+    }
+    output.writeListEnd();
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -749,18 +870,18 @@ GameInfo.prototype.read = function(input) {
       break;
       case 3:
       if (ftype == Thrift.Type.LIST) {
-        var _size24 = 0;
-        var _rtmp328;
+        var _size32 = 0;
+        var _rtmp336;
         this.tiles = [];
-        var _etype27 = 0;
-        _rtmp328 = input.readListBegin();
-        _etype27 = _rtmp328.etype;
-        _size24 = _rtmp328.size;
-        for (var _i29 = 0; _i29 < _size24; ++_i29)
+        var _etype35 = 0;
+        _rtmp336 = input.readListBegin();
+        _etype35 = _rtmp336.etype;
+        _size32 = _rtmp336.size;
+        for (var _i37 = 0; _i37 < _size32; ++_i37)
         {
-          var elem30 = null;
-          elem30 = input.readI32();
-          this.tiles.push(elem30);
+          var elem38 = null;
+          elem38 = input.readI32();
+          this.tiles.push(elem38);
         }
         input.readListEnd();
       } else {
@@ -769,19 +890,19 @@ GameInfo.prototype.read = function(input) {
       break;
       case 4:
       if (ftype == Thrift.Type.LIST) {
-        var _size31 = 0;
-        var _rtmp335;
+        var _size39 = 0;
+        var _rtmp343;
         this.startingPositions = [];
-        var _etype34 = 0;
-        _rtmp335 = input.readListBegin();
-        _etype34 = _rtmp335.etype;
-        _size31 = _rtmp335.size;
-        for (var _i36 = 0; _i36 < _size31; ++_i36)
+        var _etype42 = 0;
+        _rtmp343 = input.readListBegin();
+        _etype42 = _rtmp343.etype;
+        _size39 = _rtmp343.size;
+        for (var _i44 = 0; _i44 < _size39; ++_i44)
         {
-          var elem37 = null;
-          elem37 = new ttypes.Coordinate();
-          elem37.read(input);
-          this.startingPositions.push(elem37);
+          var elem45 = null;
+          elem45 = new ttypes.Coordinate();
+          elem45.read(input);
+          this.startingPositions.push(elem45);
         }
         input.readListEnd();
       } else {
@@ -840,12 +961,12 @@ GameInfo.prototype.write = function(output) {
   if (this.tiles) {
     output.writeFieldBegin('tiles', Thrift.Type.LIST, 3);
     output.writeListBegin(Thrift.Type.I32, this.tiles.length);
-    for (var iter38 in this.tiles)
+    for (var iter46 in this.tiles)
     {
-      if (this.tiles.hasOwnProperty(iter38))
+      if (this.tiles.hasOwnProperty(iter46))
       {
-        iter38 = this.tiles[iter38];
-        output.writeI32(iter38);
+        iter46 = this.tiles[iter46];
+        output.writeI32(iter46);
       }
     }
     output.writeListEnd();
@@ -854,12 +975,12 @@ GameInfo.prototype.write = function(output) {
   if (this.startingPositions) {
     output.writeFieldBegin('startingPositions', Thrift.Type.LIST, 4);
     output.writeListBegin(Thrift.Type.STRUCT, this.startingPositions.length);
-    for (var iter39 in this.startingPositions)
+    for (var iter47 in this.startingPositions)
     {
-      if (this.startingPositions.hasOwnProperty(iter39))
+      if (this.startingPositions.hasOwnProperty(iter47))
       {
-        iter39 = this.startingPositions[iter39];
-        iter39.write(output);
+        iter47 = this.startingPositions[iter47];
+        iter47.write(output);
       }
     }
     output.writeListEnd();

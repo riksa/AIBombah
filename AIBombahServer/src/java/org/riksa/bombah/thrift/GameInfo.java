@@ -891,13 +891,13 @@ public class GameInfo implements org.apache.thrift.TBase<GameInfo, GameInfo._Fie
           case 3: // TILES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
-                struct.tiles = new ArrayList<Tile>(_list24.size);
-                for (int _i25 = 0; _i25 < _list24.size; ++_i25)
+                org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
+                struct.tiles = new ArrayList<Tile>(_list32.size);
+                for (int _i33 = 0; _i33 < _list32.size; ++_i33)
                 {
-                  Tile _elem26; // required
-                  _elem26 = Tile.findByValue(iprot.readI32());
-                  struct.tiles.add(_elem26);
+                  Tile _elem34; // required
+                  _elem34 = Tile.findByValue(iprot.readI32());
+                  struct.tiles.add(_elem34);
                 }
                 iprot.readListEnd();
               }
@@ -909,14 +909,14 @@ public class GameInfo implements org.apache.thrift.TBase<GameInfo, GameInfo._Fie
           case 4: // STARTING_POSITIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list27 = iprot.readListBegin();
-                struct.startingPositions = new ArrayList<Coordinate>(_list27.size);
-                for (int _i28 = 0; _i28 < _list27.size; ++_i28)
+                org.apache.thrift.protocol.TList _list35 = iprot.readListBegin();
+                struct.startingPositions = new ArrayList<Coordinate>(_list35.size);
+                for (int _i36 = 0; _i36 < _list35.size; ++_i36)
                 {
-                  Coordinate _elem29; // required
-                  _elem29 = new Coordinate();
-                  _elem29.read(iprot);
-                  struct.startingPositions.add(_elem29);
+                  Coordinate _elem37; // required
+                  _elem37 = new Coordinate();
+                  _elem37.read(iprot);
+                  struct.startingPositions.add(_elem37);
                 }
                 iprot.readListEnd();
               }
@@ -982,9 +982,9 @@ public class GameInfo implements org.apache.thrift.TBase<GameInfo, GameInfo._Fie
         oprot.writeFieldBegin(TILES_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.tiles.size()));
-          for (Tile _iter30 : struct.tiles)
+          for (Tile _iter38 : struct.tiles)
           {
-            oprot.writeI32(_iter30.getValue());
+            oprot.writeI32(_iter38.getValue());
           }
           oprot.writeListEnd();
         }
@@ -994,9 +994,9 @@ public class GameInfo implements org.apache.thrift.TBase<GameInfo, GameInfo._Fie
         oprot.writeFieldBegin(STARTING_POSITIONS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.startingPositions.size()));
-          for (Coordinate _iter31 : struct.startingPositions)
+          for (Coordinate _iter39 : struct.startingPositions)
           {
-            _iter31.write(oprot);
+            _iter39.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -1066,18 +1066,18 @@ public class GameInfo implements org.apache.thrift.TBase<GameInfo, GameInfo._Fie
       if (struct.isSetTiles()) {
         {
           oprot.writeI32(struct.tiles.size());
-          for (Tile _iter32 : struct.tiles)
+          for (Tile _iter40 : struct.tiles)
           {
-            oprot.writeI32(_iter32.getValue());
+            oprot.writeI32(_iter40.getValue());
           }
         }
       }
       if (struct.isSetStartingPositions()) {
         {
           oprot.writeI32(struct.startingPositions.size());
-          for (Coordinate _iter33 : struct.startingPositions)
+          for (Coordinate _iter41 : struct.startingPositions)
           {
-            _iter33.write(oprot);
+            _iter41.write(oprot);
           }
         }
       }
@@ -1109,27 +1109,27 @@ public class GameInfo implements org.apache.thrift.TBase<GameInfo, GameInfo._Fie
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list34 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-          struct.tiles = new ArrayList<Tile>(_list34.size);
-          for (int _i35 = 0; _i35 < _list34.size; ++_i35)
+          org.apache.thrift.protocol.TList _list42 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+          struct.tiles = new ArrayList<Tile>(_list42.size);
+          for (int _i43 = 0; _i43 < _list42.size; ++_i43)
           {
-            Tile _elem36; // required
-            _elem36 = Tile.findByValue(iprot.readI32());
-            struct.tiles.add(_elem36);
+            Tile _elem44; // required
+            _elem44 = Tile.findByValue(iprot.readI32());
+            struct.tiles.add(_elem44);
           }
         }
         struct.setTilesIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.startingPositions = new ArrayList<Coordinate>(_list37.size);
-          for (int _i38 = 0; _i38 < _list37.size; ++_i38)
+          org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.startingPositions = new ArrayList<Coordinate>(_list45.size);
+          for (int _i46 = 0; _i46 < _list45.size; ++_i46)
           {
-            Coordinate _elem39; // required
-            _elem39 = new Coordinate();
-            _elem39.read(iprot);
-            struct.startingPositions.add(_elem39);
+            Coordinate _elem47; // required
+            _elem47 = new Coordinate();
+            _elem47.read(iprot);
+            struct.startingPositions.add(_elem47);
           }
         }
         struct.setStartingPositionsIsSet(true);

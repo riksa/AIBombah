@@ -51,6 +51,12 @@ struct BombState {
     7: i32 owner
 }
 
+struct FlameState {
+    1: byte xCoordinate,
+    2: byte yCoordinate,
+    3: i32 ticksRemaining,
+}
+
 enum Disease {
     NONE = 0,
     FAST_BOMB = 1,
@@ -90,6 +96,7 @@ struct MapState {
     2: list<BombState> bombs,
     3: list<PlayerState> players,
     4: i32 currentTick,
+    5: list<FlameState> flames,
 }
 
 struct Coordinate {
