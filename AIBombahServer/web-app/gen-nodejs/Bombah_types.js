@@ -22,7 +22,7 @@ ttypes.Tile = {
 'BUFF_CHAIN' : 3,
 'BUFF_FOOT' : 4,
 'DEBUFF' : 5,
-'FLAME' : 6,
+'FIRE' : 6,
 'INDESTRUCTIBLE' : 7,
 'DESTRUCTIBLE' : 8
 };
@@ -1471,6 +1471,6 @@ BombActionResult.prototype.write = function(output) {
 };
 
 ttypes.TICKS_PER_SECOND = 50;
-ttypes.TICKS_PER_TILE = 12;
+ttypes.TICKS_PER_TILE = 20;
 ttypes.TICKS_BOMB = 150;
 ttypes.TICKS_FLAME = 50;

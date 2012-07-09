@@ -21,7 +21,7 @@ Tile = {
 'BUFF_CHAIN' : 3,
 'BUFF_FOOT' : 4,
 'DEBUFF' : 5,
-'FLAME' : 6,
+'FIRE' : 6,
 'INDESTRUCTIBLE' : 7,
 'DESTRUCTIBLE' : 8
 };
@@ -1464,6 +1464,6 @@ BombActionResult.prototype.write = function(output) {
 };
 
 TICKS_PER_SECOND = 50;
-TICKS_PER_TILE = 12;
+TICKS_PER_TILE = 20;
 TICKS_BOMB = 150;
 TICKS_FLAME = 50;

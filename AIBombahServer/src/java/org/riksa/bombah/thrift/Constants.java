@@ -37,7 +37,7 @@ public class Constants {
   /**
    * movement takes 12 ticks / tile
    */
-  public static final int TICKS_PER_TILE = 12;
+  public static final int TICKS_PER_TILE = 20;
 
   /**
    * normal bomb explodes in 150 ticks (3s)
