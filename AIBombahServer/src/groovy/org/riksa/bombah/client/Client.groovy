@@ -9,6 +9,8 @@ import org.riksa.bombah.thrift.Direction
 import org.riksa.bombah.thrift.MoveAction
 import org.slf4j.LoggerFactory
 import org.riksa.bombah.thrift.Constants
+import org.riksa.bombah.thrift.YouAreDeadException
+import org.riksa.bombah.thrift.GameOverException
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,37 +34,45 @@ def clientRunnable = new Runnable() {
     @Override
     void run() {
         def transport = createTransport(url)
-        def client = createClient(transport)
-        log.debug("#Joining game")
-        def gameInfo = client.joinGame(gameId)
-        if (gameInfo) {
-            def playerId = gameInfo.playerId
-            log.debug("#Joined game $gameInfo")
-            client.waitForStart(gameId)
-            log.debug("Game started, I am player #" + playerId)
+        try {
+            def client = createClient(transport)
+            log.debug("#Joining game")
+            def gameInfo = client.joinGame(gameId)
+            if (gameInfo) {
+                def playerId = gameInfo.playerId
+                log.debug("#Joined game $gameInfo")
+                client.waitForStart(gameId)
+                log.debug("Game started, I am player #" + playerId)
 
-            client.move(playerId, new MoveAction(direction: Direction.N))
-            client.move(playerId, new MoveAction(direction: Direction.N))
-            500.times {
-                client.bomb(playerId, new BombAction(chainBombs: false))
-                client.move(playerId, new MoveAction(direction: Direction.S))
-                client.move(playerId, new MoveAction(direction: Direction.S))
-                client.move(playerId, new MoveAction(direction: Direction.E))
-                client.move(playerId, new MoveAction(direction: Direction.E))
-                client.waitTicks(gameId, Constants.TICKS_BOMB - 4*Constants.TICKS_PER_TILE )
-                client.bomb(playerId, new BombAction(chainBombs: false))
-                client.move(playerId, new MoveAction(direction: Direction.W))
-                client.move(playerId, new MoveAction(direction: Direction.W))
                 client.move(playerId, new MoveAction(direction: Direction.N))
                 client.move(playerId, new MoveAction(direction: Direction.N))
-                client.waitTicks(gameId, Constants.TICKS_BOMB - 4*Constants.TICKS_PER_TILE )
+                while( true ) {
+                    client.bomb(playerId, new BombAction(chainBombs: false))
+                    client.move(playerId, new MoveAction(direction: Direction.S))
+                    client.move(playerId, new MoveAction(direction: Direction.S))
+                    client.move(playerId, new MoveAction(direction: Direction.E))
+                    client.move(playerId, new MoveAction(direction: Direction.E))
+                    client.waitTicks(gameId, Constants.TICKS_BOMB+Constants.TICKS_FLAME - 6*Constants.TICKS_PER_TILE )
+                    client.bomb(playerId, new BombAction(chainBombs: false))
+                    client.move(playerId, new MoveAction(direction: Direction.W))
+                    client.move(playerId, new MoveAction(direction: Direction.W))
+                    client.move(playerId, new MoveAction(direction: Direction.N))
+                    client.move(playerId, new MoveAction(direction: Direction.N))
+                    client.waitTicks(gameId, Constants.TICKS_BOMB+Constants.TICKS_FLAME - 6*Constants.TICKS_PER_TILE )
+                }
+
             }
-
-            Thread.sleep(5000);
+        } catch ( YouAreDeadException e ) {
+            log.info( "I am dead")
+        } catch ( GameOverException e ) {
+            log.info( "Game Over")
+        } catch ( Exception e ) {
+            log.error( e.getMessage(), e )
+        } finally {
+            transport.close()
             log.debug("#Done...")
         }
 
-        transport.close()
     }
 }
 
