@@ -230,7 +230,7 @@ class Game {
 
         synchronized (controllers) {
             double step = 1d / Constants.TICKS_PER_TILE
-            players.each {
+            players.grep {it.alive}.each {
                 def playerId = it.playerId
                 def controller = controllers.get(playerId)
                 if (controller) {
