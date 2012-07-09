@@ -18,7 +18,7 @@ public enum Tile implements org.apache.thrift.TEnum {
   BUFF_CHAIN(3),
   BUFF_FOOT(4),
   DEBUFF(5),
-  FIRE(6),
+  FLAME(6),
   INDESTRUCTIBLE(7),
   DESTRUCTIBLE(8);
 
@@ -54,7 +54,7 @@ public enum Tile implements org.apache.thrift.TEnum {
       case 5:
         return DEBUFF;
       case 6:
-        return FIRE;
+        return FLAME;
       case 7:
         return INDESTRUCTIBLE;
       case 8:

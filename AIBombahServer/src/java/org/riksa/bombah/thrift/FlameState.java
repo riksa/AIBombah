@@ -30,9 +30,8 @@ import org.slf4j.LoggerFactory;
 public class FlameState implements org.apache.thrift.TBase<FlameState, FlameState._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("FlameState");
 
-  private static final org.apache.thrift.protocol.TField X_COORDINATE_FIELD_DESC = new org.apache.thrift.protocol.TField("xCoordinate", org.apache.thrift.protocol.TType.BYTE, (short)1);
-  private static final org.apache.thrift.protocol.TField Y_COORDINATE_FIELD_DESC = new org.apache.thrift.protocol.TField("yCoordinate", org.apache.thrift.protocol.TType.BYTE, (short)2);
-  private static final org.apache.thrift.protocol.TField TICKS_REMAINING_FIELD_DESC = new org.apache.thrift.protocol.TField("ticksRemaining", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField COORDINATE_FIELD_DESC = new org.apache.thrift.protocol.TField("coordinate", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+  private static final org.apache.thrift.protocol.TField TICKS_REMAINING_FIELD_DESC = new org.apache.thrift.protocol.TField("ticksRemaining", org.apache.thrift.protocol.TType.I32, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -40,15 +39,13 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     schemes.put(TupleScheme.class, new FlameStateTupleSchemeFactory());
   }
 
-  public byte xCoordinate; // required
-  public byte yCoordinate; // required
+  public Coordinate coordinate; // required
   public int ticksRemaining; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    X_COORDINATE((short)1, "xCoordinate"),
-    Y_COORDINATE((short)2, "yCoordinate"),
-    TICKS_REMAINING((short)3, "ticksRemaining");
+    COORDINATE((short)1, "coordinate"),
+    TICKS_REMAINING((short)2, "ticksRemaining");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -63,11 +60,9 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // X_COORDINATE
-          return X_COORDINATE;
-        case 2: // Y_COORDINATE
-          return Y_COORDINATE;
-        case 3: // TICKS_REMAINING
+        case 1: // COORDINATE
+          return COORDINATE;
+        case 2: // TICKS_REMAINING
           return TICKS_REMAINING;
         default:
           return null;
@@ -109,17 +104,13 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
   }
 
   // isset id assignments
-  private static final int __XCOORDINATE_ISSET_ID = 0;
-  private static final int __YCOORDINATE_ISSET_ID = 1;
-  private static final int __TICKSREMAINING_ISSET_ID = 2;
-  private BitSet __isset_bit_vector = new BitSet(3);
+  private static final int __TICKSREMAINING_ISSET_ID = 0;
+  private BitSet __isset_bit_vector = new BitSet(1);
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.X_COORDINATE, new org.apache.thrift.meta_data.FieldMetaData("xCoordinate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE)));
-    tmpMap.put(_Fields.Y_COORDINATE, new org.apache.thrift.meta_data.FieldMetaData("yCoordinate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE)));
+    tmpMap.put(_Fields.COORDINATE, new org.apache.thrift.meta_data.FieldMetaData("coordinate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Coordinate.class)));
     tmpMap.put(_Fields.TICKS_REMAINING, new org.apache.thrift.meta_data.FieldMetaData("ticksRemaining", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -130,15 +121,11 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
   }
 
   public FlameState(
-    byte xCoordinate,
-    byte yCoordinate,
+    Coordinate coordinate,
     int ticksRemaining)
   {
     this();
-    this.xCoordinate = xCoordinate;
-    setXCoordinateIsSet(true);
-    this.yCoordinate = yCoordinate;
-    setYCoordinateIsSet(true);
+    this.coordinate = coordinate;
     this.ticksRemaining = ticksRemaining;
     setTicksRemainingIsSet(true);
   }
@@ -149,8 +136,9 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
   public FlameState(FlameState other) {
     __isset_bit_vector.clear();
     __isset_bit_vector.or(other.__isset_bit_vector);
-    this.xCoordinate = other.xCoordinate;
-    this.yCoordinate = other.yCoordinate;
+    if (other.isSetCoordinate()) {
+      this.coordinate = new Coordinate(other.coordinate);
+    }
     this.ticksRemaining = other.ticksRemaining;
   }
 
@@ -160,58 +148,33 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
 
   @Override
   public void clear() {
-    setXCoordinateIsSet(false);
-    this.xCoordinate = 0;
-    setYCoordinateIsSet(false);
-    this.yCoordinate = 0;
+    this.coordinate = null;
     setTicksRemainingIsSet(false);
     this.ticksRemaining = 0;
   }
 
-  public byte getXCoordinate() {
-    return this.xCoordinate;
+  public Coordinate getCoordinate() {
+    return this.coordinate;
   }
 
-  public FlameState setXCoordinate(byte xCoordinate) {
-    this.xCoordinate = xCoordinate;
-    setXCoordinateIsSet(true);
+  public FlameState setCoordinate(Coordinate coordinate) {
+    this.coordinate = coordinate;
     return this;
   }
 
-  public void unsetXCoordinate() {
-    __isset_bit_vector.clear(__XCOORDINATE_ISSET_ID);
+  public void unsetCoordinate() {
+    this.coordinate = null;
   }
 
-  /** Returns true if field xCoordinate is set (has been assigned a value) and false otherwise */
-  public boolean isSetXCoordinate() {
-    return __isset_bit_vector.get(__XCOORDINATE_ISSET_ID);
+  /** Returns true if field coordinate is set (has been assigned a value) and false otherwise */
+  public boolean isSetCoordinate() {
+    return this.coordinate != null;
   }
 
-  public void setXCoordinateIsSet(boolean value) {
-    __isset_bit_vector.set(__XCOORDINATE_ISSET_ID, value);
-  }
-
-  public byte getYCoordinate() {
-    return this.yCoordinate;
-  }
-
-  public FlameState setYCoordinate(byte yCoordinate) {
-    this.yCoordinate = yCoordinate;
-    setYCoordinateIsSet(true);
-    return this;
-  }
-
-  public void unsetYCoordinate() {
-    __isset_bit_vector.clear(__YCOORDINATE_ISSET_ID);
-  }
-
-  /** Returns true if field yCoordinate is set (has been assigned a value) and false otherwise */
-  public boolean isSetYCoordinate() {
-    return __isset_bit_vector.get(__YCOORDINATE_ISSET_ID);
-  }
-
-  public void setYCoordinateIsSet(boolean value) {
-    __isset_bit_vector.set(__YCOORDINATE_ISSET_ID, value);
+  public void setCoordinateIsSet(boolean value) {
+    if (!value) {
+      this.coordinate = null;
+    }
   }
 
   public int getTicksRemaining() {
@@ -239,19 +202,11 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case X_COORDINATE:
+    case COORDINATE:
       if (value == null) {
-        unsetXCoordinate();
+        unsetCoordinate();
       } else {
-        setXCoordinate((Byte)value);
-      }
-      break;
-
-    case Y_COORDINATE:
-      if (value == null) {
-        unsetYCoordinate();
-      } else {
-        setYCoordinate((Byte)value);
+        setCoordinate((Coordinate)value);
       }
       break;
 
@@ -268,11 +223,8 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case X_COORDINATE:
-      return Byte.valueOf(getXCoordinate());
-
-    case Y_COORDINATE:
-      return Byte.valueOf(getYCoordinate());
+    case COORDINATE:
+      return getCoordinate();
 
     case TICKS_REMAINING:
       return Integer.valueOf(getTicksRemaining());
@@ -288,10 +240,8 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     }
 
     switch (field) {
-    case X_COORDINATE:
-      return isSetXCoordinate();
-    case Y_COORDINATE:
-      return isSetYCoordinate();
+    case COORDINATE:
+      return isSetCoordinate();
     case TICKS_REMAINING:
       return isSetTicksRemaining();
     }
@@ -311,21 +261,12 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     if (that == null)
       return false;
 
-    boolean this_present_xCoordinate = true;
-    boolean that_present_xCoordinate = true;
-    if (this_present_xCoordinate || that_present_xCoordinate) {
-      if (!(this_present_xCoordinate && that_present_xCoordinate))
+    boolean this_present_coordinate = true && this.isSetCoordinate();
+    boolean that_present_coordinate = true && that.isSetCoordinate();
+    if (this_present_coordinate || that_present_coordinate) {
+      if (!(this_present_coordinate && that_present_coordinate))
         return false;
-      if (this.xCoordinate != that.xCoordinate)
-        return false;
-    }
-
-    boolean this_present_yCoordinate = true;
-    boolean that_present_yCoordinate = true;
-    if (this_present_yCoordinate || that_present_yCoordinate) {
-      if (!(this_present_yCoordinate && that_present_yCoordinate))
-        return false;
-      if (this.yCoordinate != that.yCoordinate)
+      if (!this.coordinate.equals(that.coordinate))
         return false;
     }
 
@@ -354,22 +295,12 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     int lastComparison = 0;
     FlameState typedOther = (FlameState)other;
 
-    lastComparison = Boolean.valueOf(isSetXCoordinate()).compareTo(typedOther.isSetXCoordinate());
+    lastComparison = Boolean.valueOf(isSetCoordinate()).compareTo(typedOther.isSetCoordinate());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetXCoordinate()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.xCoordinate, typedOther.xCoordinate);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetYCoordinate()).compareTo(typedOther.isSetYCoordinate());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetYCoordinate()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.yCoordinate, typedOther.yCoordinate);
+    if (isSetCoordinate()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.coordinate, typedOther.coordinate);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -404,12 +335,12 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     StringBuilder sb = new StringBuilder("FlameState(");
     boolean first = true;
 
-    sb.append("xCoordinate:");
-    sb.append(this.xCoordinate);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("yCoordinate:");
-    sb.append(this.yCoordinate);
+    sb.append("coordinate:");
+    if (this.coordinate == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.coordinate);
+    }
     first = false;
     if (!first) sb.append(", ");
     sb.append("ticksRemaining:");
@@ -459,23 +390,16 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
           break;
         }
         switch (schemeField.id) {
-          case 1: // X_COORDINATE
-            if (schemeField.type == org.apache.thrift.protocol.TType.BYTE) {
-              struct.xCoordinate = iprot.readByte();
-              struct.setXCoordinateIsSet(true);
+          case 1: // COORDINATE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.coordinate = new Coordinate();
+              struct.coordinate.read(iprot);
+              struct.setCoordinateIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // Y_COORDINATE
-            if (schemeField.type == org.apache.thrift.protocol.TType.BYTE) {
-              struct.yCoordinate = iprot.readByte();
-              struct.setYCoordinateIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 3: // TICKS_REMAINING
+          case 2: // TICKS_REMAINING
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.ticksRemaining = iprot.readI32();
               struct.setTicksRemainingIsSet(true);
@@ -498,12 +422,11 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(X_COORDINATE_FIELD_DESC);
-      oprot.writeByte(struct.xCoordinate);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(Y_COORDINATE_FIELD_DESC);
-      oprot.writeByte(struct.yCoordinate);
-      oprot.writeFieldEnd();
+      if (struct.coordinate != null) {
+        oprot.writeFieldBegin(COORDINATE_FIELD_DESC);
+        struct.coordinate.write(oprot);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldBegin(TICKS_REMAINING_FIELD_DESC);
       oprot.writeI32(struct.ticksRemaining);
       oprot.writeFieldEnd();
@@ -525,21 +448,15 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     public void write(org.apache.thrift.protocol.TProtocol prot, FlameState struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetXCoordinate()) {
+      if (struct.isSetCoordinate()) {
         optionals.set(0);
       }
-      if (struct.isSetYCoordinate()) {
+      if (struct.isSetTicksRemaining()) {
         optionals.set(1);
       }
-      if (struct.isSetTicksRemaining()) {
-        optionals.set(2);
-      }
-      oprot.writeBitSet(optionals, 3);
-      if (struct.isSetXCoordinate()) {
-        oprot.writeByte(struct.xCoordinate);
-      }
-      if (struct.isSetYCoordinate()) {
-        oprot.writeByte(struct.yCoordinate);
+      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetCoordinate()) {
+        struct.coordinate.write(oprot);
       }
       if (struct.isSetTicksRemaining()) {
         oprot.writeI32(struct.ticksRemaining);
@@ -549,16 +466,13 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, FlameState struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
-        struct.xCoordinate = iprot.readByte();
-        struct.setXCoordinateIsSet(true);
+        struct.coordinate = new Coordinate();
+        struct.coordinate.read(iprot);
+        struct.setCoordinateIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.yCoordinate = iprot.readByte();
-        struct.setYCoordinateIsSet(true);
-      }
-      if (incoming.get(2)) {
         struct.ticksRemaining = iprot.readI32();
         struct.setTicksRemainingIsSet(true);
       }

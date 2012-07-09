@@ -30,14 +30,14 @@ import org.slf4j.LoggerFactory;
 public class Constants {
 
   /**
-   * 25 ticks per second at normal rate
+   * 50 ticks per second at normal rate
    */
   public static final int TICKS_PER_SECOND = 50;
 
   /**
-   * movement takes 5 ticks / tile
+   * movement takes 12 ticks / tile
    */
-  public static final int TICKS_PER_TILE = 20;
+  public static final int TICKS_PER_TILE = 12;
 
   /**
    * normal bomb explodes in 150 ticks (3s)
@@ -45,5 +45,10 @@ public class Constants {
    * slow bomb takes double that
    */
   public static final int TICKS_BOMB = 150;
+
+  /**
+   * flame is alive for 50 ticks
+   */
+  public static final int TICKS_FLAME = 50;
 
 }

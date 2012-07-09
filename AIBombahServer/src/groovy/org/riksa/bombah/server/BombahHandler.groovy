@@ -53,10 +53,10 @@ class BombahHandler implements BombahService.Iface {
                 currentState = game.getPlayer(playerId)
                 if( Math.abs(oldX - currentState.x)  < 0.001d && Math.abs(oldY - currentState.y) < 0.001d ) {
                     // no longer moving, for whatever reason
-                    log.debug( "Not moving, $currentState")
+//                    log.debug( "Not moving, $currentState")
                     done = true
                 } else {
-                    log.debug( "Moving towards $targetTile at $currentState")
+//                    log.debug( "Moving towards $targetTile at $currentState")
                     if( Math.abs(targetTile.x - currentState.x)  < 0.001d && Math.abs(targetTile.y - currentState.y) < 0.001d ) {
                         log.debug("Arrived at $targetTile $currentState")
                         done = true

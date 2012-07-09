@@ -22,7 +22,7 @@ ttypes.Tile = {
 'BUFF_CHAIN' : 3,
 'BUFF_FOOT' : 4,
 'DEBUFF' : 5,
-'FIRE' : 6,
+'FLAME' : 6,
 'INDESTRUCTIBLE' : 7,
 'DESTRUCTIBLE' : 8
 };
@@ -34,6 +34,138 @@ ttypes.Disease = {
 'FAST' : 4,
 'SLOW' : 5
 };
+var Coordinate = module.exports.Coordinate = function(args) {
+  this.x = null;
+  this.y = null;
+  if (args) {
+    if (args.x !== undefined) {
+      this.x = args.x;
+    }
+    if (args.y !== undefined) {
+      this.y = args.y;
+    }
+  }
+};
+Coordinate.prototype = {};
+Coordinate.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.BYTE) {
+        this.x = input.readByte();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.BYTE) {
+        this.y = input.readByte();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Coordinate.prototype.write = function(output) {
+  output.writeStructBegin('Coordinate');
+  if (this.x) {
+    output.writeFieldBegin('x', Thrift.Type.BYTE, 1);
+    output.writeByte(this.x);
+    output.writeFieldEnd();
+  }
+  if (this.y) {
+    output.writeFieldBegin('y', Thrift.Type.BYTE, 2);
+    output.writeByte(this.y);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var Position = module.exports.Position = function(args) {
+  this.x = null;
+  this.y = null;
+  if (args) {
+    if (args.x !== undefined) {
+      this.x = args.x;
+    }
+    if (args.y !== undefined) {
+      this.y = args.y;
+    }
+  }
+};
+Position.prototype = {};
+Position.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.DOUBLE) {
+        this.x = input.readDouble();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.DOUBLE) {
+        this.y = input.readDouble();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Position.prototype.write = function(output) {
+  output.writeStructBegin('Position');
+  if (this.x) {
+    output.writeFieldBegin('x', Thrift.Type.DOUBLE, 1);
+    output.writeDouble(this.x);
+    output.writeFieldEnd();
+  }
+  if (this.y) {
+    output.writeFieldBegin('y', Thrift.Type.DOUBLE, 2);
+    output.writeDouble(this.y);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 var BombState = module.exports.BombState = function(args) {
   this.blastSize = null;
   this.xCoordinate = null;
@@ -181,15 +313,11 @@ BombState.prototype.write = function(output) {
 };
 
 var FlameState = module.exports.FlameState = function(args) {
-  this.xCoordinate = null;
-  this.yCoordinate = null;
+  this.coordinate = null;
   this.ticksRemaining = null;
   if (args) {
-    if (args.xCoordinate !== undefined) {
-      this.xCoordinate = args.xCoordinate;
-    }
-    if (args.yCoordinate !== undefined) {
-      this.yCoordinate = args.yCoordinate;
+    if (args.coordinate !== undefined) {
+      this.coordinate = args.coordinate;
     }
     if (args.ticksRemaining !== undefined) {
       this.ticksRemaining = args.ticksRemaining;
@@ -211,20 +339,14 @@ FlameState.prototype.read = function(input) {
     switch (fid)
     {
       case 1:
-      if (ftype == Thrift.Type.BYTE) {
-        this.xCoordinate = input.readByte();
+      if (ftype == Thrift.Type.STRUCT) {
+        this.coordinate = new ttypes.Coordinate();
+        this.coordinate.read(input);
       } else {
         input.skip(ftype);
       }
       break;
       case 2:
-      if (ftype == Thrift.Type.BYTE) {
-        this.yCoordinate = input.readByte();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 3:
       if (ftype == Thrift.Type.I32) {
         this.ticksRemaining = input.readI32();
       } else {
@@ -242,18 +364,13 @@ FlameState.prototype.read = function(input) {
 
 FlameState.prototype.write = function(output) {
   output.writeStructBegin('FlameState');
-  if (this.xCoordinate) {
-    output.writeFieldBegin('xCoordinate', Thrift.Type.BYTE, 1);
-    output.writeByte(this.xCoordinate);
-    output.writeFieldEnd();
-  }
-  if (this.yCoordinate) {
-    output.writeFieldBegin('yCoordinate', Thrift.Type.BYTE, 2);
-    output.writeByte(this.yCoordinate);
+  if (this.coordinate) {
+    output.writeFieldBegin('coordinate', Thrift.Type.STRUCT, 1);
+    this.coordinate.write(output);
     output.writeFieldEnd();
   }
   if (this.ticksRemaining) {
-    output.writeFieldBegin('ticksRemaining', Thrift.Type.I32, 3);
+    output.writeFieldBegin('ticksRemaining', Thrift.Type.I32, 2);
     output.writeI32(this.ticksRemaining);
     output.writeFieldEnd();
   }
@@ -731,72 +848,6 @@ MapState.prototype.write = function(output) {
       }
     }
     output.writeListEnd();
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-var Coordinate = module.exports.Coordinate = function(args) {
-  this.x = null;
-  this.y = null;
-  if (args) {
-    if (args.x !== undefined) {
-      this.x = args.x;
-    }
-    if (args.y !== undefined) {
-      this.y = args.y;
-    }
-  }
-};
-Coordinate.prototype = {};
-Coordinate.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.BYTE) {
-        this.x = input.readByte();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 2:
-      if (ftype == Thrift.Type.BYTE) {
-        this.y = input.readByte();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Coordinate.prototype.write = function(output) {
-  output.writeStructBegin('Coordinate');
-  if (this.x) {
-    output.writeFieldBegin('x', Thrift.Type.BYTE, 1);
-    output.writeByte(this.x);
-    output.writeFieldEnd();
-  }
-  if (this.y) {
-    output.writeFieldBegin('y', Thrift.Type.BYTE, 2);
-    output.writeByte(this.y);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -1420,5 +1471,6 @@ BombActionResult.prototype.write = function(output) {
 };
 
 ttypes.TICKS_PER_SECOND = 50;
-ttypes.TICKS_PER_TILE = 20;
+ttypes.TICKS_PER_TILE = 12;
 ttypes.TICKS_BOMB = 150;
+ttypes.TICKS_FLAME = 50;

@@ -1,19 +1,24 @@
 namespace java org.riksa.bombah.thrift
 
 /**
- * 25 ticks per second at normal rate
+ * 50 ticks per second at normal rate
  */
 const i32 TICKS_PER_SECOND = 50
 /**
- * movement takes 5 ticks / tile
+ * movement takes 12 ticks / tile
  */
-const i32 TICKS_PER_TILE   = 20
+const i32 TICKS_PER_TILE   = 12
 /**
  * normal bomb explodes in 150 ticks (3s)
  * fast bomb in half that time
  * slow bomb takes double that
  */
 const i32 TICKS_BOMB      = 150
+
+/**
+ * flame is alive for 50 ticks
+ */
+const i32 TICKS_FLAME     = 50
 
 enum Direction {
     N  = 0,
@@ -26,6 +31,16 @@ enum Direction {
     NW = 7
 }
 
+struct Coordinate {
+    1: byte x,
+    2: byte y
+}
+
+struct Position {
+	1: double x,
+	2: double y
+}
+
 enum Tile {
     NONE = 0,
     BUFF_BOMB = 1,
@@ -33,8 +48,8 @@ enum Tile {
     BUFF_CHAIN = 3,
     BUFF_FOOT = 4,
     DEBUFF = 5,
-    FIRE = 6,
-
+	FIRE = 6, // does not appear in MapState.tiles list at the moment
+	
     INDESTRUCTIBLE = 7, // Indestructible grey brick
     DESTRUCTIBLE = 8, // Destructible grey brick
 
@@ -52,9 +67,8 @@ struct BombState {
 }
 
 struct FlameState {
-    1: byte xCoordinate,
-    2: byte yCoordinate,
-    3: i32 ticksRemaining,
+    1: Coordinate coordinate,
+    2: i32 ticksRemaining,
 }
 
 enum Disease {
@@ -97,11 +111,6 @@ struct MapState {
     3: list<PlayerState> players,
     4: i32 currentTick,
     5: list<FlameState> flames,
-}
-
-struct Coordinate {
-    1: byte x,
-    2: byte y
 }
 
 struct GameInfo {

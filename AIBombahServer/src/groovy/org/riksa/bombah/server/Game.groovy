@@ -24,7 +24,8 @@ class Game {
     def players = []
     def currentTick
     Timer timer
-    def bombs = new Vector<BombState>()
+    List bombs
+    List flames
     MapState mapState
     final def controllers = [:]
 
@@ -128,6 +129,8 @@ class Game {
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
+        bombs = new Vector<BombState>(width*height)
+        flames = new Vector<FlameState>(width*height)
         def rate = Constants.TICKS_PER_SECOND
         GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 30 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
@@ -183,6 +186,17 @@ class Game {
 
     synchronized void tick() throws GameOverException {
 //        def time = System.currentTimeMillis()
+        synchronized (flames) {
+            def it = flames.iterator()
+            while (it.hasNext()) {
+                def flame = it.next()
+                flame.ticksRemaining--
+                if (flame.ticksRemaining <= 0) {
+                    it.remove()
+                }
+            }
+        }
+
         synchronized (bombs) {
             def it = bombs.iterator()
             while (it.hasNext()) {
@@ -193,8 +207,8 @@ class Game {
                     // TODO
                 }
                 if (bomb.ticksRemaining <= 0) {
-                    log.debug("Boom $bomb")
                     it.remove()
+                    explodeBomb( bomb )
                 }
             }
         }
@@ -277,13 +291,12 @@ class Game {
         if (currentTick >= gameInfo.ticksTotal)
         // TODO
             throw new GameOverException()
-        def spent = time {
-            mapState = new MapState(
-                    currentTick: currentTick,
-                    bombs: bombs.clone(), // wasted, TODO
-                    players: players.clone(),
-                    tiles: gameInfo.tiles.clone())
-        }
+        mapState = new MapState(
+                currentTick: currentTick,
+                bombs: bombs.clone(), // wasted, TODO
+                players: players.clone(),
+                tiles: gameInfo.tiles.clone(),
+                flames: flames.clone() )
 
 //        log.debug( "Spent cloning: $spent")
 //        mapState = new MapState(
@@ -295,14 +308,82 @@ class Game {
         currentTick++
     }
 
+    def explodeBomb(BombState bomb) {
+        def bombCoordinates = getTileCoordinate( bomb.xCoordinate, bomb.yCoordinate, null)
+        flames.add( new FlameState(coordinate: bombCoordinates, ticksRemaining: Constants.TICKS_FLAME) )
+
+        def handleTileFlame = {
+            x,y ->
+            flames.add( new FlameState(coordinate: [x:x, y:y], ticksRemaining: Constants.TICKS_FLAME) )
+            return destroyTile( x, y )
+        }
+        for( i in 1..bomb.blastSize ) {
+            if( !handleTileFlame(bombCoordinates.x + i,bombCoordinates.y) )
+                break;
+        }
+        for( i in 1..bomb.blastSize ) {
+            if( !handleTileFlame(bombCoordinates.x - i,bombCoordinates.y) )
+                break;
+        }
+        for( i in 1..bomb.blastSize ) {
+            if( !handleTileFlame(bombCoordinates.x,bombCoordinates.y + 1) )
+                break;
+        }
+        for( i in 1..bomb.blastSize ) {
+            if( !handleTileFlame(bombCoordinates.x,bombCoordinates.y - 1) )
+                break;
+        }
+    }
+
+    boolean destroyTile(int x, int y) {
+        def tile = getTile( x, y )
+        // TODO: kill player
+        // TODO: explode bombs
+        switch( tile ) {
+            case Tile.BUFF_BOMB:
+            case Tile.BUFF_CHAIN:
+            case Tile.BUFF_FLAME:
+            case Tile.BUFF_FOOT:
+            case Tile.DEBUFF:
+                destroyBuff( x, y )
+                return false;
+                break;
+            case Tile.DESTRUCTIBLE:
+                destroyDestructable(x,y)
+                return false;
+                break;
+            case Tile.INDESTRUCTIBLE:
+                return false;
+            case Tile.NONE:
+                return true;
+            default:
+                log.warn( "TODO: handle destroyTile of $tile")
+                return false;
+        }
+
+    }
+
+    def destroyDestructable(int x, int y) {
+        log.debug( "TODO: destroyDestructable ($x, $y)" )
+        // TODO
+//        int idx = x + y * gameInfo.mapWidth
+//        if (idx >= 0 && idx < mapState.getTiles().size())
+//            mapState.getTiles().get(idx) = Tile.NONE
+    }
+
+    def destroyBuff(int x, int y) {
+        log.debug( "TODO: destroyBuff ($x, $y)" )
+        // TODO
+    }
+
     boolean canMoveTo(int x, int y) {
         if (x < 0 || x >= gameInfo.mapWidth) {
-            log.debug("x out of bounds ($x, $y)")
+//            log.debug("x out of bounds ($x, $y)")
             return false
         }
 
         if (y < 0 || y >= gameInfo.mapHeight) {
-            log.debug("x out of bounds ($x, $y)")
+//            log.debug("x out of bounds ($x, $y)")
             return false
         }
 
