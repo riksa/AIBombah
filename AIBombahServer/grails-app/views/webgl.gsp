@@ -64,7 +64,6 @@
     function updateMap() {
         var mapState = client.getMapState(); // TODO: how to async?
 //            console.log( mapState );
-        console.log("Tick # " + mapState.currentTick);
         // Bombah.thrift
         // Bombah.thrift
         $.each(mapState.tiles, function (i, tile) {
@@ -76,14 +75,22 @@
         });
 
         $.each(mapState.players, function (i, player) {
-            var x = player.x;
-            var y = player.y;
-            console.log(x + ":" + y);
-            var texture = playerTextures[i];
-            var image = playerImages[i];
-            drawTile(x * 64, y * 64, texture, image);
+            if( player.alive ) {
+                var x = player.x;
+                var y = player.y;
+                var texture = playerTextures[i];
+                var image = playerImages[i];
+                drawTile(x * 64, y * 64, texture, image);
+            }
         });
 
+        $.each(mapState.flames, function (i, flame) {
+            var x = flame.coordinate.x;
+            var y = flame.coordinate.y;
+            var texture = textures[Tile.FIRE];
+            var image = images[Tile.FIRE];
+            drawTile(x * 64, y * 64, texture, image);
+        });
     }
 
     function drawTile(x, y, texture, image) {
