@@ -233,8 +233,8 @@ class Game {
                 def controller = controllers.get(playerId)
                 if (controller) {
                     if (controller.key1Down) {
-                        log.debug("$playerId dropped bomb")
-                        // TODO
+                        BombAction bombAction = new BombAction( chainBombs: false )
+                        bomb( playerId, bombAction )
                     }
                     if (controller.directionPadDown) {
 //                        log.debug( "$playerId moving to direction ${controller.direction}" )
@@ -306,15 +306,17 @@ class Game {
         currentTick++
     }
 
+    def handleTileFlame = {
+        x, y ->
+        flames.add(new FlameState(coordinate: [x: x, y: y], ticksRemaining: Constants.TICKS_FLAME))
+        return destroyTile(x, y)
+    }
+
     def explodeBomb(BombState bomb) {
         def bombCoordinates = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
         flames.add(new FlameState(coordinate: bombCoordinates, ticksRemaining: Constants.TICKS_FLAME))
+        handleTileFlame(bombCoordinates.x, bombCoordinates.y)
 
-        def handleTileFlame = {
-            x, y ->
-            flames.add(new FlameState(coordinate: [x: x, y: y], ticksRemaining: Constants.TICKS_FLAME))
-            return destroyTile(x, y)
-        }
         for (i in 1..bomb.blastSize) {
             if (!handleTileFlame(bombCoordinates.x + i, bombCoordinates.y))
                 break;
@@ -517,6 +519,13 @@ class Game {
         if (!playerState.alive)
             throw new YouAreDeadException()
 
+        def liveBombs = bombs.count { it.owner == playerId }
+        if( liveBombs >= playerState.bombAmount ) {
+            log.debug( "Bombing failed, player already has $liveBombs live  bombs")
+            // TODO: information that the bombing failed
+            return new BombActionResult(myState: playerState, mapState: mapState)
+        }
+
         def ticks = Constants.TICKS_BOMB
         if (playerState.disease == Disease.FAST_BOMB) {
             ticks >> 1
@@ -524,6 +533,9 @@ class Game {
         if (playerState.disease == Disease.SLOW_BOMB) {
             ticks << 1
         }
+
+        // TODO: Chainbomb if tile already contains a bomb
+        // TODO: Deprecate bombAction.chainBombs
 
         def bomb = new BombState(
                 blastSize: playerState.bombSize,
