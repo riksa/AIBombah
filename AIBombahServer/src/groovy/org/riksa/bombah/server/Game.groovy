@@ -24,10 +24,12 @@ class Game {
     def players = []
     def currentTick
     Timer timer
-    List bombs
-    List flames
+    final List bombs = new LinkedList<BombState>()
+    final List flames = new LinkedList<FlameState>()
     MapState mapState
     final def controllers = [:]
+    Tile[][] buffs
+    Random random = new Random()
 
     boolean canMove(double x, double y, Direction direction, double step) {
 //        def currentLocation = getTileCoordinate(x, y, null)
@@ -91,6 +93,14 @@ class Game {
                         " OxOxOxOxOxO " +
                         "3  xxxxxxx  4"
         )
+
+        buffs = new Tile[gameInfo.mapWidth][gameInfo.mapHeight];
+        randomizeBuffs( Tile.DEBUFF, 9 )
+        randomizeBuffs( Tile.BUFF_BOMB, 9 )
+        randomizeBuffs( Tile.BUFF_FLAME, 9 )
+        randomizeBuffs( Tile.BUFF_CHAIN, 1 )
+        randomizeBuffs( Tile.BUFF_FOOT, 3 )
+
         players.clear()
         waiting = new AtomicLong(0)
         currentTick = 0
@@ -129,8 +139,8 @@ class Game {
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        bombs = new ArrayList<BombState>(width * height)
-        flames = new ArrayList<FlameState>(width * height)
+        bombs.clear()
+        flames.clear()
         def rate = Constants.TICKS_PER_SECOND
         GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 30 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
@@ -165,6 +175,30 @@ class Game {
             gameInfo.addToStartingPositions(pos5)
 
         return gameInfo
+    }
+
+    def randomizeBuffs(Tile tile, int count) {
+        count.times {
+            def freeCoordinates = []
+
+            gameInfo.tiles.eachWithIndex {
+                t, index ->
+                if( t == Tile.DESTRUCTIBLE ) {
+                    int x = index % gameInfo.mapWidth
+                    int y = (index - x) / gameInfo.mapWidth
+                    def buff = buffs[x][y]
+                    log.debug( "Buff @ $x,$y = $buff")
+                    if( !buff )
+                        freeCoordinates.add( new Coordinate( x: x, y: y))
+                }
+            }
+
+            log.debug( "Free coordinates #${freeCoordinates.size()}")
+
+            def pos = freeCoordinates.get( random.nextInt( freeCoordinates.size() ) )
+            buffs[pos.x][pos.y] = tile
+
+        }
     }
 
     Coordinate findStartingPosition(String player, width, String asciiArt) {
