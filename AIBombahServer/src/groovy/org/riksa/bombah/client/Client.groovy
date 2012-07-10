@@ -1,5 +1,12 @@
 package org.riksa.bombah.client
 
+@Grapes([
+    @Grab(group = 'org.apache.httpcomponents', module = 'httpcore', version = '4.2.1'),
+    @Grab(group='org.apache.httpcomponents', module='httpclient', version='4.2.1'),
+    @Grab(group = 'org.slf4j', module = 'slf4j-log4j12', version = '1.6.6'),
+    @Grab(group = 'org.apache.thrift', module = 'libthrift', version = '0.8.0'),
+])
+
 import org.apache.thrift.protocol.TJSONProtocol
 import org.apache.thrift.protocol.TProtocol
 import org.apache.thrift.transport.THttpClient
@@ -46,28 +53,28 @@ def clientRunnable = new Runnable() {
 
                 client.move(playerId, new MoveAction(direction: Direction.N))
                 client.move(playerId, new MoveAction(direction: Direction.N))
-                while( true ) {
+                while (true) {
                     client.bomb(playerId, new BombAction(chainBombs: false))
                     client.move(playerId, new MoveAction(direction: Direction.S))
                     client.move(playerId, new MoveAction(direction: Direction.S))
                     client.move(playerId, new MoveAction(direction: Direction.E))
                     client.move(playerId, new MoveAction(direction: Direction.E))
-                    client.waitTicks(gameId, Constants.TICKS_BOMB+Constants.TICKS_FLAME - 6*Constants.TICKS_PER_TILE )
+                    client.waitTicks(gameId, Constants.TICKS_BOMB + Constants.TICKS_FLAME - 6 * Constants.TICKS_PER_TILE)
                     client.bomb(playerId, new BombAction(chainBombs: false))
                     client.move(playerId, new MoveAction(direction: Direction.W))
                     client.move(playerId, new MoveAction(direction: Direction.W))
                     client.move(playerId, new MoveAction(direction: Direction.N))
                     client.move(playerId, new MoveAction(direction: Direction.N))
-                    client.waitTicks(gameId, Constants.TICKS_BOMB+Constants.TICKS_FLAME - 6*Constants.TICKS_PER_TILE )
+                    client.waitTicks(gameId, Constants.TICKS_BOMB + Constants.TICKS_FLAME - 6 * Constants.TICKS_PER_TILE)
                 }
 
             }
-        } catch ( YouAreDeadException e ) {
-            log.info( "I am dead")
-        } catch ( GameOverException e ) {
-            log.info( "Game Over")
-        } catch ( Exception e ) {
-            log.error( e.getMessage(), e )
+        } catch (YouAreDeadException e) {
+            log.info("I am dead")
+        } catch (GameOverException e) {
+            log.info("Game Over")
+        } catch (Exception e) {
+            log.error(e.getMessage(), e)
         } finally {
             transport.close()
             log.debug("#Done...")
@@ -78,11 +85,11 @@ def clientRunnable = new Runnable() {
 
 resetGame(url)
 
-def createTransport( url ) {
+def createTransport(url) {
     return new THttpClient(url)
 }
 
-def createClient( transport ) {
+def createClient(transport) {
     transport.open();
 
     TProtocol protocol = new TJSONProtocol(transport); //TBinaryProtocol(transport);
@@ -93,7 +100,7 @@ def resetGame(url) {
     def transport = createTransport(url)
     def client = createClient(transport)
     transport.open()
-    client.debugResetGame( -1 );
+    client.debugResetGame(-1);
     transport.close()
 }
 
