@@ -17,7 +17,8 @@ public enum Disease implements org.apache.thrift.TEnum {
   SLOW_BOMB(2),
   NO_BOMB(3),
   FAST(4),
-  SLOW(5);
+  SLOW(5),
+  DIARRHEA(6);
 
   private final int value;
 
@@ -50,6 +51,8 @@ public enum Disease implements org.apache.thrift.TEnum {
         return FAST;
       case 5:
         return SLOW;
+      case 6:
+        return DIARRHEA;
       default:
         return null;
     }

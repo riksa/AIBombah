@@ -33,7 +33,8 @@ ttypes.Disease = {
 'SLOW_BOMB' : 2,
 'NO_BOMB' : 3,
 'FAST' : 4,
-'SLOW' : 5
+'SLOW' : 5,
+'DIARRHEA' : 6
 };
 var Coordinate = module.exports.Coordinate = function(args) {
   this.x = null;

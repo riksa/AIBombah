@@ -84,7 +84,8 @@ enum Disease {
     NO_BOMB = 3,
     FAST = 4,
     SLOW = 5
-//    REVERSE_DIR = 6  // not needed for AIs, just complicating implementation
+	DIARRHEA = 6,
+//    REVERSE_DIR = 7  // not needed for AIs, just complicating implementation
 }
 
 exception GameOverException {
