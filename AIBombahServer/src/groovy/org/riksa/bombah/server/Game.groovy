@@ -244,8 +244,34 @@ class Game {
 
         double step = 1d / Constants.TICKS_PER_TILE
         players.grep {it.alive}.each {
+            PlayerState it ->
             def playerId = it.playerId
             def controller = controllers.get(playerId)
+            def coordinate = getTileCoordinate(it.x, it.y, null)
+            def buff = destroyBuff(coordinate.x, coordinate.y)
+            switch (buff) {
+                case Tile.BUFF_BOMB:
+                    it.bombAmount++
+                    log.debug( "Got bomb")
+                    break;
+                case Tile.BUFF_CHAIN:
+                    it.chain = true
+                    log.debug( "Got chain")
+                    break;
+                case Tile.BUFF_FLAME:
+                    it.bombSize++
+                    log.debug( "Got flame")
+                    break;
+                case Tile.BUFF_FOOT:
+                    it.foot = true
+                    log.debug( "Got foot")
+                    break
+                case Tile.DEBUFF:
+                    it.disease = randomDisease()
+                    log.debug("Disease obtained ${it.disease}")
+                    break;
+            }
+
             if (controller) {
                 if (controller.key1Down) {
                     BombAction bombAction = new BombAction(chainBombs: false)
@@ -254,10 +280,8 @@ class Game {
                 if (controller.directionPadDown) {
 //                        log.debug( "$playerId moving to direction ${controller.direction}" )
 
-                    int tileX = Math.round(it.x)
-                    int tileY = Math.round(it.y)
-                    def devX = tileX - it.x
-                    def devY = tileY - it.y
+                    def devX = coordinate.x - it.x
+                    def devY = coordinate.y - it.y
 
                     // check to see if we are in the middle of a tile
                     if ((controller.direction == Direction.N || controller.direction == Direction.S) && Math.abs(devX) > step / 2d) {
@@ -288,7 +312,6 @@ class Game {
                     }
                 }
             }
-
         }
 
 //        log.debug("Tick #$currentTick, time = $time")
@@ -321,6 +344,10 @@ class Game {
 //                tiles: gameInfo.tiles)
 
         currentTick++
+    }
+
+    Disease randomDisease() {
+        return Disease.DIARRHEA
     }
 
     def handleTileFlame = {
@@ -376,12 +403,6 @@ class Game {
             }
         }
 
-//        while( bombIt.hasNext() ) {
-//            def bomb = bombIt.next()
-//            bombIt.remove()
-////            explodeBomb(bomb)
-//            }
-
         def tile = getTile(x, y)
         switch (tile) {
             case Tile.BUFF_BOMB:
@@ -421,11 +442,8 @@ class Game {
             int idx = x + y * gameInfo.mapWidth
             if (idx >= 0 && idx < tiles.size()) {
                 if (tiles.get(idx) == Tile.DESTRUCTIBLE) {
-                    tiles.remove(idx)
-                    if (buffs[x][y])
-                        tiles.add(idx, buffs[x][y])
-                    else
-                        tiles.add(idx, Tile.NONE)
+                    def buff = buffs[x][y]
+                    tiles.putAt(idx, buff ?: Tile.NONE)
                 }
                 else {
                     log.warn("Tried to destruct tile that was not destructible")
@@ -437,9 +455,14 @@ class Game {
     }
 
     def destroyBuff(int x, int y) {
-        log.debug(" destroyBuff $x, $y")
-        gameInfo.tiles.putAt(x + y * gameInfo.mapWidth, Tile.NONE)
-        buffs[x][y] = null
+        if( x >= 0 && y>=0 && x < gameInfo.mapWidth && y < gameInfo.mapHeight ) {
+            def buff = buffs[x][y]
+            if (buff) {
+                gameInfo.tiles.putAt(x + y * gameInfo.mapWidth, Tile.NONE)
+                buffs[x][y] = null
+                return buff
+            }
+        }
     }
 
     boolean canMoveTo(int x, int y) {
@@ -563,35 +586,37 @@ class Game {
         if (!playerState.alive)
             throw new YouAreDeadException()
 
-        def liveBombs = bombs.count { it.owner == playerId }
-        if (liveBombs >= playerState.bombAmount) {
-            log.debug("Bombing failed, player already has $liveBombs live  bombs")
-            // TODO: information that the bombing failed
+        synchronized (bombs) {
+            def liveBombs = bombs.count { it.owner == playerId }
+            if (liveBombs >= playerState.bombAmount) {
+                log.debug("Bombing failed, player already has $liveBombs live  bombs")
+                // TODO: information that the bombing failed
+                return new BombActionResult(myState: playerState, mapState: mapState)
+            }
+
+            def ticks = Constants.TICKS_BOMB
+            if (playerState.disease == Disease.FAST_BOMB) {
+                ticks >> 1
+            }
+            if (playerState.disease == Disease.SLOW_BOMB) {
+                ticks << 1
+            }
+
+            // TODO: Chainbomb if tile already contains a bomb
+            // TODO: Deprecate bombAction.chainBombs
+
+            def bomb = new BombState(
+                    blastSize: playerState.bombSize,
+                    xCoordinate: Math.round(playerState.x),
+                    yCoordinate: Math.round(playerState.y),
+                    ticksRemaining: ticks,
+                    moving: false,
+                    direction: Direction.E,
+                    owner: playerState.playerId
+            )
+            bombs.add(bomb)
             return new BombActionResult(myState: playerState, mapState: mapState)
         }
-
-        def ticks = Constants.TICKS_BOMB
-        if (playerState.disease == Disease.FAST_BOMB) {
-            ticks >> 1
-        }
-        if (playerState.disease == Disease.SLOW_BOMB) {
-            ticks << 1
-        }
-
-        // TODO: Chainbomb if tile already contains a bomb
-        // TODO: Deprecate bombAction.chainBombs
-
-        def bomb = new BombState(
-                blastSize: playerState.bombSize,
-                xCoordinate: Math.round(playerState.x),
-                yCoordinate: Math.round(playerState.y),
-                ticksRemaining: ticks,
-                moving: false,
-                direction: Direction.E,
-                owner: playerState.playerId
-        )
-        bombs.add(bomb)
-        return new BombActionResult(myState: playerState, mapState: mapState)
     }
 
     PlayerState getPlayer(def playerId) {
