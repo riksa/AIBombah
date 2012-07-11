@@ -387,6 +387,9 @@ class Game {
     }
 
     DestroyEnum destroyTile(int x, int y) {
+        if( x<0 || y <0 || x>=gameInfo.mapWidth || y >=gameInfo.mapHeight )
+            return DestroyEnum.BLOCKED
+
         players.grep {
             def coordinates = getTileCoordinate(it.x, it.y, null)
             return coordinates.x == x && coordinates.y == y
@@ -506,20 +509,20 @@ class Game {
         gameState = GameState.RUNNING
 
         def timerTask = new TimerTask() {
-            def previousExecution = System.currentTimeMillis()
-            def avgSum = 0d
-            def avgSamples = 0
+            double avgSum = 0d
+            int avgSamples = 0
+            final double timeAllowed = 1000l * 1000l * 1000l / Constants.TICKS_PER_SECOND // max ns we have for one tick (without overhead)
 
             @Override
             void run() {
-                def timeAllowed = 1000l * 1000l * 1000l / Constants.TICKS_PER_SECOND // max ns we have for one tick (without overhead)
 
                 try {
                     def timeSpent = time({tick()})
                     double capacity = ((double) timeSpent) / (double) timeAllowed
                     avgSum += capacity
+                    def avg = 100d * avgSum / (double)avgSamples
                     if (++avgSamples % 100 == 0)
-                        log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${capacity}%) (@ avg: ${100 * avgSum / avgSamples}%)")
+                        log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${100d*capacity}%) (@ avg: ${avg}%)")
                 } catch (GameOverException e) {
                     log.debug("Game over")
                     stopGame();
