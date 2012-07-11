@@ -29,7 +29,7 @@ class Game {
     final List flames = new LinkedList<FlameState>()
     MapState mapState
     final def controllers = [:]
-    Tile[][] buffs = new Tile[13][11]
+    def buffs
     Random random = new Random()
 
     enum DestroyEnum {
@@ -367,10 +367,12 @@ class Game {
             killPlayer(it)
         }
 
-        bombs.each {
-            def coordinates = getTileCoordinate(it.xCoordinate, it.yCoordinate, null)
-            if (coordinates.x == x && coordinates.y == y) {
-                it.ticksRemaining = Constants.TICKS_BOMB_IN_FLAMES
+        synchronized (bombs) {
+            bombs.each {
+                def coordinates = getTileCoordinate(it.xCoordinate, it.yCoordinate, null)
+                if (coordinates.x == x && coordinates.y == y) {
+                    it.ticksRemaining = Constants.TICKS_BOMB_IN_FLAMES
+                }
             }
         }
 
@@ -454,6 +456,13 @@ class Game {
         def tile = getTile(x, y)
         if (tile == Tile.DESTRUCTIBLE || tile == Tile.INDESTRUCTIBLE)
             return false
+
+        if (bombs.find {
+            BombState bomb ->
+            def coordinate = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
+            return (coordinate.x == x && coordinate.y == y)
+        }) return false
+
         return true
     }
 
