@@ -255,6 +255,6 @@
 </head>
 
 <body>
-<canvas id="canvas" width="832" height="704"></canvas>
+<canvas id="canvas" width="832" height="704" style="background: green"></canvas>
 </body>
 </html>
