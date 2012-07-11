@@ -242,9 +242,14 @@ class Game {
             }
         }
 
-        double step = 1d / Constants.TICKS_PER_TILE
         players.grep {it.alive}.each {
             PlayerState it ->
+            double step = 1d / Constants.TICKS_PER_TILE
+            if( it.disease == Disease.FAST )
+                step *= 4
+            else if( it.disease == Disease.SLOW )
+                step /= 4
+
             def playerId = it.playerId
             def controller = controllers.get(playerId)
             def coordinate = getTileCoordinate(it.x, it.y, null)
@@ -347,7 +352,11 @@ class Game {
     }
 
     Disease randomDisease() {
-        return Disease.DIARRHEA
+        if( random.nextBoolean() )
+            return Disease.FAST
+        return Disease.SLOW
+
+//        return Disease.DIARRHEA
     }
 
     def handleTileFlame = {
