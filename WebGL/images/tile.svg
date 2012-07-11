@@ -914,7 +914,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="3.6289063"
      inkscape:cx="-67.237888"
-     inkscape:cy="42.009426"
+     inkscape:cy="-35.148807"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -942,7 +942,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -959,7 +959,7 @@
        y="64"
        ry="9.1428576"
        rx="0"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\8.png"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\7.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <rect
@@ -970,7 +970,7 @@
        x="-128"
        y="0"
        ry="0"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\1.png"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\0.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <rect
@@ -981,7 +981,7 @@
        x="-128"
        y="128"
        ry="0"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\9.png"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\8.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <rect
@@ -2843,12 +2843,12 @@
        x="0"
        y="64"
        ry="24"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\7.png"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\6.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <g
        id="g9260"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\6.png"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\5.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
       <g
@@ -2914,7 +2914,7 @@
     </g>
     <g
        id="g9291"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\5.png"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\4.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
       <rect
@@ -2948,7 +2948,10 @@
     </g>
     <g
        id="g4830"
-       style="stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none">
+       style="stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\player_0.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <g
          transform="translate(-48,8.666667)"
          id="g4730"
@@ -2993,7 +2996,10 @@
     </g>
     <g
        id="g4838"
-       style="stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none">
+       style="stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\player_2.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <g
          transform="translate(112,21.333332)"
          id="g4748"
@@ -3038,7 +3044,10 @@
     </g>
     <g
        id="g4846"
-       style="stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none">
+       style="stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\player_2.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <g
          transform="translate(120,51.333332)"
          id="g4742"
@@ -3084,7 +3093,10 @@
     <g
        id="g4822"
        style="stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
-       transform="scale(1,0.95744681)">
+       transform="scale(1,0.95744681)"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\player_3.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <g
          transform="translate(44,34.666665)"
          id="g4736"
@@ -3130,7 +3142,7 @@
     <g
        transform="translate(0,128)"
        id="g8946-8"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\2.png"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\9.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
       <rect
@@ -3181,7 +3193,7 @@
     </g>
     <g
        id="g4301"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\2.png"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
       <g
@@ -3247,7 +3259,7 @@
        id="g4318"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\4.png">
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\3.png">
       <g
          inkscape:export-ydpi="90"
          inkscape:export-xdpi="90"
@@ -3380,7 +3392,7 @@
     </g>
     <g
        id="g4312"
-       inkscape:export-filename="D:\__GIT\AIBombah\WebGL\images\3.png"
+       inkscape:export-filename="D:\__GIT\AIBombah\AIBombahServer\web-app\images\2.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
       <g
