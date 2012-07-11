@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 import org.riksa.bombah.thrift.*
+import groovy.transform.Synchronized
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,15 +22,21 @@ class Game {
     def slots
     AtomicLong waiting
     GameInfo gameInfo
-    def players = []
+    final List players = new LinkedList<PlayerState>()
     def currentTick
     Timer timer
     final List bombs = new LinkedList<BombState>()
     final List flames = new LinkedList<FlameState>()
     MapState mapState
     final def controllers = [:]
-    Tile[][] buffs
+    Tile[][] buffs = new Tile[13][11]
     Random random = new Random()
+
+    enum DestroyEnum {
+        CONTINUE,
+        DESTROYED,
+        BLOCKED
+    }
 
     boolean canMove(double x, double y, Direction direction, double step) {
 //        def currentLocation = getTileCoordinate(x, y, null)
@@ -80,6 +87,11 @@ class Game {
     public Game() {
         id = idGenerator.incrementAndGet()
         log.debug("Creating a new game #$id")
+        players.clear()
+        controllers.clear()
+        bombs.clear()
+        flames.clear()
+        players.clear()
         gameInfo = loadMap(13, 11,
                 "1  xxxxxxx  2" +
                         " OxOxOxOxOxO " +
@@ -95,13 +107,12 @@ class Game {
         )
 
         buffs = new Tile[gameInfo.mapWidth][gameInfo.mapHeight];
-        randomizeBuffs( Tile.DEBUFF, 9 )
-        randomizeBuffs( Tile.BUFF_BOMB, 9 )
-        randomizeBuffs( Tile.BUFF_FLAME, 9 )
-        randomizeBuffs( Tile.BUFF_CHAIN, 1 )
-        randomizeBuffs( Tile.BUFF_FOOT, 3 )
+        randomizeBuffs(Tile.DEBUFF, 9)
+        randomizeBuffs(Tile.BUFF_BOMB, 9)
+        randomizeBuffs(Tile.BUFF_FLAME, 9)
+        randomizeBuffs(Tile.BUFF_CHAIN, 1)
+        randomizeBuffs(Tile.BUFF_FOOT, 3)
 
-        players.clear()
         waiting = new AtomicLong(0)
         currentTick = 0
         slots = 4
@@ -139,8 +150,6 @@ class Game {
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        bombs.clear()
-        flames.clear()
         def rate = Constants.TICKS_PER_SECOND
         GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 30 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
@@ -183,19 +192,16 @@ class Game {
 
             gameInfo.tiles.eachWithIndex {
                 t, index ->
-                if( t == Tile.DESTRUCTIBLE ) {
+                if (t == Tile.DESTRUCTIBLE) {
                     int x = index % gameInfo.mapWidth
                     int y = (index - x) / gameInfo.mapWidth
                     def buff = buffs[x][y]
-                    log.debug( "Buff @ $x,$y = $buff")
-                    if( !buff )
-                        freeCoordinates.add( new Coordinate( x: x, y: y))
+                    if (!buff)
+                        freeCoordinates.add(new Coordinate(x: x, y: y))
                 }
             }
 
-            log.debug( "Free coordinates #${freeCoordinates.size()}")
-
-            def pos = freeCoordinates.get( random.nextInt( freeCoordinates.size() ) )
+            def pos = freeCoordinates.get(random.nextInt(freeCoordinates.size()))
             buffs[pos.x][pos.y] = tile
 
         }
@@ -221,94 +227,68 @@ class Game {
     synchronized void tick() throws GameOverException {
 //        def time = System.currentTimeMillis()
         synchronized (flames) {
-            def it = flames.iterator()
-            while (it.hasNext()) {
-                def flame = it.next()
-                flame.ticksRemaining--
-                if (flame.ticksRemaining <= 0) {
-                    it.remove()
+            flames.removeAll {
+                --it.ticksRemaining <= 0
+            }
+        }
+
+
+        synchronized (bombs) {
+            bombs.removeAll {
+                if (--it.ticksRemaining <= 0) {
+                    explodeBomb(it)
+                    return true
                 }
             }
         }
 
-        def it = bombs.iterator()
-        while (it.hasNext()) {
-            def bomb = it.next()
-            bomb.blastSize = getPlayer(bomb.owner).bombSize
-            bomb.ticksRemaining--
-            if (bomb.moving) {
-                // TODO
-            }
-            if (bomb.ticksRemaining <= 0) {
-                it.remove()
-                explodeBomb(bomb)
-            }
-        }
-
-        // inefficient
-
-//        mapState.ticksRemaining = gameInfo.ticksTotal - currentTick
-//        mapState.bombs = this.bombs
-//        mapState.players = this.players
-//        mapState.tiles = gameInfo.tiles
-        // TODO: tiles
-        // TODO: move players
-//        struct ControllerState {
-//            1: bool directionPadDown, // Direction pad pressed to direction
-//            2: Direction direction,
-//            3: bool key1Down, // Drop bomb pressed
-//            4: bool key2Down  // Stop bomb pressed
-//        }
-
-        synchronized (controllers) {
-            double step = 1d / Constants.TICKS_PER_TILE
-            players.grep {it.alive}.each {
-                def playerId = it.playerId
-                def controller = controllers.get(playerId)
-                if (controller) {
-                    if (controller.key1Down) {
-                        BombAction bombAction = new BombAction( chainBombs: false )
-                        bomb( playerId, bombAction )
-                    }
-                    if (controller.directionPadDown) {
+        double step = 1d / Constants.TICKS_PER_TILE
+        players.grep {it.alive}.each {
+            def playerId = it.playerId
+            def controller = controllers.get(playerId)
+            if (controller) {
+                if (controller.key1Down) {
+                    BombAction bombAction = new BombAction(chainBombs: false)
+                    bomb(playerId, bombAction)
+                }
+                if (controller.directionPadDown) {
 //                        log.debug( "$playerId moving to direction ${controller.direction}" )
 
-                        int tileX = Math.round(it.x)
-                        int tileY = Math.round(it.y)
-                        def devX = tileX - it.x
-                        def devY = tileY - it.y
+                    int tileX = Math.round(it.x)
+                    int tileY = Math.round(it.y)
+                    def devX = tileX - it.x
+                    def devY = tileY - it.y
 
-                        // check to see if we are in the middle of a tile
-                        if ((controller.direction == Direction.N || controller.direction == Direction.S) && Math.abs(devX) > step / 2d) {
-                            // Center to tile X first
-                            if (devX < 0) it.x -= step
-                            else it.x += step
-                        } else if ((controller.direction == Direction.E || controller.direction == Direction.W) && Math.abs(devY) > step / 2d) {
-                            // Center to tile Y
-                            if (devY < 0) it.y -= step
-                            else it.y += step
-                        } else {
-                            if (canMove(it.x, it.y, controller.direction, step)) {
-                                switch (controller.direction) {
-                                    case Direction.N:
-                                        it.y += step
-                                        break;
-                                    case Direction.E:
-                                        it.x += step
-                                        break;
-                                    case Direction.W:
-                                        it.x -= step
-                                        break;
-                                    case Direction.S:
-                                        it.y -= step
-                                        break;
-                                }
+                    // check to see if we are in the middle of a tile
+                    if ((controller.direction == Direction.N || controller.direction == Direction.S) && Math.abs(devX) > step / 2d) {
+                        // Center to tile X first
+                        if (devX < 0) it.x -= step
+                        else it.x += step
+                    } else if ((controller.direction == Direction.E || controller.direction == Direction.W) && Math.abs(devY) > step / 2d) {
+                        // Center to tile Y
+                        if (devY < 0) it.y -= step
+                        else it.y += step
+                    } else {
+                        if (canMove(it.x, it.y, controller.direction, step)) {
+                            switch (controller.direction) {
+                                case Direction.N:
+                                    it.y += step
+                                    break;
+                                case Direction.E:
+                                    it.x += step
+                                    break;
+                                case Direction.W:
+                                    it.x -= step
+                                    break;
+                                case Direction.S:
+                                    it.y -= step
+                                    break;
                             }
                         }
                     }
                 }
-
             }
+
         }
 
 //        log.debug("Tick #$currentTick, time = $time")
@@ -324,11 +304,14 @@ class Game {
             endGame()
 
         mapState = new MapState(
-                currentTick: currentTick,
-                bombs: bombs.clone(), // wasted, TODO
-                players: players.clone(),
-                tiles: gameInfo.tiles.clone(),
-                flames: flames.clone())
+                currentTick: currentTick
+        )
+        mapState.bombs = new ArrayList<BombState>(bombs)
+        mapState.flames = new ArrayList(flames)
+        mapState.tiles = new ArrayList<Tile>(gameInfo.tiles)
+        mapState.players = new ArrayList<PlayerState>(players)
+//        mapState.addToTiles(gameInfo.tiles)
+//        mapState.addToPlayers(players)
 
 //        log.debug( "Spent cloning: $spent")
 //        mapState = new MapState(
@@ -342,13 +325,20 @@ class Game {
 
     def handleTileFlame = {
         x, y ->
-        flames.add(new FlameState(coordinate: [x: x, y: y], ticksRemaining: Constants.TICKS_FLAME))
-        return destroyTile(x, y)
+        switch (destroyTile(x, y)) {
+            case DestroyEnum.BLOCKED:
+                return false
+            case DestroyEnum.DESTROYED:
+                flames.add(new FlameState(coordinate: [x: x, y: y], ticksRemaining: Constants.TICKS_FLAME))
+                return false
+            case DestroyEnum.CONTINUE:
+                flames.add(new FlameState(coordinate: [x: x, y: y], ticksRemaining: Constants.TICKS_FLAME))
+                return true
+        }
     }
 
     def explodeBomb(BombState bomb) {
         def bombCoordinates = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
-        flames.add(new FlameState(coordinate: bombCoordinates, ticksRemaining: Constants.TICKS_FLAME))
         handleTileFlame(bombCoordinates.x, bombCoordinates.y)
 
         for (i in 1..bomb.blastSize) {
@@ -369,7 +359,7 @@ class Game {
         }
     }
 
-    boolean destroyTile(int x, int y) {
+    DestroyEnum destroyTile(int x, int y) {
         players.grep {
             def coordinates = getTileCoordinate(it.x, it.y, null)
             return coordinates.x == x && coordinates.y == y
@@ -398,23 +388,22 @@ class Game {
             case Tile.BUFF_FOOT:
             case Tile.DEBUFF:
                 destroyBuff(x, y)
-                return false;
-                break;
+                return DestroyEnum.DESTROYED;
             case Tile.DESTRUCTIBLE:
-                destroyDestructable(x, y)
-                return false;
-                break;
+                destroyDestructible(x, y)
+                return DestroyEnum.DESTROYED;
             case Tile.INDESTRUCTIBLE:
-                return false;
+                return DestroyEnum.BLOCKED;
             case Tile.NONE:
-                return true;
+                return DestroyEnum.CONTINUE;
             default:
-                return false; // tile == null, out of map
+                return DestroyEnum.BLOCKED;
         }
 
     }
 
     def killPlayer(PlayerState player) {
+        return;
         log.debug("Player $player died")
         player.alive = false
         if (players.grep() {
@@ -422,17 +411,33 @@ class Game {
         }.size() <= 1) stopGame()
     }
 
-    def destroyDestructable(int x, int y) {
-        log.debug("TODO: destroyDestructable ($x, $y)")
-        // TODO
-//        int idx = x + y * gameInfo.mapWidth
-//        if (idx >= 0 && idx < mapState.getTiles().size())
-//            mapState.getTiles().get(idx) = Tile.NONE
+    @Synchronized
+    def destroyDestructible(int x, int y) {
+        def tiles = gameInfo.tiles
+        synchronized (tiles) {
+            log.debug("Destroy destructible @ $x,$y")
+            int idx = x + y * gameInfo.mapWidth
+            if (idx >= 0 && idx < tiles.size()) {
+                if (tiles.get(idx) == Tile.DESTRUCTIBLE) {
+                    tiles.remove(idx)
+                    if (buffs[x][y])
+                        tiles.add(idx, buffs[x][y])
+                    else
+                        tiles.add(idx, Tile.NONE)
+                }
+                else {
+                    log.warn("Tried to destruct tile that was not destructible")
+                }
+            }
+            log.debug("Destroy destructible done @ $x,$y")
+        }
+
     }
 
     def destroyBuff(int x, int y) {
-        log.debug("TODO: destroyBuff ($x, $y)")
-        // TODO
+        log.debug(" destroyBuff $x, $y")
+        gameInfo.tiles.putAt(x + y * gameInfo.mapWidth, Tile.NONE)
+        buffs[x][y] = null
     }
 
     boolean canMoveTo(int x, int y) {
@@ -454,8 +459,8 @@ class Game {
 
     Tile getTile(int x, int y) {
         int idx = x + y * gameInfo.mapWidth
-        if (idx >= 0 && idx < mapState.getTiles().size())
-            return mapState.getTiles().get(idx)
+        if (idx >= 0 && idx < gameInfo.tiles.size())
+            return gameInfo.tiles.get(idx)
     }
 
     void startGame() {
@@ -470,17 +475,24 @@ class Game {
 
         def timerTask = new TimerTask() {
             def previousExecution = System.currentTimeMillis()
+            def avgSum = 0d
+            def avgSamples = 0
 
             @Override
             void run() {
                 def timeAllowed = 1000l * 1000l * 1000l / Constants.TICKS_PER_SECOND // max ns we have for one tick (without overhead)
+
                 try {
                     def timeSpent = time({tick()})
-                    double capacity = (100d * (double) timeSpent) / (double) timeAllowed
-//                    log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${capacity}%)")
+                    double capacity = ((double) timeSpent) / (double) timeAllowed
+                    avgSum += capacity
+                    if (++avgSamples % 100 == 0)
+                        log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${capacity}%) (@ avg: ${100 * avgSum / avgSamples}%)")
                 } catch (GameOverException e) {
                     log.debug("Game over")
                     stopGame();
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e)
                 }
             }
         }
@@ -532,17 +544,6 @@ class Game {
             }
             Thread.yield()
         }
-//        log.debug("waitTick completed")
-//        synchronized (sleepers) {
-//            sleepers.add(Thread.currentThread())
-//        }
-//
-//        try {
-//            Thread.sleep(3 * 60 * 1000)
-//        } catch (InterruptedException e) {
-////            log.debug("waitTick completed")
-//        }
-
     }
 
     BombActionResult bomb(playerId, BombAction bombAction) {
@@ -554,8 +555,8 @@ class Game {
             throw new YouAreDeadException()
 
         def liveBombs = bombs.count { it.owner == playerId }
-        if( liveBombs >= playerState.bombAmount ) {
-            log.debug( "Bombing failed, player already has $liveBombs live  bombs")
+        if (liveBombs >= playerState.bombAmount) {
+            log.debug("Bombing failed, player already has $liveBombs live  bombs")
             // TODO: information that the bombing failed
             return new BombActionResult(myState: playerState, mapState: mapState)
         }
