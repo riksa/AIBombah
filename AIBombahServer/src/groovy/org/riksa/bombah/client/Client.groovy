@@ -1,10 +1,10 @@
 package org.riksa.bombah.client
 
 @Grapes([
-    @Grab(group = 'org.apache.httpcomponents', module = 'httpcore', version = '4.2.1'),
-    @Grab(group='org.apache.httpcomponents', module='httpclient', version='4.2.1'),
-    @Grab(group = 'org.slf4j', module = 'slf4j-log4j12', version = '1.6.6'),
-    @Grab(group = 'org.apache.thrift', module = 'libthrift', version = '0.8.0'),
+@Grab(group = 'org.apache.httpcomponents', module = 'httpcore', version = '4.2.1'),
+@Grab(group = 'org.apache.httpcomponents', module = 'httpclient', version = '4.2.1'),
+@Grab(group = 'org.slf4j', module = 'slf4j-log4j12', version = '1.6.6'),
+@Grab(group = 'org.apache.thrift', module = 'libthrift', version = '0.8.0'),
 ])
 
 import org.apache.thrift.protocol.TJSONProtocol
@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 import org.riksa.bombah.thrift.Constants
 import org.riksa.bombah.thrift.YouAreDeadException
 import org.riksa.bombah.thrift.GameOverException
+import org.riksa.bombah.thrift.MapState
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,6 +34,16 @@ def url = "http://localhost:8080/AIBombahServer/bombah/json"
 def log = LoggerFactory.getLogger(getClass())
 //FileInputStream fis =  new FileInputStream("log4j.properties");
 //LogManager.getLogManager().readConfiguration(fis);
+def random = new Random()
+
+enum ActionTypeEnum {
+    MOVE, BOMB, WAIT
+}
+
+class Action {
+    ActionTypeEnum what
+    Direction direction
+}
 
 def clientRunnable = new Runnable() {
 
@@ -51,23 +62,21 @@ def clientRunnable = new Runnable() {
                 client.waitForStart(gameId)
                 log.debug("Game started, I am player #" + playerId)
 
-                client.move(playerId, new MoveAction(direction: Direction.N))
-                client.move(playerId, new MoveAction(direction: Direction.N))
+                def mapState = client.getMapState(gameId)
                 while (true) {
-                    client.bomb(playerId, new BombAction(chainBombs: false))
-                    client.move(playerId, new MoveAction(direction: Direction.S))
-                    client.move(playerId, new MoveAction(direction: Direction.S))
-                    client.move(playerId, new MoveAction(direction: Direction.E))
-                    client.move(playerId, new MoveAction(direction: Direction.E))
-                    client.waitTicks(gameId, Constants.TICKS_BOMB + Constants.TICKS_FLAME - 6 * Constants.TICKS_PER_TILE)
-                    client.bomb(playerId, new BombAction(chainBombs: false))
-                    client.move(playerId, new MoveAction(direction: Direction.W))
-                    client.move(playerId, new MoveAction(direction: Direction.W))
-                    client.move(playerId, new MoveAction(direction: Direction.N))
-                    client.move(playerId, new MoveAction(direction: Direction.N))
-                    client.waitTicks(gameId, Constants.TICKS_BOMB + Constants.TICKS_FLAME - 6 * Constants.TICKS_PER_TILE)
+                    def action = pickAction(mapState)
+                    switch (action.what) {
+                        case ActionTypeEnum.MOVE:
+                            mapState = client.move(playerId, new MoveAction(direction: action.direction)).mapState
+                            break;
+                        case ActionTypeEnum.BOMB:
+                            mapState = client.bomb(playerId, new BombAction(chainBombs: false)).mapState
+                            break;
+                        case ActionTypeEnum.WAIT:
+                            mapState = client.waitTicks(playerId, 1);
+                            break;
+                    }
                 }
-
             }
         } catch (YouAreDeadException e) {
             log.info("I am dead")
@@ -80,6 +89,17 @@ def clientRunnable = new Runnable() {
             log.debug("#Done...")
         }
 
+    }
+
+    Action pickAction(MapState mapState) {
+        Action action = new Action()
+        action.direction = Direction.values()[random.nextInt(4)<<1]
+        if (random.nextInt(100) < 5)
+            action.what = ActionTypeEnum.BOMB
+        else
+            action.what = ActionTypeEnum.MOVE
+
+        return action;
     }
 }
 
