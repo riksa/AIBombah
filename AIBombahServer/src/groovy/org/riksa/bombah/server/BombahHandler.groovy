@@ -127,8 +127,8 @@ class BombahHandler implements BombahService.Iface {
 
     @Override
     MapState getMapState(int gameId) {
-        if (game)
-            return game.mapState
+        if (runningGame)
+            return runningGame.mapState
         return new MapState()
     }
 }
