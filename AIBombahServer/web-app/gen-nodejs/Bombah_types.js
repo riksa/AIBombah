@@ -317,12 +317,16 @@ BombState.prototype.write = function(output) {
 var FlameState = module.exports.FlameState = function(args) {
   this.coordinate = null;
   this.ticksRemaining = null;
+  this.burningBlock = null;
   if (args) {
     if (args.coordinate !== undefined) {
       this.coordinate = args.coordinate;
     }
     if (args.ticksRemaining !== undefined) {
       this.ticksRemaining = args.ticksRemaining;
+    }
+    if (args.burningBlock !== undefined) {
+      this.burningBlock = args.burningBlock;
     }
   }
 };
@@ -355,6 +359,13 @@ FlameState.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
+      case 3:
+      if (ftype == Thrift.Type.BOOL) {
+        this.burningBlock = input.readBool();
+      } else {
+        input.skip(ftype);
+      }
+      break;
       default:
         input.skip(ftype);
     }
@@ -374,6 +385,11 @@ FlameState.prototype.write = function(output) {
   if (this.ticksRemaining) {
     output.writeFieldBegin('ticksRemaining', Thrift.Type.I32, 2);
     output.writeI32(this.ticksRemaining);
+    output.writeFieldEnd();
+  }
+  if (this.burningBlock) {
+    output.writeFieldBegin('burningBlock', Thrift.Type.BOOL, 3);
+    output.writeBool(this.burningBlock);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -1475,5 +1491,5 @@ BombActionResult.prototype.write = function(output) {
 ttypes.TICKS_PER_SECOND = 50;
 ttypes.TICKS_PER_TILE = 20;
 ttypes.TICKS_BOMB = 150;
-ttypes.TICKS_BOMB_IN_FLAMES = 5;
+ttypes.TICKS_BOMB_IN_FLAMES = 2;
 ttypes.TICKS_FLAME = 50;

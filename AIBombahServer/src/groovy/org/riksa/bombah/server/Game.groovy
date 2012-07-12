@@ -195,7 +195,7 @@ class Game {
                 if (t == Tile.DESTRUCTIBLE) {
                     int x = index % gameInfo.mapWidth
                     int y = (index - x) / gameInfo.mapWidth
-                    def buff = buffs[x][y]
+                    def buff = getTileBuff(x, y)
                     if (!buff)
                         freeCoordinates.add(new Coordinate(x: x, y: y))
                 }
@@ -245,9 +245,9 @@ class Game {
         players.grep {it.alive}.each {
             PlayerState it ->
             double step = 1d / Constants.TICKS_PER_TILE
-            if( it.disease == Disease.FAST )
+            if (it.disease == Disease.FAST)
                 step *= 4
-            else if( it.disease == Disease.SLOW )
+            else if (it.disease == Disease.SLOW)
                 step /= 4
 
             def playerId = it.playerId
@@ -257,19 +257,19 @@ class Game {
             switch (buff) {
                 case Tile.BUFF_BOMB:
                     it.bombAmount++
-                    log.debug( "Got bomb")
+                    log.debug("Got bomb")
                     break;
                 case Tile.BUFF_CHAIN:
                     it.chain = true
-                    log.debug( "Got chain")
+                    log.debug("Got chain")
                     break;
                 case Tile.BUFF_FLAME:
                     it.bombSize++
-                    log.debug( "Got flame")
+                    log.debug("Got flame")
                     break;
                 case Tile.BUFF_FOOT:
                     it.foot = true
-                    log.debug( "Got foot")
+                    log.debug("Got foot")
                     break
                 case Tile.DEBUFF:
                     it.disease = randomDisease()
@@ -329,7 +329,7 @@ class Game {
 //        }
 
         if (currentTick >= gameInfo.ticksTotal)
-            endGame()
+            stopGame()
 
         mapState = new MapState(
                 currentTick: currentTick
@@ -352,7 +352,7 @@ class Game {
     }
 
     Disease randomDisease() {
-        if( random.nextBoolean() )
+        if (random.nextBoolean())
             return Disease.FAST
         return Disease.SLOW
 
@@ -365,7 +365,7 @@ class Game {
             case DestroyEnum.BLOCKED:
                 return false
             case DestroyEnum.DESTROYED:
-                flames.add(new FlameState(coordinate: [x: x, y: y], ticksRemaining: Constants.TICKS_FLAME))
+                flames.add(new FlameState(coordinate: [x: x, y: y], ticksRemaining: Constants.TICKS_FLAME, burningBlock: true))
                 return false
             case DestroyEnum.CONTINUE:
                 flames.add(new FlameState(coordinate: [x: x, y: y], ticksRemaining: Constants.TICKS_FLAME))
@@ -396,7 +396,7 @@ class Game {
     }
 
     DestroyEnum destroyTile(int x, int y) {
-        if( x<0 || y <0 || x>=gameInfo.mapWidth || y >=gameInfo.mapHeight )
+        if (x < 0 || y < 0 || x >= gameInfo.mapWidth || y >= gameInfo.mapHeight)
             return DestroyEnum.BLOCKED
 
         players.grep {
@@ -430,7 +430,10 @@ class Game {
             case Tile.INDESTRUCTIBLE:
                 return DestroyEnum.BLOCKED;
             case Tile.NONE:
-                return DestroyEnum.CONTINUE;
+                if (getTileFlame(x, y)?.burningBlock)
+                    return DestroyEnum.BLOCKED;
+                else
+                    return DestroyEnum.CONTINUE;
             default:
                 return DestroyEnum.BLOCKED;
         }
@@ -454,7 +457,7 @@ class Game {
             int idx = x + y * gameInfo.mapWidth
             if (idx >= 0 && idx < tiles.size()) {
                 if (tiles.get(idx) == Tile.DESTRUCTIBLE) {
-                    def buff = buffs[x][y]
+                    def buff = getTileBuff(x, y)
                     tiles.putAt(idx, buff ?: Tile.NONE)
                 }
                 else {
@@ -467,8 +470,8 @@ class Game {
     }
 
     def destroyBuff(int x, int y) {
-        if( x >= 0 && y>=0 && x < gameInfo.mapWidth && y < gameInfo.mapHeight ) {
-            def buff = buffs[x][y]
+        if (x >= 0 && y >= 0 && x < gameInfo.mapWidth && y < gameInfo.mapHeight) {
+            def buff = getTileBuff(x, y)
             if (buff) {
                 gameInfo.tiles.putAt(x + y * gameInfo.mapWidth, Tile.NONE)
                 buffs[x][y] = null
@@ -507,6 +510,17 @@ class Game {
             return gameInfo.tiles.get(idx)
     }
 
+    FlameState getTileFlame(int x, int y) {
+        flames.find {
+            it.coordinate.x == x && it.coordinate.y == y
+        }
+    }
+
+    Tile getTileBuff(int x, int y) {
+        if (x >= 0 && y >= 0 && x < gameInfo.mapWidth && y < gameInfo.mapHeight)
+            return buffs[x][y]
+    }
+
     void startGame() {
         log.debug("Starting game #${gameInfo.gameId}")
 
@@ -529,9 +543,9 @@ class Game {
                     def timeSpent = time({tick()})
                     double capacity = ((double) timeSpent) / (double) timeAllowed
                     avgSum += capacity
-                    def avg = 100d * avgSum / (double)avgSamples
+                    def avg = 100d * avgSum / (double) avgSamples
                     if (++avgSamples % 100 == 0)
-                        log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${100d*capacity}%) (@ avg: ${avg}%)")
+                        log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${100d * capacity}%) (@ avg: ${avg}%)")
                 } catch (GameOverException e) {
                     log.debug("Game over")
                     stopGame();

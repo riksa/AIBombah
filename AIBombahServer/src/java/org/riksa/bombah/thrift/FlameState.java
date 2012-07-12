@@ -32,6 +32,7 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
 
   private static final org.apache.thrift.protocol.TField COORDINATE_FIELD_DESC = new org.apache.thrift.protocol.TField("coordinate", org.apache.thrift.protocol.TType.STRUCT, (short)1);
   private static final org.apache.thrift.protocol.TField TICKS_REMAINING_FIELD_DESC = new org.apache.thrift.protocol.TField("ticksRemaining", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField BURNING_BLOCK_FIELD_DESC = new org.apache.thrift.protocol.TField("burningBlock", org.apache.thrift.protocol.TType.BOOL, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -41,11 +42,13 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
 
   public Coordinate coordinate; // required
   public int ticksRemaining; // required
+  public boolean burningBlock; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     COORDINATE((short)1, "coordinate"),
-    TICKS_REMAINING((short)2, "ticksRemaining");
+    TICKS_REMAINING((short)2, "ticksRemaining"),
+    BURNING_BLOCK((short)3, "burningBlock");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -64,6 +67,8 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
           return COORDINATE;
         case 2: // TICKS_REMAINING
           return TICKS_REMAINING;
+        case 3: // BURNING_BLOCK
+          return BURNING_BLOCK;
         default:
           return null;
       }
@@ -105,7 +110,8 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
 
   // isset id assignments
   private static final int __TICKSREMAINING_ISSET_ID = 0;
-  private BitSet __isset_bit_vector = new BitSet(1);
+  private static final int __BURNINGBLOCK_ISSET_ID = 1;
+  private BitSet __isset_bit_vector = new BitSet(2);
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -113,6 +119,8 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Coordinate.class)));
     tmpMap.put(_Fields.TICKS_REMAINING, new org.apache.thrift.meta_data.FieldMetaData("ticksRemaining", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.BURNING_BLOCK, new org.apache.thrift.meta_data.FieldMetaData("burningBlock", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(FlameState.class, metaDataMap);
   }
@@ -122,12 +130,15 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
 
   public FlameState(
     Coordinate coordinate,
-    int ticksRemaining)
+    int ticksRemaining,
+    boolean burningBlock)
   {
     this();
     this.coordinate = coordinate;
     this.ticksRemaining = ticksRemaining;
     setTicksRemainingIsSet(true);
+    this.burningBlock = burningBlock;
+    setBurningBlockIsSet(true);
   }
 
   /**
@@ -140,6 +151,7 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
       this.coordinate = new Coordinate(other.coordinate);
     }
     this.ticksRemaining = other.ticksRemaining;
+    this.burningBlock = other.burningBlock;
   }
 
   public FlameState deepCopy() {
@@ -151,6 +163,8 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     this.coordinate = null;
     setTicksRemainingIsSet(false);
     this.ticksRemaining = 0;
+    setBurningBlockIsSet(false);
+    this.burningBlock = false;
   }
 
   public Coordinate getCoordinate() {
@@ -200,6 +214,29 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     __isset_bit_vector.set(__TICKSREMAINING_ISSET_ID, value);
   }
 
+  public boolean isBurningBlock() {
+    return this.burningBlock;
+  }
+
+  public FlameState setBurningBlock(boolean burningBlock) {
+    this.burningBlock = burningBlock;
+    setBurningBlockIsSet(true);
+    return this;
+  }
+
+  public void unsetBurningBlock() {
+    __isset_bit_vector.clear(__BURNINGBLOCK_ISSET_ID);
+  }
+
+  /** Returns true if field burningBlock is set (has been assigned a value) and false otherwise */
+  public boolean isSetBurningBlock() {
+    return __isset_bit_vector.get(__BURNINGBLOCK_ISSET_ID);
+  }
+
+  public void setBurningBlockIsSet(boolean value) {
+    __isset_bit_vector.set(__BURNINGBLOCK_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case COORDINATE:
@@ -218,6 +255,14 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
       }
       break;
 
+    case BURNING_BLOCK:
+      if (value == null) {
+        unsetBurningBlock();
+      } else {
+        setBurningBlock((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -228,6 +273,9 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
 
     case TICKS_REMAINING:
       return Integer.valueOf(getTicksRemaining());
+
+    case BURNING_BLOCK:
+      return Boolean.valueOf(isBurningBlock());
 
     }
     throw new IllegalStateException();
@@ -244,6 +292,8 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
       return isSetCoordinate();
     case TICKS_REMAINING:
       return isSetTicksRemaining();
+    case BURNING_BLOCK:
+      return isSetBurningBlock();
     }
     throw new IllegalStateException();
   }
@@ -276,6 +326,15 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
       if (!(this_present_ticksRemaining && that_present_ticksRemaining))
         return false;
       if (this.ticksRemaining != that.ticksRemaining)
+        return false;
+    }
+
+    boolean this_present_burningBlock = true;
+    boolean that_present_burningBlock = true;
+    if (this_present_burningBlock || that_present_burningBlock) {
+      if (!(this_present_burningBlock && that_present_burningBlock))
+        return false;
+      if (this.burningBlock != that.burningBlock)
         return false;
     }
 
@@ -315,6 +374,16 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetBurningBlock()).compareTo(typedOther.isSetBurningBlock());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetBurningBlock()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.burningBlock, typedOther.burningBlock);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -345,6 +414,10 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
     if (!first) sb.append(", ");
     sb.append("ticksRemaining:");
     sb.append(this.ticksRemaining);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("burningBlock:");
+    sb.append(this.burningBlock);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -407,6 +480,14 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 3: // BURNING_BLOCK
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.burningBlock = iprot.readBool();
+              struct.setBurningBlockIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -429,6 +510,9 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
       }
       oprot.writeFieldBegin(TICKS_REMAINING_FIELD_DESC);
       oprot.writeI32(struct.ticksRemaining);
+      oprot.writeFieldEnd();
+      oprot.writeFieldBegin(BURNING_BLOCK_FIELD_DESC);
+      oprot.writeBool(struct.burningBlock);
       oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -454,19 +538,25 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
       if (struct.isSetTicksRemaining()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetBurningBlock()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetCoordinate()) {
         struct.coordinate.write(oprot);
       }
       if (struct.isSetTicksRemaining()) {
         oprot.writeI32(struct.ticksRemaining);
       }
+      if (struct.isSetBurningBlock()) {
+        oprot.writeBool(struct.burningBlock);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, FlameState struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.coordinate = new Coordinate();
         struct.coordinate.read(iprot);
@@ -475,6 +565,10 @@ public class FlameState implements org.apache.thrift.TBase<FlameState, FlameStat
       if (incoming.get(1)) {
         struct.ticksRemaining = iprot.readI32();
         struct.setTicksRemainingIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.burningBlock = iprot.readBool();
+        struct.setBurningBlockIsSet(true);
       }
     }
   }

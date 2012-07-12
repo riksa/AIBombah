@@ -47,9 +47,9 @@ public class Constants {
   public static final int TICKS_BOMB = 150;
 
   /**
-   * if bomb is in flames, it will explode in 5 ticks
+   * if bomb is in flames, it will explode in 2 ticks
    */
-  public static final int TICKS_BOMB_IN_FLAMES = 5;
+  public static final int TICKS_BOMB_IN_FLAMES = 2;
 
   /**
    * flame is alive for 50 ticks

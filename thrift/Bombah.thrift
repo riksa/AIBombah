@@ -16,9 +16,9 @@ const i32 TICKS_PER_TILE   = 20
 const i32 TICKS_BOMB      = 150
 
 /**
- * if bomb is in flames, it will explode in 5 ticks
+ * if bomb is in flames, it will explode in 2 ticks
  */
-const i32 TICKS_BOMB_IN_FLAMES = 5
+const i32 TICKS_BOMB_IN_FLAMES = 2
 
 /**
  * flame is alive for 50 ticks
@@ -75,6 +75,7 @@ struct BombState {
 struct FlameState {
     1: Coordinate coordinate,
     2: i32 ticksRemaining,
+    3: bool burningBlock
 }
 
 enum Disease {
