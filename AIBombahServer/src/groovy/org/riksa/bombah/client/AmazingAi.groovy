@@ -10,6 +10,8 @@ import org.riksa.bombah.thrift.Constants
 import org.riksa.bombah.thrift.Tile
 import org.riksa.bombah.thrift.BombState
 import org.riksa.bombah.thrift.FlameState
+import org.riksa.bombah.server.Game
+import org.riksa.bombah.thrift.Disease
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,18 +60,18 @@ class AmazingAi {
         if (path) {
             log.debug("Found path without bomb here $path")
             Coordinate target = path.get(0)
-            def myTile = getTileCoordinate( myState.x, myState.y, null )
+            def myTile = getTileCoordinate(myState.x, myState.y, null)
             def dir
-            if( target.x < myTile.x )
+            if (target.x < myTile.x)
                 dir = Direction.E
-            if( target.x > myTile.x )
+            if (target.x > myTile.x)
                 dir = Direction.W
-            if( target.y < myTile.y )
+            if (target.y < myTile.y)
                 dir = Direction.S
-            if( target.y > myTile.y )
+            if (target.y > myTile.y)
                 dir = Direction.N
 
-            log.debug( "Moving $myTile -> $dir = $target ")
+            log.debug("Moving $myTile -> $dir = $target ")
             return new Action(what: Action.ActionTypeEnum.MOVE, direction: dir)
         }
 
@@ -127,7 +129,7 @@ class AmazingAi {
 
             [Direction.N, Direction.E, Direction.W, Direction.S].each {
                 def coordinate = getTileCoordinate(t.x, t.y, it)
-                if( !visited.contains(coordinate) ) {
+                if (!visited.contains(coordinate)) {
                     if (canMoveTo(coordinate.x, coordinate.y)) {
                         visited.add(coordinate)
                         q.add(coordinate)
@@ -189,8 +191,8 @@ class AmazingAi {
             return gameInfo.tiles.get(idx)
     }
 
-    FlameState getTileFlame(def flames, int x, int y) {
-        flames.find {
+    FlameState getTileFlame(int x, int y) {
+        mapState.flames.find {
             it.coordinate.x == x && it.coordinate.y == y
         }
     }
@@ -230,12 +232,123 @@ class AmazingAi {
             spec[flame.coordinate.x][flame.coordinate.y].stop = flame.ticksRemaining
         }
 
-        // TODO: process bombs
+        def bombs = new LinkedList<BombState>(mapState.bombs)
+        if (dropBomb) {
+            def ticks = Constants.TICKS_BOMB
+            if (myState.disease == Disease.FAST_BOMB) {
+                ticks >> 1
+            }
+            if (myState.disease == Disease.SLOW_BOMB) {
+                ticks << 1
+            }
+            bombs.add(new BombState(
+                    blastSize: myState.bombSize,
+                    xCoordinate: Math.round(myState.x),
+                    yCoordinate: Math.round(myState.y),
+                    ticksRemaining: ticks,
+                    moving: false,
+                    direction: Direction.E,
+                    owner: myState.playerId
+            ))
+        }
+
+        def destroyTile = {
+            x, y, tickOffset ->
+            if (x < 0 || y < 0 || x >= gameInfo.mapWidth || y >= gameInfo.mapHeight)
+                return Game.DestroyEnum.BLOCKED
+
+            synchronized (bombs) {
+                bombs.each {
+                    def coordinates = getTileCoordinate(it.xCoordinate, it.yCoordinate, null)
+                    if (coordinates.x == x && coordinates.y == y) {
+                        it.ticksRemaining = tickOffset + Constants.TICKS_BOMB_IN_FLAMES
+                    }
+                }
+            }
+
+            def tile = getTile(x, y)
+            switch (tile) {
+                case Tile.BUFF_BOMB:
+                case Tile.BUFF_CHAIN:
+                case Tile.BUFF_FLAME:
+                case Tile.BUFF_FOOT:
+                case Tile.DEBUFF:
+                    return Game.DestroyEnum.DESTROYED;
+                case Tile.DESTRUCTIBLE:
+                    return Game.DestroyEnum.DESTROYED;
+                case Tile.INDESTRUCTIBLE:
+                    return Game.DestroyEnum.BLOCKED;
+                case Tile.NONE:
+                    if (getTileFlame(x, y)?.burningBlock)
+                        return Game.DestroyEnum.BLOCKED;
+                    else
+                        return Game.DestroyEnum.CONTINUE;
+                default:
+                    return Game.DestroyEnum.BLOCKED;
+            }
+
+        }
+
+
+        def handleTileFlame = {
+            x, y, tickOffset ->
+            switch (destroyTile(x, y, tickOffset)) {
+                case Game.DestroyEnum.BLOCKED:
+                    return false
+                case Game.DestroyEnum.DESTROYED:
+                    spec[x][y].start = tickOffset
+                    spec[x][y].stop = tickOffset + Constants.TICKS_FLAME
+                    return false
+                case Game.DestroyEnum.CONTINUE:
+                    spec[x][y].start = tickOffset
+                    spec[x][y].stop = tickOffset + Constants.TICKS_FLAME
+                    return true
+            }
+        }
+
+        def explodeBomb = {
+            BombState bomb, int tickOffset ->
+            log.debug("Bomb $bomb")
+            def coordinate = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
+
+            handleTileFlame(coordinate.x, coordinate.y, tickOffset)
+
+            for (i in 1..bomb.blastSize) {
+                if (!handleTileFlame(coordinate.x + i, coordinate.y, tickOffset))
+                    break;
+            }
+            for (i in 1..bomb.blastSize) {
+                if (!handleTileFlame(coordinate.x - i, coordinate.y, tickOffset))
+                    break;
+            }
+            for (i in 1..bomb.blastSize) {
+                if (!handleTileFlame(coordinate.x, coordinate.y + i, tickOffset))
+                    break;
+            }
+            for (i in 1..bomb.blastSize) {
+                if (!handleTileFlame(coordinate.x, coordinate.y - i, tickOffset))
+                    break;
+            }
+
+
+        }
+
+        while (!bombs.isEmpty()) {
+            bombs.sort {
+                it.ticksRemaining
+            }
+            def bomb = bombs.removeFirst()
+            explodeBomb(bomb, 0)
+        }
 
         return spec
     }
 
     boolean canBomb() {
+        if (mapState?.bombs?.grep() {
+            it.owner == gameInfo.playerId
+        }.size() >= myState.bombAmount) return false
+
         def coordinate = getTileCoordinate(myState.x, myState.y, null)
         return !getTileBomb(coordinate.x, coordinate.y)
     }
