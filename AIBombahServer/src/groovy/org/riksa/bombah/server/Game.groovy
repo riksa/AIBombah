@@ -116,7 +116,7 @@ class Game {
 
         waiting = new AtomicLong(0)
         currentTick = 0
-        slots = 4
+        slots = 1
         mapState = new MapState(currentTick: 0)
         gameState = GameState.CREATED
     }

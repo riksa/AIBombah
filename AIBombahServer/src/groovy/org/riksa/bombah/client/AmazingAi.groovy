@@ -35,7 +35,12 @@ class AmazingAi {
 
     def setMapState(MapState mapState) {
         this.mapState = mapState
-        myState = mapState.players.find { it.playerId == gameInfo.playerId }
+        def newState = mapState.players.find { it.playerId == gameInfo.playerId }
+        if( newState )
+            myState = newState
+        else
+            log.warn "Why is $newState null"
+
         log.debug("My state $myState")
     }
 
@@ -77,6 +82,17 @@ class AmazingAi {
 
         def direction = [Direction.N, Direction.E, Direction.W, Direction.S].get(random.nextInt(4))
         return new Action(what: Action.ActionTypeEnum.MOVE, direction: direction)
+    }
+
+    def drawFlameSpeculation(FlameSpeculation[][] flameSpeculation) {
+        for( y in 0 .. gameInfo.mapHeight-1 )  {
+            def sb = new StringBuffer()
+            for( x in 0 .. gameInfo.mapWidth-1 ) {
+                def spec = flameSpeculation[x][y]
+                sb.append( String.format("[%3d-%3d] ", spec.start<999?spec.start:0, spec.stop<999?spec.stop:0) )
+            }
+            log.debug( sb.toString() )
+        }
     }
 
     Coordinate getTileCoordinate(x, y, direction) {
@@ -338,16 +354,17 @@ class AmazingAi {
                 it.ticksRemaining
             }
             def bomb = bombs.removeFirst()
-            explodeBomb(bomb, 0)
+            explodeBomb(bomb, bomb.ticksRemaining)
         }
 
+        drawFlameSpeculation( spec )
         return spec
     }
 
     boolean canBomb() {
-        if (mapState?.bombs?.grep() {
+        if (mapState.bombs.grep() {
             it.owner == gameInfo.playerId
-        }.size() >= myState.bombAmount) return false
+        }.size() >= myState?.bombAmount) return false
 
         def coordinate = getTileCoordinate(myState.x, myState.y, null)
         return !getTileBomb(coordinate.x, coordinate.y)
