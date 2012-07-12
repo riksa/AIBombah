@@ -90,9 +90,10 @@
                 if (player.alive) {
                     var x = player.x;
                     var y = player.y;
-                    var texture = playerTextures[i];
-                    var image = playerImages[i];
-                    drawTile(x * 64, y * 64, texture, image);
+                    drawTile(x * 64, y * 64, playerTextures[i], playerImages[i]);
+                    if( player.disease ) {
+                        drawTile(x * 64, y * 64, textures[Tile.DEBUFF], images[Tile.DEBUFF]);
+                    }
                 }
             });
 

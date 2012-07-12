@@ -99,6 +99,7 @@ def clientRunnable = new Runnable() {
         else
             action.what = ActionTypeEnum.MOVE
 
+        log.debug( "Action ${action.direction}")
         return action;
     }
 }

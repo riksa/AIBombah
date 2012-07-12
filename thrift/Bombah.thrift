@@ -25,6 +25,12 @@ const i32 TICKS_BOMB_IN_FLAMES = 2
  */
 const i32 TICKS_FLAME     = 50
 
+/**
+ * Length of a fresh infection
+ */
+const i32 TICKS_DISEASE   = 1000
+
+
 enum Direction {
     N  = 0,
     NE = 1,
@@ -110,7 +116,8 @@ struct PlayerState {
     6:bool alive,
     7:double x,
     8:double y,
-    9:i32 playerId
+    9:i32 playerId,
+    10:i32 diseaseTicks
 }
 
 struct MapState {

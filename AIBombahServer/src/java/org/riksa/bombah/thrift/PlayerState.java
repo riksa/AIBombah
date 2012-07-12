@@ -39,6 +39,7 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
   private static final org.apache.thrift.protocol.TField X_FIELD_DESC = new org.apache.thrift.protocol.TField("x", org.apache.thrift.protocol.TType.DOUBLE, (short)7);
   private static final org.apache.thrift.protocol.TField Y_FIELD_DESC = new org.apache.thrift.protocol.TField("y", org.apache.thrift.protocol.TType.DOUBLE, (short)8);
   private static final org.apache.thrift.protocol.TField PLAYER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("playerId", org.apache.thrift.protocol.TType.I32, (short)9);
+  private static final org.apache.thrift.protocol.TField DISEASE_TICKS_FIELD_DESC = new org.apache.thrift.protocol.TField("diseaseTicks", org.apache.thrift.protocol.TType.I32, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -59,6 +60,7 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
   public double x; // required
   public double y; // required
   public int playerId; // required
+  public int diseaseTicks; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -74,7 +76,8 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
     ALIVE((short)6, "alive"),
     X((short)7, "x"),
     Y((short)8, "y"),
-    PLAYER_ID((short)9, "playerId");
+    PLAYER_ID((short)9, "playerId"),
+    DISEASE_TICKS((short)10, "diseaseTicks");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -107,6 +110,8 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
           return Y;
         case 9: // PLAYER_ID
           return PLAYER_ID;
+        case 10: // DISEASE_TICKS
+          return DISEASE_TICKS;
         default:
           return null;
       }
@@ -155,7 +160,8 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
   private static final int __X_ISSET_ID = 5;
   private static final int __Y_ISSET_ID = 6;
   private static final int __PLAYERID_ISSET_ID = 7;
-  private BitSet __isset_bit_vector = new BitSet(8);
+  private static final int __DISEASETICKS_ISSET_ID = 8;
+  private BitSet __isset_bit_vector = new BitSet(9);
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -177,6 +183,8 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
     tmpMap.put(_Fields.PLAYER_ID, new org.apache.thrift.meta_data.FieldMetaData("playerId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DISEASE_TICKS, new org.apache.thrift.meta_data.FieldMetaData("diseaseTicks", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(PlayerState.class, metaDataMap);
   }
@@ -193,7 +201,8 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
     boolean alive,
     double x,
     double y,
-    int playerId)
+    int playerId,
+    int diseaseTicks)
   {
     this();
     this.bombSize = bombSize;
@@ -213,6 +222,8 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
     setYIsSet(true);
     this.playerId = playerId;
     setPlayerIdIsSet(true);
+    this.diseaseTicks = diseaseTicks;
+    setDiseaseTicksIsSet(true);
   }
 
   /**
@@ -232,6 +243,7 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
     this.x = other.x;
     this.y = other.y;
     this.playerId = other.playerId;
+    this.diseaseTicks = other.diseaseTicks;
   }
 
   public PlayerState deepCopy() {
@@ -257,6 +269,8 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
     this.y = 0.0;
     setPlayerIdIsSet(false);
     this.playerId = 0;
+    setDiseaseTicksIsSet(false);
+    this.diseaseTicks = 0;
   }
 
   public byte getBombSize() {
@@ -475,6 +489,29 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
     __isset_bit_vector.set(__PLAYERID_ISSET_ID, value);
   }
 
+  public int getDiseaseTicks() {
+    return this.diseaseTicks;
+  }
+
+  public PlayerState setDiseaseTicks(int diseaseTicks) {
+    this.diseaseTicks = diseaseTicks;
+    setDiseaseTicksIsSet(true);
+    return this;
+  }
+
+  public void unsetDiseaseTicks() {
+    __isset_bit_vector.clear(__DISEASETICKS_ISSET_ID);
+  }
+
+  /** Returns true if field diseaseTicks is set (has been assigned a value) and false otherwise */
+  public boolean isSetDiseaseTicks() {
+    return __isset_bit_vector.get(__DISEASETICKS_ISSET_ID);
+  }
+
+  public void setDiseaseTicksIsSet(boolean value) {
+    __isset_bit_vector.set(__DISEASETICKS_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case BOMB_SIZE:
@@ -549,6 +586,14 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
       }
       break;
 
+    case DISEASE_TICKS:
+      if (value == null) {
+        unsetDiseaseTicks();
+      } else {
+        setDiseaseTicks((Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -581,6 +626,9 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
     case PLAYER_ID:
       return Integer.valueOf(getPlayerId());
 
+    case DISEASE_TICKS:
+      return Integer.valueOf(getDiseaseTicks());
+
     }
     throw new IllegalStateException();
   }
@@ -610,6 +658,8 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
       return isSetY();
     case PLAYER_ID:
       return isSetPlayerId();
+    case DISEASE_TICKS:
+      return isSetDiseaseTicks();
     }
     throw new IllegalStateException();
   }
@@ -705,6 +755,15 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
       if (!(this_present_playerId && that_present_playerId))
         return false;
       if (this.playerId != that.playerId)
+        return false;
+    }
+
+    boolean this_present_diseaseTicks = true;
+    boolean that_present_diseaseTicks = true;
+    if (this_present_diseaseTicks || that_present_diseaseTicks) {
+      if (!(this_present_diseaseTicks && that_present_diseaseTicks))
+        return false;
+      if (this.diseaseTicks != that.diseaseTicks)
         return false;
     }
 
@@ -814,6 +873,16 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetDiseaseTicks()).compareTo(typedOther.isSetDiseaseTicks());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDiseaseTicks()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.diseaseTicks, typedOther.diseaseTicks);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -872,6 +941,10 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
     if (!first) sb.append(", ");
     sb.append("playerId:");
     sb.append(this.playerId);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("diseaseTicks:");
+    sb.append(this.diseaseTicks);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -989,6 +1062,14 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 10: // DISEASE_TICKS
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.diseaseTicks = iprot.readI32();
+              struct.setDiseaseTicksIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1032,6 +1113,9 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
       oprot.writeFieldEnd();
       oprot.writeFieldBegin(PLAYER_ID_FIELD_DESC);
       oprot.writeI32(struct.playerId);
+      oprot.writeFieldEnd();
+      oprot.writeFieldBegin(DISEASE_TICKS_FIELD_DESC);
+      oprot.writeI32(struct.diseaseTicks);
       oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -1078,7 +1162,10 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
       if (struct.isSetPlayerId()) {
         optionals.set(8);
       }
-      oprot.writeBitSet(optionals, 9);
+      if (struct.isSetDiseaseTicks()) {
+        optionals.set(9);
+      }
+      oprot.writeBitSet(optionals, 10);
       if (struct.isSetBombSize()) {
         oprot.writeByte(struct.bombSize);
       }
@@ -1106,12 +1193,15 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
       if (struct.isSetPlayerId()) {
         oprot.writeI32(struct.playerId);
       }
+      if (struct.isSetDiseaseTicks()) {
+        oprot.writeI32(struct.diseaseTicks);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, PlayerState struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(9);
+      BitSet incoming = iprot.readBitSet(10);
       if (incoming.get(0)) {
         struct.bombSize = iprot.readByte();
         struct.setBombSizeIsSet(true);
@@ -1147,6 +1237,10 @@ public class PlayerState implements org.apache.thrift.TBase<PlayerState, PlayerS
       if (incoming.get(8)) {
         struct.playerId = iprot.readI32();
         struct.setPlayerIdIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.diseaseTicks = iprot.readI32();
+        struct.setDiseaseTicksIsSet(true);
       }
     }
   }

@@ -56,4 +56,9 @@ public class Constants {
    */
   public static final int TICKS_FLAME = 50;
 
+  /**
+   * Length of a fresh infection
+   */
+  public static final int TICKS_DISEASE = 1000;
+
 }

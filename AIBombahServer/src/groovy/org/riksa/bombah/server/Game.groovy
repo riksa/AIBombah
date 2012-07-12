@@ -31,6 +31,7 @@ class Game {
     final def controllers = [:]
     def buffs
     Random random = new Random()
+    final double INFECTION_RADIUS_SQUARED = Math.pow(0.5d,2)
 
     enum DestroyEnum {
         CONTINUE,
@@ -107,7 +108,7 @@ class Game {
         )
 
         buffs = new Tile[gameInfo.mapWidth][gameInfo.mapHeight];
-        randomizeBuffs(Tile.DEBUFF, 9)
+        randomizeBuffs(Tile.DEBUFF, 20)
         randomizeBuffs(Tile.BUFF_BOMB, 9)
         randomizeBuffs(Tile.BUFF_FLAME, 9)
         randomizeBuffs(Tile.BUFF_CHAIN, 1)
@@ -241,9 +242,27 @@ class Game {
                 }
             }
         }
+        players.grep {it.disease && it.disease != Disease.NONE }.each {
+            PlayerState infected ->
+
+            players.grep {it.disease == null || it.disease == Disease.NONE }.each {
+                PlayerState target ->
+                def dist = Math.pow(target.x-infected.x,2) + Math.pow(target.y-infected.y,2)
+
+                if( dist < INFECTION_RADIUS_SQUARED )
+                    infect( target, infected.disease, infected.diseaseTicks )
+            }
+
+            if (--infected.diseaseTicks <= 0) {
+                infected.disease = Disease.NONE
+            }
+
+
+        }
 
         players.grep {it.alive}.each {
             PlayerState it ->
+
             double step = 1d / Constants.TICKS_PER_TILE
             if (it.disease == Disease.FAST)
                 step *= 4
@@ -272,7 +291,7 @@ class Game {
                     log.debug("Got foot")
                     break
                 case Tile.DEBUFF:
-                    it.disease = randomDisease()
+                    infect(it, randomDisease(), Constants.TICKS_DISEASE)
                     log.debug("Disease obtained ${it.disease}")
                     break;
             }
@@ -349,6 +368,11 @@ class Game {
 //                tiles: gameInfo.tiles)
 
         currentTick++
+    }
+
+    def infect(PlayerState playerState, Disease disease, int ticks) {
+        playerState.disease = disease
+        playerState.diseaseTicks = ticks
     }
 
     Disease randomDisease() {

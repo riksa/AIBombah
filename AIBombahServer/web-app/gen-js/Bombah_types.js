@@ -493,6 +493,7 @@ PlayerState = function(args) {
   this.x = null;
   this.y = null;
   this.playerId = null;
+  this.diseaseTicks = null;
   if (args) {
     if (args.bombSize !== undefined) {
       this.bombSize = args.bombSize;
@@ -520,6 +521,9 @@ PlayerState = function(args) {
     }
     if (args.playerId !== undefined) {
       this.playerId = args.playerId;
+    }
+    if (args.diseaseTicks !== undefined) {
+      this.diseaseTicks = args.diseaseTicks;
     }
   }
 };
@@ -600,6 +604,13 @@ PlayerState.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
+      case 10:
+      if (ftype == Thrift.Type.I32) {
+        this.diseaseTicks = input.readI32().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
       default:
         input.skip(ftype);
     }
@@ -654,6 +665,11 @@ PlayerState.prototype.write = function(output) {
   if (this.playerId) {
     output.writeFieldBegin('playerId', Thrift.Type.I32, 9);
     output.writeI32(this.playerId);
+    output.writeFieldEnd();
+  }
+  if (this.diseaseTicks) {
+    output.writeFieldBegin('diseaseTicks', Thrift.Type.I32, 10);
+    output.writeI32(this.diseaseTicks);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -1486,3 +1502,4 @@ TICKS_PER_TILE = 20;
 TICKS_BOMB = 150;
 TICKS_BOMB_IN_FLAMES = 2;
 TICKS_FLAME = 50;
+TICKS_DISEASE = 1000;
