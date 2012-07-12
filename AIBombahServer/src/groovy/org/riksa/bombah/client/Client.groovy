@@ -70,15 +70,14 @@ Coordinate getTileCoordinate(x, y, direction) {
 }
 
 def clientRunnable = new Runnable() {
-
     int gameId = -1
-    GameInfo gameInfo
-    MapState mapState
-    PlayerState myState
-    def spec
-
     @Override
     void run() {
+        GameInfo gameInfo
+        MapState mapState
+        PlayerState myState
+        def spec
+
         def transport = createTransport(url)
         try {
             def client = createClient(transport)
@@ -147,29 +146,61 @@ def clientRunnable = new Runnable() {
         return new Action(what: ActionTypeEnum.MOVE, direction: direction)
     }
 
-    List<Direction> findSafePath(def flameSpeculations) {
-        def safe = [Direction.N, Direction.E, Direction.W, Direction.S].grep {
-            def targetLocation = getTileCoordinate(myState.x, myState.y, it)
-            // TODO: BFS
-            canMoveSafe(targetLocation, 0, flameSpeculations)
+    List<Coordinate> findSafePath(def flameSpeculations) {
+        //http://en.wikipedia.org/wiki/Breadth-first_search
+        // //        1 procedure BFS(G,v):
+//        2      create a queue Q
+//        3      enqueue v onto Q
+//        4      mark v
+//        5      while Q is not empty:
+//        6          t ← Q.dequeue()
+//        7          if t is what we are looking for:
+//        8              return t
+//        9          for all edges e in G.incidentEdges(t) do
+//        10             o ← G.opposite(t,e)
+//        11             if o is not marked:
+//        12                  mark o
+//        13                  enqueue o onto Q
+        def visited = new HashSet<Coordinate>()
+        def q = new LinkedList<Coordinate>()
+        def v = getTileCoordinate(myState.x, myState.y, null)
+        q.add( v )
+        visited.add( v )
+        while( !q.isEmpty() ) {
+            def t = q.removeFirst()
+
+            def reachTile = 0
+            def exitTile = reachTile + Constants.TICKS_PER_TILE + Constants.TICKS_BOMB // kludge, is it safe enough to stay there
+
+            if( canMoveSafe(t, reachTile, exitTile, flameSpeculations) )  {
+                return [t]
+            }
+
+            [Direction.N, Direction.E, Direction.W, Direction.S].each {
+                def coordinate = getTileCoordinate(t.x, t.y, it)
+                if( canMoveTo( coordinate.x, coordinate.y ) ) {
+                    q.add( coordinate )
+                }
+
+            }
         }
 
-        if (safe) {
-            def idx = random.nextInt(safe.size())
-            return [safe[idx]]
-        }
+        log.debug( "Path not found, random dir")
+        def safe = [Direction.N, Direction.E, Direction.W, Direction.S]
+        def idx = random.nextInt(safe.size())
+        return [safe[idx]]
 
     }
 
-    def canMoveSafe(Coordinate coordinate, int tick, FlameSpeculation[][] flameSpeculations) {
+    def canMoveSafe(Coordinate coordinate, int enter, int exit, FlameSpeculation[][] flameSpeculations) {
         if (canMoveTo(coordinate.x, coordinate.y)) {
             // TODO: how long would it take to be there and beyond, for now assume next tile
             def spec = flameSpeculations[coordinate.x][coordinate.y]
-            if (spec.start > tick + Constants.TICKS_PER_TILE) {
+            if (spec.start > exit ) {
                 // we got time to move to and from the tile without dying
                 return true
             }
-            if (spec.stop < tick ) {
+            if (spec.stop < enter ) {
                 // flame is out by the time we get there
                 return true
             }
@@ -200,14 +231,14 @@ def clientRunnable = new Runnable() {
         return true
     }
 
-    Tile getTile(int x, int y) {
-        int idx = x + y * gameInfo.mapWidth
-        if (idx >= 0 && idx < gameInfo.tiles.size())
-            return gameInfo.tiles.get(idx)
+    Tile getTile(tiles, int x, int y, int w) {
+        int idx = x + y * w
+        if (idx >= 0 && idx < tiles.size())
+            return tiles.get(idx)
     }
 
-    FlameState getTileFlame(int x, int y) {
-        mapState.flames.find {
+    FlameState getTileFlame(def flames, int x, int y) {
+        flames.find {
             it.coordinate.x == x && it.coordinate.y == y
         }
     }
