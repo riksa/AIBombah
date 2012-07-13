@@ -40,25 +40,30 @@ class Game {
     }
 
     boolean canMove(double x, double y, Direction direction, double step) {
-//        def currentLocation = getTileCoordinate(x, y, null)
+        def currentLocation = getTileCoordinate(x, y, null)
         def half = 0.5d + step
 
+        def targetLocation
         switch (direction) {
             case Direction.N:
-                def targetLocation = getTileCoordinate(x, y + half, null)
-                return canMoveTo(targetLocation.x, targetLocation.y)
+                targetLocation = getTileCoordinate(x, y + half, null)
+                break
             case Direction.E:
-                def targetLocation = getTileCoordinate(x + half, y, null)
-                return canMoveTo(targetLocation.x, targetLocation.y)
+                targetLocation = getTileCoordinate(x + half, y, null)
+                break
             case Direction.W:
-                def targetLocation = getTileCoordinate(x - half, y, null)
-                return canMoveTo(targetLocation.x, targetLocation.y)
+                targetLocation = getTileCoordinate(x - half, y, null)
+                break
             case Direction.S:
-                def targetLocation = getTileCoordinate(x, y - half, null)
-                return canMoveTo(targetLocation.x, targetLocation.y)
+                targetLocation = getTileCoordinate(x, y - half, null)
+                break
             default:
                 return false
         }
+        if( currentLocation.x == targetLocation.x && currentLocation.y == targetLocation.y )
+            return true
+        return canMoveTo(targetLocation.x, targetLocation.y)
+
     }
 
     Coordinate getTileCoordinate(x, y, direction) {
@@ -116,7 +121,7 @@ class Game {
 
         waiting = new AtomicLong(0)
         currentTick = 0
-        slots = 4
+        slots = 1
         mapState = new MapState(currentTick: 0)
         gameState = GameState.CREATED
     }
@@ -256,8 +261,15 @@ class Game {
             if (--infected.diseaseTicks <= 0) {
                 infected.disease = Disease.NONE
             }
+        }
 
-
+        players.grep {it.disease == Disease.DIARRHEA }.each {
+            PlayerState infected ->
+            def coordinate = getTileCoordinate(infected.x, infected.y, null)
+            if (!getTileBomb(coordinate.x, coordinate.y)) {
+                BombAction bombAction = new BombAction(chainBombs: false)
+                bomb(infected.playerId, bombAction)
+            }
         }
 
         players.grep {it.alive}.each {
@@ -376,9 +388,9 @@ class Game {
     }
 
     Disease randomDisease() {
-        if (random.nextBoolean())
-            return Disease.FAST
-        return Disease.SLOW
+        def pool = [Disease.DIARRHEA]
+
+        return pool[random.nextInt(pool.size())]
 
 //        return Disease.DIARRHEA
     }
@@ -538,6 +550,14 @@ class Game {
         }
     }
 
+    BombState getTileBomb(int x, int y) {
+        bombs.find {
+            BombState bomb ->
+            def coordinate = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
+            return (coordinate.x == x && coordinate.y == y)
+        }
+    }
+
     Tile getTileBuff(int x, int y) {
         if (x >= 0 && y >= 0 && x < gameInfo.mapWidth && y < gameInfo.mapHeight)
             return buffs[x][y]
@@ -557,7 +577,7 @@ class Game {
         while ((idx = gameInfo.tiles.indexOf(Tile.DESTRUCTIBLE)) != -1) {
             int x = idx % gameInfo.mapWidth
             int y = (idx - x) / gameInfo.mapWidth
-            destroyDestructible(x,y)
+            destroyDestructible(x, y)
         }
 
         def timerTask = new TimerTask() {
