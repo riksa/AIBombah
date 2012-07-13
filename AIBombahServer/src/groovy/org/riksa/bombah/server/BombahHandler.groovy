@@ -52,11 +52,10 @@ class BombahHandler implements BombahService.Iface {
                     // no longer moving, for whatever reason
 //                    log.debug( "Not moving, $currentState")
                     done = true
-                } else {
 //                    log.debug( "Moving towards $targetTile at $currentState")
-                    if( Math.abs(targetTile.x - currentState.x)  < 0.001d && Math.abs(targetTile.y - currentState.y) < 0.001d ) {
-                        done = true
-                    }
+                }
+                if( Math.abs(targetTile.x - currentState.x)  < 0.001d && Math.abs(targetTile.y - currentState.y) < 0.001d ) {
+                    done = true
                 }
 
                 oldX = currentState.x

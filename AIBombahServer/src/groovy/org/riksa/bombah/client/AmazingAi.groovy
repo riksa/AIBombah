@@ -36,7 +36,7 @@ class AmazingAi {
     def setMapState(MapState mapState) {
         this.mapState = mapState
         def newState = mapState.players.find { it.playerId == gameInfo.playerId }
-        if( newState )
+        if (newState)
             myState = newState
         else
             log.warn "Why is $newState null"
@@ -44,54 +44,141 @@ class AmazingAi {
         log.debug("My state $myState")
     }
 
+
+
     Action pickAction() {
-        def flameSpeculation
+        def flameSpeculations = buildFlameSpeculation(false)
         List<Direction> path
 
-        if (canBomb()) {
-            flameSpeculation = buildFlameSpeculation(true)
-            log.debug("FlameSpec $flameSpeculation")
-            path = findSafePath(flameSpeculation)
-            if (path) {
-                log.debug("Found path with bomb here $path")
-                return new Action(what: Action.ActionTypeEnum.BOMB)
-            } else {
-                log.debug("Bombing would be suicidal")
+        path = pathToReachableBuff(flameSpeculations)
+        if ( path && path.size() > 1 ) {
+            return createMoveAction(path.get(1))
+        }
+
+//        if (canBomb()) {
+//            def bombFlameSpeculation = buildFlameSpeculation(true)
+//            path = findSafePath(flameSpeculation)
+//            if (path) {
+//                log.debug("Found path with bomb here $path")
+//                return new Action(what: Action.ActionTypeEnum.BOMB)
+//            } else {
+//                log.debug("Bombing would be suicidal")
+//            }
+//        }
+//
+//        flameSpeculation = buildFlameSpeculation(false)
+//        path = findSafePath(flameSpeculation)
+//        if (path) {
+//            log.debug("Found path without bomb here $path")
+//            Coordinate target = path.get(0)
+//            def myTile = getTileCoordinate(myState.x, myState.y, null)
+//            def dir
+//            if (target.x < myTile.x)
+//                dir = Direction.E
+//            if (target.x > myTile.x)
+//                dir = Direction.W
+//            if (target.y < myTile.y)
+//                dir = Direction.S
+//            if (target.y > myTile.y)
+//                dir = Direction.N
+//
+//            log.debug("Moving $myTile -> $dir = $target ")
+//            return new Action(what: Action.ActionTypeEnum.MOVE, direction: dir)
+//        }
+
+        return new Action(what: Action.ActionTypeEnum.WAIT)
+
+//        def direction = [Direction.N, Direction.E, Direction.W, Direction.S].get(random.nextInt(4))
+//        return new Action(what: Action.ActionTypeEnum.MOVE, direction: direction)
+    }
+
+    List<Coordinate> pathToReachableBuff(def flameSpeculations) {
+        //http://en.wikipedia.org/wiki/Breadth-first_search
+        // //        1 procedure BFS(G,v):
+//        2      create a queue Q
+//        3      enqueue v onto Q
+//        4      mark v
+//        5      while Q is not empty:
+//        6          t ← Q.dequeue()
+//        7          if t is what we are looking for:
+//        8              return t
+//        9          for all edges e in G.incidentEdges(t) do
+//        10             o ← G.opposite(t,e)
+//        11             if o is not marked:
+//        12                  mark o
+//        13                  enqueue o onto Q
+        def visited = new HashSet<Coordinate>()
+        def q = new LinkedList<Coordinate>()
+        def v = getTileCoordinate(myState.x, myState.y, null)
+        q.add(v)
+        visited.add(v)
+        def parent = [:]
+
+        while (!q.isEmpty()) {
+            def t = q.removeFirst()
+
+            def reachTile = 0
+            def exitTile = reachTile + Constants.TICKS_PER_TILE + Constants.TICKS_BOMB // kludge, is it safe enough to stay there
+
+            log.debug( "Examine $t")
+            Tile buff = getTileBuff(t.x, t.y)
+            if (buff && canMoveSafe(t, reachTile, exitTile, flameSpeculations)) {
+                log.debug( "Found buff $t")
+                def path = [t]
+                def node = t
+                while( parent[node] ) {
+                    log.debug( "Parent of $node = "+ parent[node] )
+                    node = parent[node]
+                    path.add(0, node)
+                }
+
+                log.debug( "Path $path" )
+                return path
+            }
+
+            [Direction.N, Direction.E, Direction.W, Direction.S].each {
+                def coordinate = getTileCoordinate(t.x, t.y, it)
+                if (!visited.contains(coordinate)) {
+                    parent[coordinate] = t
+                    if (canMoveTo(coordinate.x, coordinate.y)) {
+                        log.debug( "Queued $coordinate")
+                        visited.add(coordinate)
+                        q.add(coordinate)
+                    } else {
+                        log.debug( "Can not move to $coordinate" )
+                    }
+                } else {
+                    log.debug( "Visited $coordinate" )
+                }
+
             }
         }
+    }
 
-        flameSpeculation = buildFlameSpeculation(false)
-        path = findSafePath(flameSpeculation)
-        if (path) {
-            log.debug("Found path without bomb here $path")
-            Coordinate target = path.get(0)
-            def myTile = getTileCoordinate(myState.x, myState.y, null)
-            def dir
-            if (target.x < myTile.x)
-                dir = Direction.E
-            if (target.x > myTile.x)
-                dir = Direction.W
-            if (target.y < myTile.y)
-                dir = Direction.S
-            if (target.y > myTile.y)
-                dir = Direction.N
+    Action createMoveAction(Coordinate target) {
+        def myTile = getTileCoordinate(myState.x, myState.y, null)
+        def dir
+        if (target.x < myTile.x)
+            dir = Direction.W
+        if (target.x > myTile.x)
+            dir = Direction.E
+        if (target.y < myTile.y)
+            dir = Direction.S
+        if (target.y > myTile.y)
+            dir = Direction.N
 
-            log.debug("Moving $myTile -> $dir = $target ")
-            return new Action(what: Action.ActionTypeEnum.MOVE, direction: dir)
-        }
-
-        def direction = [Direction.N, Direction.E, Direction.W, Direction.S].get(random.nextInt(4))
-        return new Action(what: Action.ActionTypeEnum.MOVE, direction: direction)
+        log.debug("Moving $myTile -> $dir = $target ")
+        return new Action(what: Action.ActionTypeEnum.MOVE, direction: dir)
     }
 
     def drawFlameSpeculation(FlameSpeculation[][] flameSpeculation) {
-        for( y in 0 .. gameInfo.mapHeight-1 )  {
+        for (y in 0..gameInfo.mapHeight - 1) {
             def sb = new StringBuffer()
-            for( x in 0 .. gameInfo.mapWidth-1 ) {
+            for (x in 0..gameInfo.mapWidth - 1) {
                 def spec = flameSpeculation[x][y]
-                sb.append( String.format("[%3d-%3d] ", spec.start<999?spec.start:0, spec.stop<999?spec.stop:0) )
+                sb.append(String.format("[%3d-%3d] ", spec.start < 999 ? spec.start : 0, spec.stop < 999 ? spec.stop : 0))
             }
-            log.debug( sb.toString() )
+            log.debug(sb.toString())
         }
     }
 
@@ -189,8 +276,10 @@ class AmazingAi {
         }
 
         def tile = getTile(x, y)
-        if (tile == Tile.DESTRUCTIBLE || tile == Tile.INDESTRUCTIBLE)
+        if (tile == Tile.DESTRUCTIBLE || tile == Tile.INDESTRUCTIBLE) {
+            log.debug( "Tile is $tile")
             return false
+        }
 
         if (mapState.bombs.find {
             BombState bomb ->
@@ -203,8 +292,20 @@ class AmazingAi {
 
     Tile getTile(int x, int y) {
         int idx = x + y * gameInfo.mapWidth
-        if (idx >= 0 && idx < gameInfo.tiles.size())
-            return gameInfo.tiles.get(idx)
+        if (idx >= 0 && idx < mapState.tiles.size())
+            return mapState.tiles.get(idx)
+    }
+
+    Tile getTileBuff(int x, int y) {
+        Tile tile = getTile(x, y)
+        switch (tile) {
+            case Tile.BUFF_BOMB:
+            case Tile.BUFF_CHAIN:
+            case Tile.BUFF_FLAME:
+            case Tile.BUFF_FOOT:
+            case Tile.DEBUFF:
+                return tile
+        }
     }
 
     FlameState getTileFlame(int x, int y) {
@@ -357,7 +458,7 @@ class AmazingAi {
             explodeBomb(bomb, bomb.ticksRemaining)
         }
 
-        drawFlameSpeculation( spec )
+        drawFlameSpeculation(spec)
         return spec
     }
 

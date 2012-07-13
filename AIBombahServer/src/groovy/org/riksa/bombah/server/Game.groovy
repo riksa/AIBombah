@@ -31,7 +31,7 @@ class Game {
     final def controllers = [:]
     def buffs
     Random random = new Random()
-    final double INFECTION_RADIUS_SQUARED = Math.pow(0.5d,2)
+    final double INFECTION_RADIUS_SQUARED = Math.pow(0.5d, 2)
 
     enum DestroyEnum {
         CONTINUE,
@@ -116,7 +116,7 @@ class Game {
 
         waiting = new AtomicLong(0)
         currentTick = 0
-        slots = 1
+        slots = 4
         mapState = new MapState(currentTick: 0)
         gameState = GameState.CREATED
     }
@@ -247,10 +247,10 @@ class Game {
 
             players.grep {it.disease == null || it.disease == Disease.NONE }.each {
                 PlayerState target ->
-                def dist = Math.pow(target.x-infected.x,2) + Math.pow(target.y-infected.y,2)
+                def dist = Math.pow(target.x - infected.x, 2) + Math.pow(target.y - infected.y, 2)
 
-                if( dist < INFECTION_RADIUS_SQUARED )
-                    infect( target, infected.disease, infected.diseaseTicks )
+                if (dist < INFECTION_RADIUS_SQUARED)
+                    infect(target, infected.disease, infected.diseaseTicks)
             }
 
             if (--infected.diseaseTicks <= 0) {
@@ -477,7 +477,6 @@ class Game {
     def destroyDestructible(int x, int y) {
         def tiles = gameInfo.tiles
         synchronized (tiles) {
-            log.debug("Destroy destructible @ $x,$y")
             int idx = x + y * gameInfo.mapWidth
             if (idx >= 0 && idx < tiles.size()) {
                 if (tiles.get(idx) == Tile.DESTRUCTIBLE) {
@@ -488,7 +487,6 @@ class Game {
                     log.warn("Tried to destruct tile that was not destructible")
                 }
             }
-            log.debug("Destroy destructible done @ $x,$y")
         }
 
     }
@@ -554,6 +552,13 @@ class Game {
             timer.cancel()
 
         gameState = GameState.RUNNING
+
+        int idx
+        while ((idx = gameInfo.tiles.indexOf(Tile.DESTRUCTIBLE)) != -1) {
+            int x = idx % gameInfo.mapWidth
+            int y = (idx - x) / gameInfo.mapWidth
+            destroyDestructible(x,y)
+        }
 
         def timerTask = new TimerTask() {
             double avgSum = 0d

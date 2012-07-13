@@ -72,7 +72,7 @@ def clientRunnable = new Runnable() {
                             break;
                         case Action.ActionTypeEnum.WAIT:
                             log.debug("Wait $action")
-                            mapState = client.waitTicks(ai.gameInfo.playerId, 1);
+                            mapState = client.waitTicks(ai.gameInfo.playerId, 300);
                             break
                     }
                 }
