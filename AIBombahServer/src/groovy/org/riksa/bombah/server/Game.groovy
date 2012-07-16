@@ -115,7 +115,7 @@ class Game {
         )
 
         buffs = new Tile[gameInfo.mapWidth][gameInfo.mapHeight];
-        randomizeBuffs(Tile.DEBUFF, 20)
+        randomizeBuffs(Tile.DEBUFF, 9)
         randomizeBuffs(Tile.BUFF_BOMB, 9)
         randomizeBuffs(Tile.BUFF_FLAME, 9)
         randomizeBuffs(Tile.BUFF_CHAIN, 1)
@@ -238,7 +238,7 @@ class Game {
 
     synchronized void tick() throws GameOverException {
 //        def time = System.currentTimeMillis()
-        if (random.nextInt(30) == 0) {
+        if (random.nextInt(30) == -1) {
             // GOD MODE! It's raining bombs
             def freeCoordinates = findCoordinatesWithTile(Tile.NONE)
             freeCoordinates.removeAll {
@@ -606,12 +606,12 @@ class Game {
 
         gameState = GameState.RUNNING
 
-        int idx
-        while ((idx = gameInfo.tiles.indexOf(Tile.DESTRUCTIBLE)) != -1) {
-            int x = idx % gameInfo.mapWidth
-            int y = (idx - x) / gameInfo.mapWidth
-            destroyDestructible(x, y)
-        }
+//        int idx
+//        while ((idx = gameInfo.tiles.indexOf(Tile.DESTRUCTIBLE)) != -1) {
+//            int x = idx % gameInfo.mapWidth
+//            int y = (idx - x) / gameInfo.mapWidth
+//            destroyDestructible(x, y)
+//        }
 
         def timerTask = new TimerTask() {
             double avgSum = 0d

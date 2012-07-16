@@ -50,9 +50,69 @@ class AmazingAi {
         def flameSpeculations = buildFlameSpeculation(false)
         List<Direction> path
 
-        path = pathToReachableBuff(flameSpeculations)
+        // Path to buffs
+        path = pathToSomethingAwesome(flameSpeculations, {
+            Coordinate t ->
+            Tile buff = getTileBuff(t.x, t.y)
+            if (buff && buff != Tile.DEBUFF) {
+                return true
+            }
+        })
         if (path && path.size() > 1) {
             return createMoveAction(path.get(1))
+        }
+
+        // Path to something worth bombing
+        path = pathToSomethingAwesome(flameSpeculations, {
+            Coordinate t ->
+            mapState.players.each {
+                PlayerState playerState ->
+                if (playerState.playerId != myState.playerId) {
+                    def c = getTileCoordinate(playerState.x, playerState.y, null)
+                    if (c.x + 1 == t.x && c.y == t.y) {
+                        log.debug("Target player $playerState with bomb @ $t")
+                        return true
+                    }
+                    if (c.x - 1 == t.x && c.y == t.y) {
+                        log.debug("Target player $playerState with bomb @ $t")
+                        return true
+                    }
+                    if (c.x == t.x && c.y + 1 == t.y) {
+                        log.debug("Target player $playerState with bomb @ $t")
+                        return true
+                    }
+                    if (c.x == t.x && c.y - 1 == t.y) {
+                        log.debug("Target player $playerState with bomb @ $t")
+                        return true
+                    }
+                }
+            }
+            if (getTile(t.x + 1, t.y) == Tile.DESTRUCTIBLE) {
+                return true
+            }
+            if (getTile(t.x, t.y + 1) == Tile.DESTRUCTIBLE) {
+                return true
+            }
+            if (getTile(t.x, t.y - 1) == Tile.DESTRUCTIBLE) {
+                return true
+            }
+            if (getTile(t.x - 1, t.y) == Tile.DESTRUCTIBLE) {
+                return true
+            }
+            return false
+        })
+        if (path) {
+            log.debug("Path $path")
+            if (path.size() == 1) {
+                def flameSpeculationsWithBomb = buildFlameSpeculation(true)
+                if (pathToSafety(flameSpeculations))
+                    return new Action(what: Action.ActionTypeEnum.BOMB)
+                else {
+                    log.debug("Bombing would be stupid")
+                }
+            }
+            else
+                return createMoveAction(path.get(1))
         }
 
 //        log.debug( "Cannot find safe buffs")
@@ -94,13 +154,22 @@ class AmazingAi {
 //            return new Action(what: Action.ActionTypeEnum.MOVE, direction: dir)
 //        }
 
-        return new Action(what: Action.ActionTypeEnum.WAIT)
+//        return new Action(what: Action.ActionTypeEnum.WAIT)
 
-//        def direction = [Direction.N, Direction.E, Direction.W, Direction.S].get(random.nextInt(4))
-//        return new Action(what: Action.ActionTypeEnum.MOVE, direction: direction)
+        def direction = [Direction.N, Direction.E, Direction.W, Direction.S].get(random.nextInt(4))
+        return new Action(what: Action.ActionTypeEnum.MOVE, direction: direction)
     }
 
     List<Coordinate> pathToReachableBuff(def flameSpeculations) {
+        def somethingAwesome = {
+            Coordinate t ->
+            Tile buff = getTileBuff(t.x, t.y)
+            if (buff && buff != Tile.DEBUFF) {
+                return true
+            }
+        }
+
+        return pathToSomethingAwesome(flameSpeculations, somethingAwesome)
         //http://en.wikipedia.org/wiki/Breadth-first_search
         // //        1 procedure BFS(G,v):
 //        2      create a queue Q
@@ -130,6 +199,45 @@ class AmazingAi {
 
             Tile buff = getTileBuff(t.x, t.y)
             if (buff && buff != Tile.DEBUFF && canMoveSafe(t, reachTile, exitTile, flameSpeculations)) {
+                def path = [t]
+                def node = t
+                while (parent[node]) {
+                    node = parent[node]
+                    path.add(0, node)
+                }
+
+                return path
+            }
+
+            [Direction.N, Direction.E, Direction.W, Direction.S].each {
+                def coordinate = getTileCoordinate(t.x, t.y, it)
+                if (!visited.contains(coordinate)) {
+                    parent[coordinate] = t
+                    if (canMoveTo(coordinate.x, coordinate.y)) {
+                        visited.add(coordinate)
+                        q.add(coordinate)
+                    }
+                }
+
+            }
+        }
+    }
+
+    List<Coordinate> pathToSomethingAwesome(def flameSpeculations, Closure somethingAwesome) {
+        def visited = new HashSet<Coordinate>()
+        def q = new LinkedList<Coordinate>()
+        def v = getTileCoordinate(myState.x, myState.y, null)
+        q.add(v)
+        visited.add(v)
+        def parent = [:]
+
+        while (!q.isEmpty()) {
+            def t = q.removeFirst()
+
+            def reachTile = 0
+            def exitTile = reachTile + Constants.TICKS_PER_TILE + Constants.TICKS_BOMB // kludge, is it safe enough to stay there
+
+            if (somethingAwesome(t) && canMoveSafe(t, reachTile, exitTile, flameSpeculations)) {
                 def path = [t]
                 def node = t
                 while (parent[node]) {
