@@ -60,7 +60,7 @@ class Game {
             default:
                 return false
         }
-        if( currentLocation.x == targetLocation.x && currentLocation.y == targetLocation.y )
+        if (currentLocation.x == targetLocation.x && currentLocation.y == targetLocation.y)
             return true
         return canMoveTo(targetLocation.x, targetLocation.y)
 
@@ -121,7 +121,7 @@ class Game {
 
         waiting = new AtomicLong(0)
         currentTick = 0
-        slots = 1
+        slots = 4
         mapState = new MapState(currentTick: 0)
         gameState = GameState.CREATED
     }
@@ -194,22 +194,13 @@ class Game {
 
     def randomizeBuffs(Tile tile, int count) {
         count.times {
-            def freeCoordinates = []
-
-            gameInfo.tiles.eachWithIndex {
-                t, index ->
-                if (t == Tile.DESTRUCTIBLE) {
-                    int x = index % gameInfo.mapWidth
-                    int y = (index - x) / gameInfo.mapWidth
-                    def buff = getTileBuff(x, y)
-                    if (!buff)
-                        freeCoordinates.add(new Coordinate(x: x, y: y))
-                }
+            def freeCoordinates = findCoordinatesWithTile(Tile.DESTRUCTIBLE)
+            freeCoordinates.removeAll {
+                getTileBuff(it.x, it.y)
             }
 
             def pos = freeCoordinates.get(random.nextInt(freeCoordinates.size()))
             buffs[pos.x][pos.y] = tile
-
         }
     }
 
@@ -230,8 +221,49 @@ class Game {
         waitTick()
     }
 
+    List<Coordinate> findCoordinatesWithTile(Tile tile) {
+        def ret = []
+        gameInfo.tiles.eachWithIndex {
+            t, index ->
+            if (t == tile) {
+                int x = index % gameInfo.mapWidth
+                int y = (index - x) / gameInfo.mapWidth
+                ret.add(new Coordinate(x: x, y: y))
+            }
+        }
+        return ret
+    }
+
     synchronized void tick() throws GameOverException {
 //        def time = System.currentTimeMillis()
+        if (random.nextInt(30) == 0) {
+            // GOD MODE! It's raining bombs
+            def freeCoordinates = findCoordinatesWithTile(Tile.NONE)
+            freeCoordinates.removeAll {
+                getTileBuff(it.x, it.y) || getTileBomb(it.x, it.y) || getTileFlame(it.x, it.y)
+            }
+
+            def pos = freeCoordinates.get(random.nextInt(freeCoordinates.size()))
+            if (random.nextInt(15)>0) {
+                def bomb = new BombState(
+                        blastSize: 2 + random.nextInt(3),
+                        xCoordinate: pos.x,
+                        yCoordinate: pos.y,
+                        ticksRemaining: 30 + random.nextInt(150),
+                        moving: false,
+                        direction: Direction.E,
+                        owner: 1
+                )
+                bombs.add(bomb)
+            } else {
+                def pool = [Tile.BUFF_BOMB, Tile.BUFF_CHAIN, Tile.BUFF_FLAME, Tile.DEBUFF, Tile.BUFF_FOOT]
+                def buff = pool[random.nextInt(pool.size())]
+                buffs[pos.x][pos.y] = buff
+                gameInfo.tiles.putAt( pos.x+gameInfo.mapWidth*pos.y, buff )
+            }
+
+        }
+
         synchronized (flames) {
             flames.removeAll {
                 --it.ticksRemaining <= 0
@@ -388,7 +420,7 @@ class Game {
     }
 
     Disease randomDisease() {
-        def pool = [Disease.DIARRHEA]
+        def pool = Disease.values() //[Disease.DIARRHEA]
 
         return pool[random.nextInt(pool.size())]
 
@@ -593,8 +625,8 @@ class Game {
                     double capacity = ((double) timeSpent) / (double) timeAllowed
                     avgSum += capacity
                     def avg = 100d * avgSum / (double) avgSamples
-                    if (++avgSamples % 100 == 0)
-                        log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${100d * capacity}%) (@ avg: ${avg}%)")
+//                    if (++avgSamples % 100 == 0)
+//                        log.debug("CPU capacity $timeSpent/$timeAllowed (@ ${100d * capacity}%) (@ avg: ${avg}%)")
                 } catch (GameOverException e) {
                     log.debug("Game over")
                     stopGame();
@@ -664,8 +696,6 @@ class Game {
         synchronized (bombs) {
             def liveBombs = bombs.count { it.owner == playerId }
             if (liveBombs >= playerState.bombAmount) {
-                log.debug("Bombing failed, player already has $liveBombs live  bombs")
-                // TODO: information that the bombing failed
                 return new BombActionResult(myState: playerState, mapState: mapState)
             }
 

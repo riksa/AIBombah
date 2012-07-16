@@ -44,6 +44,7 @@ def log = LoggerFactory.getLogger(getClass())
 
 def clientRunnable = new Runnable() {
     int gameId = -1
+    boolean done = false
 
     @Override
     void run() {
@@ -58,21 +59,18 @@ def clientRunnable = new Runnable() {
                 log.debug("Game started, I am player #" + ai.gameInfo.playerId)
 
                 def mapState = client.getMapState(gameId)
-                while (true) {
+                while (!done) {
                     ai.setMapState(mapState)
                     def action = ai.pickAction()
                     switch (action.what) {
                         case Action.ActionTypeEnum.MOVE:
-                            log.debug("Move $action")
                             mapState = client.move(ai.gameInfo.playerId, new MoveAction(direction: action.direction)).mapState
                             break
                         case Action.ActionTypeEnum.BOMB:
-                            log.debug("Bomb $action")
                             mapState = client.bomb(ai.gameInfo.playerId, new BombAction(chainBombs: false)).mapState
                             break;
                         case Action.ActionTypeEnum.WAIT:
-                            log.debug("Wait $action")
-                            mapState = client.waitTicks(ai.gameInfo.playerId, 300);
+                            mapState = client.waitTicks(ai.gameInfo.playerId, 1);
                             break
                     }
                 }
@@ -84,6 +82,7 @@ def clientRunnable = new Runnable() {
         } catch (Exception e) {
             log.error(e.getMessage(), e)
         } finally {
+            done = true
             transport.close()
             log.debug("#Done...")
         }

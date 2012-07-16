@@ -41,7 +41,6 @@ class AmazingAi {
         else
             log.warn "Why is $newState null"
 
-        log.debug("My state $myState")
     }
 
 
@@ -54,6 +53,14 @@ class AmazingAi {
         if ( path && path.size() > 1 ) {
             return createMoveAction(path.get(1))
         }
+
+//        log.debug( "Cannot find safe buffs")
+        path = pathToSafety(flameSpeculations)
+        if ( path && path.size() > 1 ) {
+            log.debug( "Found a safe place $path")
+            return createMoveAction(path.get(1))
+        }
+//        log.debug( "Cannot find safe place")
 
 //        if (canBomb()) {
 //            def bombFlameSpeculation = buildFlameSpeculation(true)
@@ -120,19 +127,15 @@ class AmazingAi {
             def reachTile = 0
             def exitTile = reachTile + Constants.TICKS_PER_TILE + Constants.TICKS_BOMB // kludge, is it safe enough to stay there
 
-            log.debug( "Examine $t")
             Tile buff = getTileBuff(t.x, t.y)
-            if (buff && canMoveSafe(t, reachTile, exitTile, flameSpeculations)) {
-                log.debug( "Found buff $t")
+            if (buff && buff != Tile.DEBUFF && canMoveSafe(t, reachTile, exitTile, flameSpeculations)) {
                 def path = [t]
                 def node = t
                 while( parent[node] ) {
-                    log.debug( "Parent of $node = "+ parent[node] )
                     node = parent[node]
                     path.add(0, node)
                 }
 
-                log.debug( "Path $path" )
                 return path
             }
 
@@ -141,14 +144,9 @@ class AmazingAi {
                 if (!visited.contains(coordinate)) {
                     parent[coordinate] = t
                     if (canMoveTo(coordinate.x, coordinate.y)) {
-                        log.debug( "Queued $coordinate")
                         visited.add(coordinate)
                         q.add(coordinate)
-                    } else {
-                        log.debug( "Can not move to $coordinate" )
                     }
-                } else {
-                    log.debug( "Visited $coordinate" )
                 }
 
             }
@@ -172,14 +170,14 @@ class AmazingAi {
     }
 
     def drawFlameSpeculation(FlameSpeculation[][] flameSpeculation) {
-        for (y in 0..gameInfo.mapHeight - 1) {
-            def sb = new StringBuffer()
-            for (x in 0..gameInfo.mapWidth - 1) {
-                def spec = flameSpeculation[x][y]
-                sb.append(String.format("[%3d-%3d] ", spec.start < 999 ? spec.start : 0, spec.stop < 999 ? spec.stop : 0))
-            }
-            log.debug(sb.toString())
-        }
+//        for (y in 0..gameInfo.mapHeight - 1) {
+//            def sb = new StringBuffer()
+//            for (x in 0..gameInfo.mapWidth - 1) {
+//                def spec = flameSpeculation[x][y]
+//                sb.append(String.format("[%3d-%3d] ", spec.start < 999 ? spec.start : 0, spec.stop < 999 ? spec.stop : 0))
+//            }
+//            log.debug(sb.toString())
+//        }
     }
 
     Coordinate getTileCoordinate(x, y, direction) {
@@ -200,26 +198,14 @@ class AmazingAi {
     }
 
 
-    List<Coordinate> findSafePath(def flameSpeculations) {
-        //http://en.wikipedia.org/wiki/Breadth-first_search
-        // //        1 procedure BFS(G,v):
-//        2      create a queue Q
-//        3      enqueue v onto Q
-//        4      mark v
-//        5      while Q is not empty:
-//        6          t ← Q.dequeue()
-//        7          if t is what we are looking for:
-//        8              return t
-//        9          for all edges e in G.incidentEdges(t) do
-//        10             o ← G.opposite(t,e)
-//        11             if o is not marked:
-//        12                  mark o
-//        13                  enqueue o onto Q
+    List<Coordinate> pathToSafety(def flameSpeculations) {
         def visited = new HashSet<Coordinate>()
         def q = new LinkedList<Coordinate>()
         def v = getTileCoordinate(myState.x, myState.y, null)
         q.add(v)
         visited.add(v)
+        def parent = [:]
+
         while (!q.isEmpty()) {
             def t = q.removeFirst()
 
@@ -227,26 +213,30 @@ class AmazingAi {
             def exitTile = reachTile + Constants.TICKS_PER_TILE + Constants.TICKS_BOMB // kludge, is it safe enough to stay there
 
             if (canMoveSafe(t, reachTile, exitTile, flameSpeculations)) {
-                return [t]
+                def path = [t]
+                def node = t
+                while( parent[node] ) {
+                    node = parent[node]
+                    path.add(0, node)
+                }
+
+                return path
             }
 
             [Direction.N, Direction.E, Direction.W, Direction.S].each {
                 def coordinate = getTileCoordinate(t.x, t.y, it)
                 if (!visited.contains(coordinate)) {
+                    parent[coordinate] = t
                     if (canMoveTo(coordinate.x, coordinate.y)) {
                         visited.add(coordinate)
                         q.add(coordinate)
+                    } else {
                     }
+                } else {
                 }
 
             }
         }
-
-        log.debug("Path not found, random dir")
-        def safe = [Direction.N, Direction.E, Direction.W, Direction.S]
-        def idx = random.nextInt(safe.size())
-        def dir = safe[idx]
-        return [getTileCoordinate(myState.x, myState.y, dir)]
     }
 
     def canMoveSafe(Coordinate coordinate, int enter, int exit, FlameSpeculation[][] flameSpeculations) {
@@ -277,7 +267,6 @@ class AmazingAi {
 
         def tile = getTile(x, y)
         if (tile == Tile.DESTRUCTIBLE || tile == Tile.INDESTRUCTIBLE) {
-            log.debug( "Tile is $tile")
             return false
         }
 
@@ -291,8 +280,9 @@ class AmazingAi {
     }
 
     Tile getTile(int x, int y) {
+        // TODO: Why is tiles null occasionally
         int idx = x + y * gameInfo.mapWidth
-        if (idx >= 0 && idx < mapState.tiles.size())
+        if (idx >= 0 && idx < mapState?.tiles?.size())
             return mapState.tiles.get(idx)
     }
 
@@ -425,7 +415,6 @@ class AmazingAi {
 
         def explodeBomb = {
             BombState bomb, int tickOffset ->
-            log.debug("Bomb $bomb")
             def coordinate = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
 
             handleTileFlame(coordinate.x, coordinate.y, tickOffset)
