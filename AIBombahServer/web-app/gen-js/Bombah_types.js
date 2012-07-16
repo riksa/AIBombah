@@ -454,35 +454,6 @@ YouAreDeadException.prototype.write = function(output) {
   return;
 };
 
-TimeoutException = function(args) {
-};
-Thrift.inherits(TimeoutException, Thrift.TException);
-TimeoutException.prototype.name = 'TimeoutException';
-TimeoutException.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    input.skip(ftype);
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-TimeoutException.prototype.write = function(output) {
-  output.writeStructBegin('TimeoutException');
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
 PlayerState = function(args) {
   this.bombSize = null;
   this.bombAmount = null;

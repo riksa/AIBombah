@@ -103,10 +103,6 @@ exception YouAreDeadException {
 
 }
 
-exception TimeoutException {
-
-}
-
 struct PlayerState {
     1:byte bombSize, // just the buffs, actual size might be different because of diseases
     2:byte bombAmount,
@@ -187,13 +183,13 @@ service BombahService {
 //	ChainActionResult chainActions(1: i32 playerId, 2: ChainAction chainAction) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
 
 // GameId not used yet, for future use. Just use -1...
-    MapState waitTicks( 1:i32 gameId, 2: i32 ticks ) throws (1: GameOverException gameOver);
-    MapState waitForTick( 1:i32 gameId, 2: i32 tick ) throws (1: GameOverException gameOver);
-    GameInfo joinGame( 1:i32 gameId) throws (1:TimeoutException timeOutException);
+    MapState waitTicks( 1:i32 gameId, 2: i32 ticks ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+    MapState waitForTick( 1:i32 gameId, 2: i32 tick ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
+    GameInfo joinGame( 1:i32 gameId) throws (1:GameOverException gameOverException);
 	GameInfo getGameInfo(1:i32 gameId) throws (1:GameOverException gameOverException);
 	void debugResetGame(1:i32 gameId);
 
-    void waitForStart(1:i32 gameId) throws (1:TimeoutException timeOutException);
+    void waitForStart(1:i32 gameId) throws (1:GameOverException gameOverException);
 
 	MapState getMapState(1:i32 gameId) throws (1: GameOverException gameOver);
 

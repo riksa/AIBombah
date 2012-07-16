@@ -34,10 +34,11 @@ class AmazingAi {
     }
 
     def setMapState(MapState mapState) {
-        this.mapState = mapState
         def newState = mapState.players.find { it.playerId == gameInfo.playerId }
-        if (newState)
+        if (newState) {
+            this.mapState = mapState
             myState = newState
+        }
         else
             log.warn "Why is $newState null"
 
@@ -50,14 +51,14 @@ class AmazingAi {
         List<Direction> path
 
         path = pathToReachableBuff(flameSpeculations)
-        if ( path && path.size() > 1 ) {
+        if (path && path.size() > 1) {
             return createMoveAction(path.get(1))
         }
 
 //        log.debug( "Cannot find safe buffs")
         path = pathToSafety(flameSpeculations)
-        if ( path && path.size() > 1 ) {
-            log.debug( "Found a safe place $path")
+        if (path && path.size() > 1) {
+            log.debug("Found a safe place $path")
             return createMoveAction(path.get(1))
         }
 //        log.debug( "Cannot find safe place")
@@ -131,7 +132,7 @@ class AmazingAi {
             if (buff && buff != Tile.DEBUFF && canMoveSafe(t, reachTile, exitTile, flameSpeculations)) {
                 def path = [t]
                 def node = t
-                while( parent[node] ) {
+                while (parent[node]) {
                     node = parent[node]
                     path.add(0, node)
                 }
@@ -170,14 +171,14 @@ class AmazingAi {
     }
 
     def drawFlameSpeculation(FlameSpeculation[][] flameSpeculation) {
-//        for (y in 0..gameInfo.mapHeight - 1) {
-//            def sb = new StringBuffer()
-//            for (x in 0..gameInfo.mapWidth - 1) {
-//                def spec = flameSpeculation[x][y]
-//                sb.append(String.format("[%3d-%3d] ", spec.start < 999 ? spec.start : 0, spec.stop < 999 ? spec.stop : 0))
-//            }
-//            log.debug(sb.toString())
-//        }
+        for (y in 0..gameInfo.mapHeight - 1) {
+            def sb = new StringBuffer()
+            for (x in 0..gameInfo.mapWidth - 1) {
+                def spec = flameSpeculation[x][y]
+                sb.append(String.format("[%3d-%3d %s:%3d] ", spec.start < 999 ? spec.start : 0, spec.stop < 999 ? spec.stop : 0, spec.bombState ? "*" : " ", spec.bombState?.ticksRemaining ?: 0))
+            }
+            log.debug(sb.toString())
+        }
     }
 
     Coordinate getTileCoordinate(x, y, direction) {
@@ -215,7 +216,7 @@ class AmazingAi {
             if (canMoveSafe(t, reachTile, exitTile, flameSpeculations)) {
                 def path = [t]
                 def node = t
-                while( parent[node] ) {
+                while (parent[node]) {
                     node = parent[node]
                     path.add(0, node)
                 }
@@ -307,6 +308,7 @@ class AmazingAi {
     class FlameSpeculation {
         int start
         int stop
+        BombState bombState
 
         @Override
         public String toString() {
@@ -338,6 +340,8 @@ class AmazingAi {
             spec[flame.coordinate.x][flame.coordinate.y].start = 0
             spec[flame.coordinate.x][flame.coordinate.y].stop = flame.ticksRemaining
         }
+
+//        log.debug("Flames count=${mapState.flames.size()}, ${mapState.flames}")
 
         def bombs = new LinkedList<BombState>(mapState.bombs)
         if (dropBomb) {
@@ -386,10 +390,7 @@ class AmazingAi {
                 case Tile.INDESTRUCTIBLE:
                     return Game.DestroyEnum.BLOCKED;
                 case Tile.NONE:
-                    if (getTileFlame(x, y)?.burningBlock)
-                        return Game.DestroyEnum.BLOCKED;
-                    else
-                        return Game.DestroyEnum.CONTINUE;
+                    return Game.DestroyEnum.CONTINUE;
                 default:
                     return Game.DestroyEnum.BLOCKED;
             }
@@ -399,16 +400,18 @@ class AmazingAi {
 
         def handleTileFlame = {
             x, y, tickOffset ->
+
+            def buffer = Constants.TICKS_PER_SECOND
             switch (destroyTile(x, y, tickOffset)) {
                 case Game.DestroyEnum.BLOCKED:
                     return false
                 case Game.DestroyEnum.DESTROYED:
-                    spec[x][y].start = tickOffset
-                    spec[x][y].stop = tickOffset + Constants.TICKS_FLAME
+                    spec[x][y].start = Math.min(tickOffset - buffer, spec[x][y].start)
+                    spec[x][y].stop = Math.max(tickOffset + buffer + Constants.TICKS_FLAME, spec[x][y].start)
                     return false
                 case Game.DestroyEnum.CONTINUE:
-                    spec[x][y].start = tickOffset
-                    spec[x][y].stop = tickOffset + Constants.TICKS_FLAME
+                    spec[x][y].start = Math.min(tickOffset, spec[x][y].start)
+                    spec[x][y].stop = Math.max(tickOffset + Constants.TICKS_FLAME, spec[x][y].start)
                     return true
             }
         }
@@ -416,6 +419,7 @@ class AmazingAi {
         def explodeBomb = {
             BombState bomb, int tickOffset ->
             def coordinate = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
+            spec[coordinate.x][coordinate.y].bombState = bomb
 
             handleTileFlame(coordinate.x, coordinate.y, tickOffset)
 
@@ -443,11 +447,14 @@ class AmazingAi {
             bombs.sort {
                 it.ticksRemaining
             }
+
+//            log.debug( "Bombs: $bombs")
+
             def bomb = bombs.removeFirst()
             explodeBomb(bomb, bomb.ticksRemaining)
         }
 
-        drawFlameSpeculation(spec)
+//        drawFlameSpeculation(spec)
         return spec
     }
 

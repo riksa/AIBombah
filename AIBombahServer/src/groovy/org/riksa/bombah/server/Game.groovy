@@ -60,8 +60,10 @@ class Game {
             default:
                 return false
         }
+        // We are mobing towards tile center, that's always ok
         if (currentLocation.x == targetLocation.x && currentLocation.y == targetLocation.y)
             return true
+        targetLocation = getTileCoordinate(x,y,direction) // this shouldn't be necessary
         return canMoveTo(targetLocation.x, targetLocation.y)
 
     }
@@ -509,7 +511,6 @@ class Game {
     }
 
     def killPlayer(PlayerState player) {
-        return;
         log.debug("Player $player died")
         player.alive = false
         if (players.grep() {

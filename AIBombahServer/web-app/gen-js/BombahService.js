@@ -612,10 +612,14 @@ BombahService_waitTicks_args.prototype.write = function(output) {
 
 BombahService_waitTicks_result = function(args) {
   this.success = null;
+  this.youAreDead = null;
   this.gameOver = null;
   if (args) {
     if (args.success !== undefined) {
       this.success = args.success;
+    }
+    if (args.youAreDead !== undefined) {
+      this.youAreDead = args.youAreDead;
     }
     if (args.gameOver !== undefined) {
       this.gameOver = args.gameOver;
@@ -646,6 +650,14 @@ BombahService_waitTicks_result.prototype.read = function(input) {
       break;
       case 1:
       if (ftype == Thrift.Type.STRUCT) {
+        this.youAreDead = new YouAreDeadException();
+        this.youAreDead.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.STRUCT) {
         this.gameOver = new GameOverException();
         this.gameOver.read(input);
       } else {
@@ -668,8 +680,13 @@ BombahService_waitTicks_result.prototype.write = function(output) {
     this.success.write(output);
     output.writeFieldEnd();
   }
+  if (this.youAreDead) {
+    output.writeFieldBegin('youAreDead', Thrift.Type.STRUCT, 1);
+    this.youAreDead.write(output);
+    output.writeFieldEnd();
+  }
   if (this.gameOver) {
-    output.writeFieldBegin('gameOver', Thrift.Type.STRUCT, 1);
+    output.writeFieldBegin('gameOver', Thrift.Type.STRUCT, 2);
     this.gameOver.write(output);
     output.writeFieldEnd();
   }
@@ -746,10 +763,14 @@ BombahService_waitForTick_args.prototype.write = function(output) {
 
 BombahService_waitForTick_result = function(args) {
   this.success = null;
+  this.youAreDead = null;
   this.gameOver = null;
   if (args) {
     if (args.success !== undefined) {
       this.success = args.success;
+    }
+    if (args.youAreDead !== undefined) {
+      this.youAreDead = args.youAreDead;
     }
     if (args.gameOver !== undefined) {
       this.gameOver = args.gameOver;
@@ -780,6 +801,14 @@ BombahService_waitForTick_result.prototype.read = function(input) {
       break;
       case 1:
       if (ftype == Thrift.Type.STRUCT) {
+        this.youAreDead = new YouAreDeadException();
+        this.youAreDead.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.STRUCT) {
         this.gameOver = new GameOverException();
         this.gameOver.read(input);
       } else {
@@ -802,8 +831,13 @@ BombahService_waitForTick_result.prototype.write = function(output) {
     this.success.write(output);
     output.writeFieldEnd();
   }
+  if (this.youAreDead) {
+    output.writeFieldBegin('youAreDead', Thrift.Type.STRUCT, 1);
+    this.youAreDead.write(output);
+    output.writeFieldEnd();
+  }
   if (this.gameOver) {
-    output.writeFieldBegin('gameOver', Thrift.Type.STRUCT, 1);
+    output.writeFieldBegin('gameOver', Thrift.Type.STRUCT, 2);
     this.gameOver.write(output);
     output.writeFieldEnd();
   }
@@ -867,13 +901,13 @@ BombahService_joinGame_args.prototype.write = function(output) {
 
 BombahService_joinGame_result = function(args) {
   this.success = null;
-  this.timeOutException = null;
+  this.gameOverException = null;
   if (args) {
     if (args.success !== undefined) {
       this.success = args.success;
     }
-    if (args.timeOutException !== undefined) {
-      this.timeOutException = args.timeOutException;
+    if (args.gameOverException !== undefined) {
+      this.gameOverException = args.gameOverException;
     }
   }
 };
@@ -901,8 +935,8 @@ BombahService_joinGame_result.prototype.read = function(input) {
       break;
       case 1:
       if (ftype == Thrift.Type.STRUCT) {
-        this.timeOutException = new TimeoutException();
-        this.timeOutException.read(input);
+        this.gameOverException = new GameOverException();
+        this.gameOverException.read(input);
       } else {
         input.skip(ftype);
       }
@@ -923,9 +957,9 @@ BombahService_joinGame_result.prototype.write = function(output) {
     this.success.write(output);
     output.writeFieldEnd();
   }
-  if (this.timeOutException) {
-    output.writeFieldBegin('timeOutException', Thrift.Type.STRUCT, 1);
-    this.timeOutException.write(output);
+  if (this.gameOverException) {
+    output.writeFieldBegin('gameOverException', Thrift.Type.STRUCT, 1);
+    this.gameOverException.write(output);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -1189,10 +1223,10 @@ BombahService_waitForStart_args.prototype.write = function(output) {
 };
 
 BombahService_waitForStart_result = function(args) {
-  this.timeOutException = null;
+  this.gameOverException = null;
   if (args) {
-    if (args.timeOutException !== undefined) {
-      this.timeOutException = args.timeOutException;
+    if (args.gameOverException !== undefined) {
+      this.gameOverException = args.gameOverException;
     }
   }
 };
@@ -1212,8 +1246,8 @@ BombahService_waitForStart_result.prototype.read = function(input) {
     {
       case 1:
       if (ftype == Thrift.Type.STRUCT) {
-        this.timeOutException = new TimeoutException();
-        this.timeOutException.read(input);
+        this.gameOverException = new GameOverException();
+        this.gameOverException.read(input);
       } else {
         input.skip(ftype);
       }
@@ -1232,9 +1266,9 @@ BombahService_waitForStart_result.prototype.read = function(input) {
 
 BombahService_waitForStart_result.prototype.write = function(output) {
   output.writeStructBegin('BombahService_waitForStart_result');
-  if (this.timeOutException) {
-    output.writeFieldBegin('timeOutException', Thrift.Type.STRUCT, 1);
-    this.timeOutException.write(output);
+  if (this.gameOverException) {
+    output.writeFieldBegin('gameOverException', Thrift.Type.STRUCT, 1);
+    this.gameOverException.write(output);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -1585,6 +1619,9 @@ BombahServiceClient.prototype.recv_waitTicks = function() {
   result.read(this.input);
   this.input.readMessageEnd();
 
+  if (null !== result.youAreDead) {
+    throw result.youAreDead;
+  }
   if (null !== result.gameOver) {
     throw result.gameOver;
   }
@@ -1629,6 +1666,9 @@ BombahServiceClient.prototype.recv_waitForTick = function() {
   result.read(this.input);
   this.input.readMessageEnd();
 
+  if (null !== result.youAreDead) {
+    throw result.youAreDead;
+  }
   if (null !== result.gameOver) {
     throw result.gameOver;
   }
@@ -1672,8 +1712,8 @@ BombahServiceClient.prototype.recv_joinGame = function() {
   result.read(this.input);
   this.input.readMessageEnd();
 
-  if (null !== result.timeOutException) {
-    throw result.timeOutException;
+  if (null !== result.gameOverException) {
+    throw result.gameOverException;
   }
   if (null !== result.success) {
     return result.success;
@@ -1795,8 +1835,8 @@ BombahServiceClient.prototype.recv_waitForStart = function() {
   result.read(this.input);
   this.input.readMessageEnd();
 
-  if (null !== result.timeOutException) {
-    throw result.timeOutException;
+  if (null !== result.gameOverException) {
+    throw result.gameOverException;
   }
   return;
 };

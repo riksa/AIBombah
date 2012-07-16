@@ -45,17 +45,17 @@ public class BombahService {
 
     public BombActionResult bomb(int playerId, BombAction bombAction) throws YouAreDeadException, GameOverException, org.apache.thrift.TException;
 
-    public MapState waitTicks(int gameId, int ticks) throws GameOverException, org.apache.thrift.TException;
+    public MapState waitTicks(int gameId, int ticks) throws YouAreDeadException, GameOverException, org.apache.thrift.TException;
 
-    public MapState waitForTick(int gameId, int tick) throws GameOverException, org.apache.thrift.TException;
+    public MapState waitForTick(int gameId, int tick) throws YouAreDeadException, GameOverException, org.apache.thrift.TException;
 
-    public GameInfo joinGame(int gameId) throws TimeoutException, org.apache.thrift.TException;
+    public GameInfo joinGame(int gameId) throws GameOverException, org.apache.thrift.TException;
 
     public GameInfo getGameInfo(int gameId) throws GameOverException, org.apache.thrift.TException;
 
     public void debugResetGame(int gameId) throws org.apache.thrift.TException;
 
-    public void waitForStart(int gameId) throws TimeoutException, org.apache.thrift.TException;
+    public void waitForStart(int gameId) throws GameOverException, org.apache.thrift.TException;
 
     public MapState getMapState(int gameId) throws GameOverException, org.apache.thrift.TException;
 
@@ -219,7 +219,7 @@ public class BombahService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "bomb failed: unknown result");
     }
 
-    public MapState waitTicks(int gameId, int ticks) throws GameOverException, org.apache.thrift.TException
+    public MapState waitTicks(int gameId, int ticks) throws YouAreDeadException, GameOverException, org.apache.thrift.TException
     {
       send_waitTicks(gameId, ticks);
       return recv_waitTicks();
@@ -233,12 +233,15 @@ public class BombahService {
       sendBase("waitTicks", args);
     }
 
-    public MapState recv_waitTicks() throws GameOverException, org.apache.thrift.TException
+    public MapState recv_waitTicks() throws YouAreDeadException, GameOverException, org.apache.thrift.TException
     {
       waitTicks_result result = new waitTicks_result();
       receiveBase(result, "waitTicks");
       if (result.isSetSuccess()) {
         return result.success;
+      }
+      if (result.youAreDead != null) {
+        throw result.youAreDead;
       }
       if (result.gameOver != null) {
         throw result.gameOver;
@@ -246,7 +249,7 @@ public class BombahService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "waitTicks failed: unknown result");
     }
 
-    public MapState waitForTick(int gameId, int tick) throws GameOverException, org.apache.thrift.TException
+    public MapState waitForTick(int gameId, int tick) throws YouAreDeadException, GameOverException, org.apache.thrift.TException
     {
       send_waitForTick(gameId, tick);
       return recv_waitForTick();
@@ -260,12 +263,15 @@ public class BombahService {
       sendBase("waitForTick", args);
     }
 
-    public MapState recv_waitForTick() throws GameOverException, org.apache.thrift.TException
+    public MapState recv_waitForTick() throws YouAreDeadException, GameOverException, org.apache.thrift.TException
     {
       waitForTick_result result = new waitForTick_result();
       receiveBase(result, "waitForTick");
       if (result.isSetSuccess()) {
         return result.success;
+      }
+      if (result.youAreDead != null) {
+        throw result.youAreDead;
       }
       if (result.gameOver != null) {
         throw result.gameOver;
@@ -273,7 +279,7 @@ public class BombahService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "waitForTick failed: unknown result");
     }
 
-    public GameInfo joinGame(int gameId) throws TimeoutException, org.apache.thrift.TException
+    public GameInfo joinGame(int gameId) throws GameOverException, org.apache.thrift.TException
     {
       send_joinGame(gameId);
       return recv_joinGame();
@@ -286,15 +292,15 @@ public class BombahService {
       sendBase("joinGame", args);
     }
 
-    public GameInfo recv_joinGame() throws TimeoutException, org.apache.thrift.TException
+    public GameInfo recv_joinGame() throws GameOverException, org.apache.thrift.TException
     {
       joinGame_result result = new joinGame_result();
       receiveBase(result, "joinGame");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.timeOutException != null) {
-        throw result.timeOutException;
+      if (result.gameOverException != null) {
+        throw result.gameOverException;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "joinGame failed: unknown result");
     }
@@ -345,7 +351,7 @@ public class BombahService {
       return;
     }
 
-    public void waitForStart(int gameId) throws TimeoutException, org.apache.thrift.TException
+    public void waitForStart(int gameId) throws GameOverException, org.apache.thrift.TException
     {
       send_waitForStart(gameId);
       recv_waitForStart();
@@ -358,12 +364,12 @@ public class BombahService {
       sendBase("waitForStart", args);
     }
 
-    public void recv_waitForStart() throws TimeoutException, org.apache.thrift.TException
+    public void recv_waitForStart() throws GameOverException, org.apache.thrift.TException
     {
       waitForStart_result result = new waitForStart_result();
       receiveBase(result, "waitForStart");
-      if (result.timeOutException != null) {
-        throw result.timeOutException;
+      if (result.gameOverException != null) {
+        throw result.gameOverException;
       }
       return;
     }
@@ -571,7 +577,7 @@ public class BombahService {
         prot.writeMessageEnd();
       }
 
-      public MapState getResult() throws GameOverException, org.apache.thrift.TException {
+      public MapState getResult() throws YouAreDeadException, GameOverException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -606,7 +612,7 @@ public class BombahService {
         prot.writeMessageEnd();
       }
 
-      public MapState getResult() throws GameOverException, org.apache.thrift.TException {
+      public MapState getResult() throws YouAreDeadException, GameOverException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -638,7 +644,7 @@ public class BombahService {
         prot.writeMessageEnd();
       }
 
-      public GameInfo getResult() throws TimeoutException, org.apache.thrift.TException {
+      public GameInfo getResult() throws GameOverException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -734,7 +740,7 @@ public class BombahService {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TimeoutException, org.apache.thrift.TException {
+      public void getResult() throws GameOverException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -898,6 +904,8 @@ public class BombahService {
         waitTicks_result result = new waitTicks_result();
         try {
           result.success = iface.waitTicks(args.gameId, args.ticks);
+        } catch (YouAreDeadException youAreDead) {
+          result.youAreDead = youAreDead;
         } catch (GameOverException gameOver) {
           result.gameOver = gameOver;
         }
@@ -918,6 +926,8 @@ public class BombahService {
         waitForTick_result result = new waitForTick_result();
         try {
           result.success = iface.waitForTick(args.gameId, args.tick);
+        } catch (YouAreDeadException youAreDead) {
+          result.youAreDead = youAreDead;
         } catch (GameOverException gameOver) {
           result.gameOver = gameOver;
         }
@@ -938,8 +948,8 @@ public class BombahService {
         joinGame_result result = new joinGame_result();
         try {
           result.success = iface.joinGame(args.gameId);
-        } catch (TimeoutException timeOutException) {
-          result.timeOutException = timeOutException;
+        } catch (GameOverException gameOverException) {
+          result.gameOverException = gameOverException;
         }
         return result;
       }
@@ -994,8 +1004,8 @@ public class BombahService {
         waitForStart_result result = new waitForStart_result();
         try {
           iface.waitForStart(args.gameId);
-        } catch (TimeoutException timeOutException) {
-          result.timeOutException = timeOutException;
+        } catch (GameOverException gameOverException) {
+          result.gameOverException = gameOverException;
         }
         return result;
       }
@@ -5110,7 +5120,8 @@ public class BombahService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("waitTicks_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-    private static final org.apache.thrift.protocol.TField GAME_OVER_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOver", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField YOU_ARE_DEAD_FIELD_DESC = new org.apache.thrift.protocol.TField("youAreDead", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField GAME_OVER_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOver", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5119,12 +5130,14 @@ public class BombahService {
     }
 
     public MapState success; // required
+    public YouAreDeadException youAreDead; // required
     public GameOverException gameOver; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      GAME_OVER((short)1, "gameOver");
+      YOU_ARE_DEAD((short)1, "youAreDead"),
+      GAME_OVER((short)2, "gameOver");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5141,7 +5154,9 @@ public class BombahService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // GAME_OVER
+          case 1: // YOU_ARE_DEAD
+            return YOU_ARE_DEAD;
+          case 2: // GAME_OVER
             return GAME_OVER;
           default:
             return null;
@@ -5188,6 +5203,8 @@ public class BombahService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, MapState.class)));
+      tmpMap.put(_Fields.YOU_ARE_DEAD, new org.apache.thrift.meta_data.FieldMetaData("youAreDead", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.GAME_OVER, new org.apache.thrift.meta_data.FieldMetaData("gameOver", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -5199,10 +5216,12 @@ public class BombahService {
 
     public waitTicks_result(
       MapState success,
+      YouAreDeadException youAreDead,
       GameOverException gameOver)
     {
       this();
       this.success = success;
+      this.youAreDead = youAreDead;
       this.gameOver = gameOver;
     }
 
@@ -5212,6 +5231,9 @@ public class BombahService {
     public waitTicks_result(waitTicks_result other) {
       if (other.isSetSuccess()) {
         this.success = new MapState(other.success);
+      }
+      if (other.isSetYouAreDead()) {
+        this.youAreDead = new YouAreDeadException(other.youAreDead);
       }
       if (other.isSetGameOver()) {
         this.gameOver = new GameOverException(other.gameOver);
@@ -5225,6 +5247,7 @@ public class BombahService {
     @Override
     public void clear() {
       this.success = null;
+      this.youAreDead = null;
       this.gameOver = null;
     }
 
@@ -5249,6 +5272,30 @@ public class BombahService {
     public void setSuccessIsSet(boolean value) {
       if (!value) {
         this.success = null;
+      }
+    }
+
+    public YouAreDeadException getYouAreDead() {
+      return this.youAreDead;
+    }
+
+    public waitTicks_result setYouAreDead(YouAreDeadException youAreDead) {
+      this.youAreDead = youAreDead;
+      return this;
+    }
+
+    public void unsetYouAreDead() {
+      this.youAreDead = null;
+    }
+
+    /** Returns true if field youAreDead is set (has been assigned a value) and false otherwise */
+    public boolean isSetYouAreDead() {
+      return this.youAreDead != null;
+    }
+
+    public void setYouAreDeadIsSet(boolean value) {
+      if (!value) {
+        this.youAreDead = null;
       }
     }
 
@@ -5286,6 +5333,14 @@ public class BombahService {
         }
         break;
 
+      case YOU_ARE_DEAD:
+        if (value == null) {
+          unsetYouAreDead();
+        } else {
+          setYouAreDead((YouAreDeadException)value);
+        }
+        break;
+
       case GAME_OVER:
         if (value == null) {
           unsetGameOver();
@@ -5301,6 +5356,9 @@ public class BombahService {
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case YOU_ARE_DEAD:
+        return getYouAreDead();
 
       case GAME_OVER:
         return getGameOver();
@@ -5318,6 +5376,8 @@ public class BombahService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case YOU_ARE_DEAD:
+        return isSetYouAreDead();
       case GAME_OVER:
         return isSetGameOver();
       }
@@ -5343,6 +5403,15 @@ public class BombahService {
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_youAreDead = true && this.isSetYouAreDead();
+      boolean that_present_youAreDead = true && that.isSetYouAreDead();
+      if (this_present_youAreDead || that_present_youAreDead) {
+        if (!(this_present_youAreDead && that_present_youAreDead))
+          return false;
+        if (!this.youAreDead.equals(that.youAreDead))
           return false;
       }
 
@@ -5377,6 +5446,16 @@ public class BombahService {
       }
       if (isSetSuccess()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetYouAreDead()).compareTo(typedOther.isSetYouAreDead());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetYouAreDead()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.youAreDead, typedOther.youAreDead);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -5416,6 +5495,14 @@ public class BombahService {
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("youAreDead:");
+      if (this.youAreDead == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.youAreDead);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -5477,7 +5564,16 @@ public class BombahService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // GAME_OVER
+            case 1: // YOU_ARE_DEAD
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.youAreDead = new YouAreDeadException();
+                struct.youAreDead.read(iprot);
+                struct.setYouAreDeadIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // GAME_OVER
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.gameOver = new GameOverException();
                 struct.gameOver.read(iprot);
@@ -5506,6 +5602,11 @@ public class BombahService {
           struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.youAreDead != null) {
+          oprot.writeFieldBegin(YOU_ARE_DEAD_FIELD_DESC);
+          struct.youAreDead.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.gameOver != null) {
           oprot.writeFieldBegin(GAME_OVER_FIELD_DESC);
           struct.gameOver.write(oprot);
@@ -5532,12 +5633,18 @@ public class BombahService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetGameOver()) {
+        if (struct.isSetYouAreDead()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetGameOver()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
+        }
+        if (struct.isSetYouAreDead()) {
+          struct.youAreDead.write(oprot);
         }
         if (struct.isSetGameOver()) {
           struct.gameOver.write(oprot);
@@ -5547,13 +5654,18 @@ public class BombahService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, waitTicks_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = new MapState();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
+          struct.youAreDead = new YouAreDeadException();
+          struct.youAreDead.read(iprot);
+          struct.setYouAreDeadIsSet(true);
+        }
+        if (incoming.get(2)) {
           struct.gameOver = new GameOverException();
           struct.gameOver.read(iprot);
           struct.setGameOverIsSet(true);
@@ -6013,7 +6125,8 @@ public class BombahService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("waitForTick_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-    private static final org.apache.thrift.protocol.TField GAME_OVER_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOver", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField YOU_ARE_DEAD_FIELD_DESC = new org.apache.thrift.protocol.TField("youAreDead", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField GAME_OVER_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOver", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6022,12 +6135,14 @@ public class BombahService {
     }
 
     public MapState success; // required
+    public YouAreDeadException youAreDead; // required
     public GameOverException gameOver; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      GAME_OVER((short)1, "gameOver");
+      YOU_ARE_DEAD((short)1, "youAreDead"),
+      GAME_OVER((short)2, "gameOver");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6044,7 +6159,9 @@ public class BombahService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // GAME_OVER
+          case 1: // YOU_ARE_DEAD
+            return YOU_ARE_DEAD;
+          case 2: // GAME_OVER
             return GAME_OVER;
           default:
             return null;
@@ -6091,6 +6208,8 @@ public class BombahService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, MapState.class)));
+      tmpMap.put(_Fields.YOU_ARE_DEAD, new org.apache.thrift.meta_data.FieldMetaData("youAreDead", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.GAME_OVER, new org.apache.thrift.meta_data.FieldMetaData("gameOver", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -6102,10 +6221,12 @@ public class BombahService {
 
     public waitForTick_result(
       MapState success,
+      YouAreDeadException youAreDead,
       GameOverException gameOver)
     {
       this();
       this.success = success;
+      this.youAreDead = youAreDead;
       this.gameOver = gameOver;
     }
 
@@ -6115,6 +6236,9 @@ public class BombahService {
     public waitForTick_result(waitForTick_result other) {
       if (other.isSetSuccess()) {
         this.success = new MapState(other.success);
+      }
+      if (other.isSetYouAreDead()) {
+        this.youAreDead = new YouAreDeadException(other.youAreDead);
       }
       if (other.isSetGameOver()) {
         this.gameOver = new GameOverException(other.gameOver);
@@ -6128,6 +6252,7 @@ public class BombahService {
     @Override
     public void clear() {
       this.success = null;
+      this.youAreDead = null;
       this.gameOver = null;
     }
 
@@ -6152,6 +6277,30 @@ public class BombahService {
     public void setSuccessIsSet(boolean value) {
       if (!value) {
         this.success = null;
+      }
+    }
+
+    public YouAreDeadException getYouAreDead() {
+      return this.youAreDead;
+    }
+
+    public waitForTick_result setYouAreDead(YouAreDeadException youAreDead) {
+      this.youAreDead = youAreDead;
+      return this;
+    }
+
+    public void unsetYouAreDead() {
+      this.youAreDead = null;
+    }
+
+    /** Returns true if field youAreDead is set (has been assigned a value) and false otherwise */
+    public boolean isSetYouAreDead() {
+      return this.youAreDead != null;
+    }
+
+    public void setYouAreDeadIsSet(boolean value) {
+      if (!value) {
+        this.youAreDead = null;
       }
     }
 
@@ -6189,6 +6338,14 @@ public class BombahService {
         }
         break;
 
+      case YOU_ARE_DEAD:
+        if (value == null) {
+          unsetYouAreDead();
+        } else {
+          setYouAreDead((YouAreDeadException)value);
+        }
+        break;
+
       case GAME_OVER:
         if (value == null) {
           unsetGameOver();
@@ -6204,6 +6361,9 @@ public class BombahService {
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case YOU_ARE_DEAD:
+        return getYouAreDead();
 
       case GAME_OVER:
         return getGameOver();
@@ -6221,6 +6381,8 @@ public class BombahService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case YOU_ARE_DEAD:
+        return isSetYouAreDead();
       case GAME_OVER:
         return isSetGameOver();
       }
@@ -6246,6 +6408,15 @@ public class BombahService {
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_youAreDead = true && this.isSetYouAreDead();
+      boolean that_present_youAreDead = true && that.isSetYouAreDead();
+      if (this_present_youAreDead || that_present_youAreDead) {
+        if (!(this_present_youAreDead && that_present_youAreDead))
+          return false;
+        if (!this.youAreDead.equals(that.youAreDead))
           return false;
       }
 
@@ -6280,6 +6451,16 @@ public class BombahService {
       }
       if (isSetSuccess()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetYouAreDead()).compareTo(typedOther.isSetYouAreDead());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetYouAreDead()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.youAreDead, typedOther.youAreDead);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -6319,6 +6500,14 @@ public class BombahService {
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("youAreDead:");
+      if (this.youAreDead == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.youAreDead);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -6380,7 +6569,16 @@ public class BombahService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // GAME_OVER
+            case 1: // YOU_ARE_DEAD
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.youAreDead = new YouAreDeadException();
+                struct.youAreDead.read(iprot);
+                struct.setYouAreDeadIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // GAME_OVER
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.gameOver = new GameOverException();
                 struct.gameOver.read(iprot);
@@ -6409,6 +6607,11 @@ public class BombahService {
           struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.youAreDead != null) {
+          oprot.writeFieldBegin(YOU_ARE_DEAD_FIELD_DESC);
+          struct.youAreDead.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.gameOver != null) {
           oprot.writeFieldBegin(GAME_OVER_FIELD_DESC);
           struct.gameOver.write(oprot);
@@ -6435,12 +6638,18 @@ public class BombahService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetGameOver()) {
+        if (struct.isSetYouAreDead()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetGameOver()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
+        }
+        if (struct.isSetYouAreDead()) {
+          struct.youAreDead.write(oprot);
         }
         if (struct.isSetGameOver()) {
           struct.gameOver.write(oprot);
@@ -6450,13 +6659,18 @@ public class BombahService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, waitForTick_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = new MapState();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
+          struct.youAreDead = new YouAreDeadException();
+          struct.youAreDead.read(iprot);
+          struct.setYouAreDeadIsSet(true);
+        }
+        if (incoming.get(2)) {
           struct.gameOver = new GameOverException();
           struct.gameOver.read(iprot);
           struct.setGameOverIsSet(true);
@@ -6822,7 +7036,7 @@ public class BombahService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("joinGame_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-    private static final org.apache.thrift.protocol.TField TIME_OUT_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("timeOutException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField GAME_OVER_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOverException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6831,12 +7045,12 @@ public class BombahService {
     }
 
     public GameInfo success; // required
-    public TimeoutException timeOutException; // required
+    public GameOverException gameOverException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      TIME_OUT_EXCEPTION((short)1, "timeOutException");
+      GAME_OVER_EXCEPTION((short)1, "gameOverException");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6853,8 +7067,8 @@ public class BombahService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // TIME_OUT_EXCEPTION
-            return TIME_OUT_EXCEPTION;
+          case 1: // GAME_OVER_EXCEPTION
+            return GAME_OVER_EXCEPTION;
           default:
             return null;
         }
@@ -6900,7 +7114,7 @@ public class BombahService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, GameInfo.class)));
-      tmpMap.put(_Fields.TIME_OUT_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("timeOutException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.GAME_OVER_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("gameOverException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(joinGame_result.class, metaDataMap);
@@ -6911,11 +7125,11 @@ public class BombahService {
 
     public joinGame_result(
       GameInfo success,
-      TimeoutException timeOutException)
+      GameOverException gameOverException)
     {
       this();
       this.success = success;
-      this.timeOutException = timeOutException;
+      this.gameOverException = gameOverException;
     }
 
     /**
@@ -6925,8 +7139,8 @@ public class BombahService {
       if (other.isSetSuccess()) {
         this.success = new GameInfo(other.success);
       }
-      if (other.isSetTimeOutException()) {
-        this.timeOutException = new TimeoutException(other.timeOutException);
+      if (other.isSetGameOverException()) {
+        this.gameOverException = new GameOverException(other.gameOverException);
       }
     }
 
@@ -6937,7 +7151,7 @@ public class BombahService {
     @Override
     public void clear() {
       this.success = null;
-      this.timeOutException = null;
+      this.gameOverException = null;
     }
 
     public GameInfo getSuccess() {
@@ -6964,27 +7178,27 @@ public class BombahService {
       }
     }
 
-    public TimeoutException getTimeOutException() {
-      return this.timeOutException;
+    public GameOverException getGameOverException() {
+      return this.gameOverException;
     }
 
-    public joinGame_result setTimeOutException(TimeoutException timeOutException) {
-      this.timeOutException = timeOutException;
+    public joinGame_result setGameOverException(GameOverException gameOverException) {
+      this.gameOverException = gameOverException;
       return this;
     }
 
-    public void unsetTimeOutException() {
-      this.timeOutException = null;
+    public void unsetGameOverException() {
+      this.gameOverException = null;
     }
 
-    /** Returns true if field timeOutException is set (has been assigned a value) and false otherwise */
-    public boolean isSetTimeOutException() {
-      return this.timeOutException != null;
+    /** Returns true if field gameOverException is set (has been assigned a value) and false otherwise */
+    public boolean isSetGameOverException() {
+      return this.gameOverException != null;
     }
 
-    public void setTimeOutExceptionIsSet(boolean value) {
+    public void setGameOverExceptionIsSet(boolean value) {
       if (!value) {
-        this.timeOutException = null;
+        this.gameOverException = null;
       }
     }
 
@@ -6998,11 +7212,11 @@ public class BombahService {
         }
         break;
 
-      case TIME_OUT_EXCEPTION:
+      case GAME_OVER_EXCEPTION:
         if (value == null) {
-          unsetTimeOutException();
+          unsetGameOverException();
         } else {
-          setTimeOutException((TimeoutException)value);
+          setGameOverException((GameOverException)value);
         }
         break;
 
@@ -7014,8 +7228,8 @@ public class BombahService {
       case SUCCESS:
         return getSuccess();
 
-      case TIME_OUT_EXCEPTION:
-        return getTimeOutException();
+      case GAME_OVER_EXCEPTION:
+        return getGameOverException();
 
       }
       throw new IllegalStateException();
@@ -7030,8 +7244,8 @@ public class BombahService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case TIME_OUT_EXCEPTION:
-        return isSetTimeOutException();
+      case GAME_OVER_EXCEPTION:
+        return isSetGameOverException();
       }
       throw new IllegalStateException();
     }
@@ -7058,12 +7272,12 @@ public class BombahService {
           return false;
       }
 
-      boolean this_present_timeOutException = true && this.isSetTimeOutException();
-      boolean that_present_timeOutException = true && that.isSetTimeOutException();
-      if (this_present_timeOutException || that_present_timeOutException) {
-        if (!(this_present_timeOutException && that_present_timeOutException))
+      boolean this_present_gameOverException = true && this.isSetGameOverException();
+      boolean that_present_gameOverException = true && that.isSetGameOverException();
+      if (this_present_gameOverException || that_present_gameOverException) {
+        if (!(this_present_gameOverException && that_present_gameOverException))
           return false;
-        if (!this.timeOutException.equals(that.timeOutException))
+        if (!this.gameOverException.equals(that.gameOverException))
           return false;
       }
 
@@ -7093,12 +7307,12 @@ public class BombahService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetTimeOutException()).compareTo(typedOther.isSetTimeOutException());
+      lastComparison = Boolean.valueOf(isSetGameOverException()).compareTo(typedOther.isSetGameOverException());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetTimeOutException()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.timeOutException, typedOther.timeOutException);
+      if (isSetGameOverException()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gameOverException, typedOther.gameOverException);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -7131,11 +7345,11 @@ public class BombahService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("timeOutException:");
-      if (this.timeOutException == null) {
+      sb.append("gameOverException:");
+      if (this.gameOverException == null) {
         sb.append("null");
       } else {
-        sb.append(this.timeOutException);
+        sb.append(this.gameOverException);
       }
       first = false;
       sb.append(")");
@@ -7189,11 +7403,11 @@ public class BombahService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // TIME_OUT_EXCEPTION
+            case 1: // GAME_OVER_EXCEPTION
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.timeOutException = new TimeoutException();
-                struct.timeOutException.read(iprot);
-                struct.setTimeOutExceptionIsSet(true);
+                struct.gameOverException = new GameOverException();
+                struct.gameOverException.read(iprot);
+                struct.setGameOverExceptionIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -7218,9 +7432,9 @@ public class BombahService {
           struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.timeOutException != null) {
-          oprot.writeFieldBegin(TIME_OUT_EXCEPTION_FIELD_DESC);
-          struct.timeOutException.write(oprot);
+        if (struct.gameOverException != null) {
+          oprot.writeFieldBegin(GAME_OVER_EXCEPTION_FIELD_DESC);
+          struct.gameOverException.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -7244,15 +7458,15 @@ public class BombahService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetTimeOutException()) {
+        if (struct.isSetGameOverException()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
-        if (struct.isSetTimeOutException()) {
-          struct.timeOutException.write(oprot);
+        if (struct.isSetGameOverException()) {
+          struct.gameOverException.write(oprot);
         }
       }
 
@@ -7266,9 +7480,9 @@ public class BombahService {
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.timeOutException = new TimeoutException();
-          struct.timeOutException.read(iprot);
-          struct.setTimeOutExceptionIsSet(true);
+          struct.gameOverException = new GameOverException();
+          struct.gameOverException.read(iprot);
+          struct.setGameOverExceptionIsSet(true);
         }
       }
     }
@@ -9036,7 +9250,7 @@ public class BombahService {
   public static class waitForStart_result implements org.apache.thrift.TBase<waitForStart_result, waitForStart_result._Fields>, java.io.Serializable, Cloneable   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("waitForStart_result");
 
-    private static final org.apache.thrift.protocol.TField TIME_OUT_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("timeOutException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField GAME_OVER_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("gameOverException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -9044,11 +9258,11 @@ public class BombahService {
       schemes.put(TupleScheme.class, new waitForStart_resultTupleSchemeFactory());
     }
 
-    public TimeoutException timeOutException; // required
+    public GameOverException gameOverException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      TIME_OUT_EXCEPTION((short)1, "timeOutException");
+      GAME_OVER_EXCEPTION((short)1, "gameOverException");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -9063,8 +9277,8 @@ public class BombahService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // TIME_OUT_EXCEPTION
-            return TIME_OUT_EXCEPTION;
+          case 1: // GAME_OVER_EXCEPTION
+            return GAME_OVER_EXCEPTION;
           default:
             return null;
         }
@@ -9108,7 +9322,7 @@ public class BombahService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.TIME_OUT_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("timeOutException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.GAME_OVER_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("gameOverException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(waitForStart_result.class, metaDataMap);
@@ -9118,18 +9332,18 @@ public class BombahService {
     }
 
     public waitForStart_result(
-      TimeoutException timeOutException)
+      GameOverException gameOverException)
     {
       this();
-      this.timeOutException = timeOutException;
+      this.gameOverException = gameOverException;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public waitForStart_result(waitForStart_result other) {
-      if (other.isSetTimeOutException()) {
-        this.timeOutException = new TimeoutException(other.timeOutException);
+      if (other.isSetGameOverException()) {
+        this.gameOverException = new GameOverException(other.gameOverException);
       }
     }
 
@@ -9139,40 +9353,40 @@ public class BombahService {
 
     @Override
     public void clear() {
-      this.timeOutException = null;
+      this.gameOverException = null;
     }
 
-    public TimeoutException getTimeOutException() {
-      return this.timeOutException;
+    public GameOverException getGameOverException() {
+      return this.gameOverException;
     }
 
-    public waitForStart_result setTimeOutException(TimeoutException timeOutException) {
-      this.timeOutException = timeOutException;
+    public waitForStart_result setGameOverException(GameOverException gameOverException) {
+      this.gameOverException = gameOverException;
       return this;
     }
 
-    public void unsetTimeOutException() {
-      this.timeOutException = null;
+    public void unsetGameOverException() {
+      this.gameOverException = null;
     }
 
-    /** Returns true if field timeOutException is set (has been assigned a value) and false otherwise */
-    public boolean isSetTimeOutException() {
-      return this.timeOutException != null;
+    /** Returns true if field gameOverException is set (has been assigned a value) and false otherwise */
+    public boolean isSetGameOverException() {
+      return this.gameOverException != null;
     }
 
-    public void setTimeOutExceptionIsSet(boolean value) {
+    public void setGameOverExceptionIsSet(boolean value) {
       if (!value) {
-        this.timeOutException = null;
+        this.gameOverException = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case TIME_OUT_EXCEPTION:
+      case GAME_OVER_EXCEPTION:
         if (value == null) {
-          unsetTimeOutException();
+          unsetGameOverException();
         } else {
-          setTimeOutException((TimeoutException)value);
+          setGameOverException((GameOverException)value);
         }
         break;
 
@@ -9181,8 +9395,8 @@ public class BombahService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case TIME_OUT_EXCEPTION:
-        return getTimeOutException();
+      case GAME_OVER_EXCEPTION:
+        return getGameOverException();
 
       }
       throw new IllegalStateException();
@@ -9195,8 +9409,8 @@ public class BombahService {
       }
 
       switch (field) {
-      case TIME_OUT_EXCEPTION:
-        return isSetTimeOutException();
+      case GAME_OVER_EXCEPTION:
+        return isSetGameOverException();
       }
       throw new IllegalStateException();
     }
@@ -9214,12 +9428,12 @@ public class BombahService {
       if (that == null)
         return false;
 
-      boolean this_present_timeOutException = true && this.isSetTimeOutException();
-      boolean that_present_timeOutException = true && that.isSetTimeOutException();
-      if (this_present_timeOutException || that_present_timeOutException) {
-        if (!(this_present_timeOutException && that_present_timeOutException))
+      boolean this_present_gameOverException = true && this.isSetGameOverException();
+      boolean that_present_gameOverException = true && that.isSetGameOverException();
+      if (this_present_gameOverException || that_present_gameOverException) {
+        if (!(this_present_gameOverException && that_present_gameOverException))
           return false;
-        if (!this.timeOutException.equals(that.timeOutException))
+        if (!this.gameOverException.equals(that.gameOverException))
           return false;
       }
 
@@ -9239,12 +9453,12 @@ public class BombahService {
       int lastComparison = 0;
       waitForStart_result typedOther = (waitForStart_result)other;
 
-      lastComparison = Boolean.valueOf(isSetTimeOutException()).compareTo(typedOther.isSetTimeOutException());
+      lastComparison = Boolean.valueOf(isSetGameOverException()).compareTo(typedOther.isSetGameOverException());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetTimeOutException()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.timeOutException, typedOther.timeOutException);
+      if (isSetGameOverException()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gameOverException, typedOther.gameOverException);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -9269,11 +9483,11 @@ public class BombahService {
       StringBuilder sb = new StringBuilder("waitForStart_result(");
       boolean first = true;
 
-      sb.append("timeOutException:");
-      if (this.timeOutException == null) {
+      sb.append("gameOverException:");
+      if (this.gameOverException == null) {
         sb.append("null");
       } else {
-        sb.append(this.timeOutException);
+        sb.append(this.gameOverException);
       }
       first = false;
       sb.append(")");
@@ -9318,11 +9532,11 @@ public class BombahService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // TIME_OUT_EXCEPTION
+            case 1: // GAME_OVER_EXCEPTION
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.timeOutException = new TimeoutException();
-                struct.timeOutException.read(iprot);
-                struct.setTimeOutExceptionIsSet(true);
+                struct.gameOverException = new GameOverException();
+                struct.gameOverException.read(iprot);
+                struct.setGameOverExceptionIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -9342,9 +9556,9 @@ public class BombahService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.timeOutException != null) {
-          oprot.writeFieldBegin(TIME_OUT_EXCEPTION_FIELD_DESC);
-          struct.timeOutException.write(oprot);
+        if (struct.gameOverException != null) {
+          oprot.writeFieldBegin(GAME_OVER_EXCEPTION_FIELD_DESC);
+          struct.gameOverException.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -9365,12 +9579,12 @@ public class BombahService {
       public void write(org.apache.thrift.protocol.TProtocol prot, waitForStart_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetTimeOutException()) {
+        if (struct.isSetGameOverException()) {
           optionals.set(0);
         }
         oprot.writeBitSet(optionals, 1);
-        if (struct.isSetTimeOutException()) {
-          struct.timeOutException.write(oprot);
+        if (struct.isSetGameOverException()) {
+          struct.gameOverException.write(oprot);
         }
       }
 
@@ -9379,9 +9593,9 @@ public class BombahService {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.timeOutException = new TimeoutException();
-          struct.timeOutException.read(iprot);
-          struct.setTimeOutExceptionIsSet(true);
+          struct.gameOverException = new GameOverException();
+          struct.gameOverException.read(iprot);
+          struct.setGameOverExceptionIsSet(true);
         }
       }
     }
