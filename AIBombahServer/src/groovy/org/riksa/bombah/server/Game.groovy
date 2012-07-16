@@ -63,7 +63,7 @@ class Game {
         // We are mobing towards tile center, that's always ok
         if (currentLocation.x == targetLocation.x && currentLocation.y == targetLocation.y)
             return true
-        targetLocation = getTileCoordinate(x,y,direction) // this shouldn't be necessary
+        targetLocation = getTileCoordinate(x, y, direction) // this shouldn't be necessary
         return canMoveTo(targetLocation.x, targetLocation.y)
 
     }
@@ -246,7 +246,7 @@ class Game {
             }
 
             def pos = freeCoordinates.get(random.nextInt(freeCoordinates.size()))
-            if (random.nextInt(15)>0) {
+            if (random.nextInt(15) > 0) {
                 def bomb = new BombState(
                         blastSize: 2 + random.nextInt(3),
                         xCoordinate: pos.x,
@@ -261,7 +261,7 @@ class Game {
                 def pool = [Tile.BUFF_BOMB, Tile.BUFF_CHAIN, Tile.BUFF_FLAME, Tile.DEBUFF, Tile.BUFF_FOOT]
                 def buff = pool[random.nextInt(pool.size())]
                 buffs[pos.x][pos.y] = buff
-                gameInfo.tiles.putAt( pos.x+gameInfo.mapWidth*pos.y, buff )
+                gameInfo.tiles.putAt(pos.x + gameInfo.mapWidth * pos.y, buff)
             }
 
         }
@@ -562,11 +562,13 @@ class Game {
         if (tile == Tile.DESTRUCTIBLE || tile == Tile.INDESTRUCTIBLE)
             return false
 
-        if (bombs.find {
-            BombState bomb ->
-            def coordinate = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
-            return (coordinate.x == x && coordinate.y == y)
-        }) return false
+        synchronized (bombs) {
+            if (bombs.find {
+                BombState bomb ->
+                def coordinate = getTileCoordinate(bomb.xCoordinate, bomb.yCoordinate, null)
+                return (coordinate.x == x && coordinate.y == y)
+            }) return false
+        }
 
         return true
     }
@@ -606,12 +608,12 @@ class Game {
 
         gameState = GameState.RUNNING
 
-//        int idx
-//        while ((idx = gameInfo.tiles.indexOf(Tile.DESTRUCTIBLE)) != -1) {
-//            int x = idx % gameInfo.mapWidth
-//            int y = (idx - x) / gameInfo.mapWidth
-//            destroyDestructible(x, y)
-//        }
+        int idx
+        while ((idx = gameInfo.tiles.indexOf(Tile.DESTRUCTIBLE)) != -1) {
+            int x = idx % gameInfo.mapWidth
+            int y = (idx - x) / gameInfo.mapWidth
+            destroyDestructible(x, y)
+        }
 
         def timerTask = new TimerTask() {
             double avgSum = 0d
