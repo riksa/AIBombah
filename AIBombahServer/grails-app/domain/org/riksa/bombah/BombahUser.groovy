@@ -24,7 +24,7 @@ class BombahUser {
     def setPassword(password) {
         salt = createSalt(SALT_SIZE_BYTES)
         def iterations = credentialMatcher.hashIterations
-        log.error( "Iterations $iterations")
+        log.error("Iterations $iterations")
         passwordHash = new Sha512Hash(password, salt, iterations).toHex()
     }
 
@@ -36,5 +36,7 @@ class BombahUser {
 
     static constraints = {
         username(nullable: false, blank: false, unique: true)
+        salt(nullable: true)
+        passwordHash(nullable: true)
     }
 }
