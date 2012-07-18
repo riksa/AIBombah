@@ -92,6 +92,7 @@ log4j = {
             'grails.app'
 
     debug 'grails.app.controllers',
+            'grails.app.domains',
             'grails.app.services',
             'org.riksa'
 }
