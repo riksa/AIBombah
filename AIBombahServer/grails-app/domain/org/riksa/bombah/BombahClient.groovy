@@ -4,13 +4,16 @@ package org.riksa.bombah
  * An AI client
  */
 class BombahClient {
-    String name
+    Date dateCreated
+    Date lastUpdated
+
+    String clientname
 
     static belongsTo = [user: BombahUser]
 
     static hasMany = [tournaments: Tournament, matches: Match]
 
     static constraints = {
-        name(unique: true)
+        clientname(unique: true)
     }
 }
