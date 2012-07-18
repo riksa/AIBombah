@@ -11,6 +11,9 @@ class SecurityFilters {
                 // Ignore direct views (e.g. the default main index page).
                 if (!controllerName) return true
 
+                // Allow access to BombahController for clients to play without auth for now
+                if( controllerName == "bombah" ) return true
+
                 // Access control by convention.
                 accessControl()
             }
