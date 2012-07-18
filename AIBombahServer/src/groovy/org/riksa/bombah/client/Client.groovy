@@ -39,6 +39,8 @@ import org.riksa.bombah.thrift.Tile
 //def PORT = 12345
 def url = "http://localhost:8080/AIBombahServer/bombah/json"
 def log = LoggerFactory.getLogger(getClass())
+def username = "testUser"
+def clientId = 1
 //FileInputStream fis =  new FileInputStream("log4j.properties");
 //LogManager.getLogManager().readConfiguration(fis);
 
@@ -52,7 +54,7 @@ def clientRunnable = new Runnable() {
         try {
             def client = createClient(transport)
             log.debug("#Joining game")
-            def gameInfo = client.joinGame(gameId)
+            def gameInfo = client.joinGame(gameId, username, "testClient_#" + clientId++)
             if (gameInfo) {
                 def ai = new AmazingAi(gameInfo)
                 client.waitForStart(gameId)

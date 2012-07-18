@@ -7,6 +7,10 @@ import java.util.concurrent.atomic.AtomicLong
 
 import org.riksa.bombah.thrift.*
 import groovy.transform.Synchronized
+import org.riksa.bombah.BombahUser
+import org.riksa.bombah.BombahRole
+import org.riksa.bombah.BombahClient
+import org.riksa.bombah.Match
 
 /**
  * Created with IntelliJ IDEA.
@@ -128,7 +132,7 @@ class Game {
         gameState = GameState.CREATED
     }
 
-    synchronized int join() {
+    synchronized int join(String username, String clientname) {
         if (gameState == GameState.FINISHED) {
             throw new GameOverException()
         }
@@ -137,7 +141,20 @@ class Game {
             log.debug("Game is full")
             return -1
         }
-        def playerId = idGenerator.incrementAndGet()
+
+        def user = BombahUser.findByUsername(username)
+        if (!user) {
+            user = new BombahUser(username: username).save(failOnError: true)
+            user.addToRoles(BombahRole.findByName("player"))
+        }
+
+        def client = BombahClient.findByUserAndClientname(user, clientname)
+        if (!client) {
+            client = new BombahClient(clientname: clientname).save(failOnError: true)
+            user.addToClients(client)
+        }
+
+        def playerId = client.id
         def startingPosition = gameInfo.startingPositions.get(players.size())
         log.debug("Added $playerId as $startingPosition")
 
@@ -600,6 +617,7 @@ class Game {
 
     void startGame() {
         log.debug("Starting game #${gameInfo.gameId}")
+        match = new Match().save()
 
         final long sleepTime = 1000l / gameInfo.ticksPerSecond
 
