@@ -185,7 +185,7 @@ service BombahService {
 // GameId not used yet, for future use. Just use -1...
     MapState waitTicks( 1:i32 gameId, 2: i32 ticks ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
     MapState waitForTick( 1:i32 gameId, 2: i32 tick ) throws (1: YouAreDeadException youAreDead, 2: GameOverException gameOver);
-    GameInfo joinGame( 1:i32 gameId) throws (1:GameOverException gameOverException);
+    GameInfo joinGame( 1:i32 gameId, 2: string username, 3: string clientname ) throws (1:GameOverException gameOverException);
 	GameInfo getGameInfo(1:i32 gameId) throws (1:GameOverException gameOverException);
 	void debugResetGame(1:i32 gameId);
 

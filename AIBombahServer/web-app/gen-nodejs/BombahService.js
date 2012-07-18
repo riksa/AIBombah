@@ -849,9 +849,17 @@ BombahService_waitForTick_result.prototype.write = function(output) {
 
 var BombahService_joinGame_args = function(args) {
   this.gameId = null;
+  this.username = null;
+  this.clientname = null;
   if (args) {
     if (args.gameId !== undefined) {
       this.gameId = args.gameId;
+    }
+    if (args.username !== undefined) {
+      this.username = args.username;
+    }
+    if (args.clientname !== undefined) {
+      this.clientname = args.clientname;
     }
   }
 };
@@ -876,9 +884,20 @@ BombahService_joinGame_args.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 0:
+      case 2:
+      if (ftype == Thrift.Type.STRING) {
+        this.username = input.readString();
+      } else {
         input.skip(ftype);
-        break;
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.STRING) {
+        this.clientname = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
       default:
         input.skip(ftype);
     }
@@ -893,6 +912,16 @@ BombahService_joinGame_args.prototype.write = function(output) {
   if (this.gameId) {
     output.writeFieldBegin('gameId', Thrift.Type.I32, 1);
     output.writeI32(this.gameId);
+    output.writeFieldEnd();
+  }
+  if (this.username) {
+    output.writeFieldBegin('username', Thrift.Type.STRING, 2);
+    output.writeString(this.username);
+    output.writeFieldEnd();
+  }
+  if (this.clientname) {
+    output.writeFieldBegin('clientname', Thrift.Type.STRING, 3);
+    output.writeString(this.clientname);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -1643,17 +1672,19 @@ BombahServiceClient.prototype.recv_waitForTick = function(input,mtype,rseqid) {
   }
   return callback('waitForTick failed: unknown result');
 };
-BombahServiceClient.prototype.joinGame = function(gameId, callback) {
+BombahServiceClient.prototype.joinGame = function(gameId, username, clientname, callback) {
   this.seqid += 1;
   this._reqs[this.seqid] = callback;
-  this.send_joinGame(gameId);
+  this.send_joinGame(gameId, username, clientname);
 };
 
-BombahServiceClient.prototype.send_joinGame = function(gameId) {
+BombahServiceClient.prototype.send_joinGame = function(gameId, username, clientname) {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('joinGame', Thrift.MessageType.CALL, this.seqid);
   var args = new BombahService_joinGame_args();
   args.gameId = gameId;
+  args.username = username;
+  args.clientname = clientname;
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
@@ -1926,7 +1957,7 @@ BombahServiceProcessor.prototype.process_joinGame = function(seqid, input, outpu
   args.read(input);
   input.readMessageEnd();
   var result = new BombahService_joinGame_result();
-  this._handler.joinGame(args.gameId, function (success) {
+  this._handler.joinGame(args.gameId, args.username, args.clientname, function (success) {
     result.success = success;
     output.writeMessageBegin("joinGame", Thrift.MessageType.REPLY, seqid);
     result.write(output);

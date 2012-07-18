@@ -17,7 +17,7 @@ class BombahHandler implements BombahService.Iface {
     ControllerState controllerState
 
     synchronized Game getGame() {
-        if( !runningGame ) {
+        if (!runningGame) {
             runningGame = createGame();
         }
         return runningGame
@@ -38,23 +38,23 @@ class BombahHandler implements BombahService.Iface {
     MoveActionResult move(int playerId, MoveAction moveAction) {
         def controllerState = new ControllerState(directionPadDown: true, direction: moveAction.direction, key1Down: false, key2Down: false)
         def done = false
-        def currentState = game.controllerEvent( playerId, controllerState ).myState
+        def currentState = game.controllerEvent(playerId, controllerState).myState
         def step = 1d / Constants.TICKS_PER_TILE
-        if( game.canMove( currentState.x, currentState.y, moveAction.direction, step ) ) {
-            Coordinate targetTile = game.getTileCoordinate( currentState.x, currentState.y, moveAction.direction )
+        if (game.canMove(currentState.x, currentState.y, moveAction.direction, step)) {
+            Coordinate targetTile = game.getTileCoordinate(currentState.x, currentState.y, moveAction.direction)
 
             def oldX = currentState.x
             def oldY = currentState.y
-            while( !done ) {
+            while (!done) {
                 game.waitTick()
                 currentState = game.getPlayer(playerId)
-                if( Math.abs(oldX - currentState.x)  < 0.001d && Math.abs(oldY - currentState.y) < 0.001d ) {
+                if (Math.abs(oldX - currentState.x) < 0.001d && Math.abs(oldY - currentState.y) < 0.001d) {
                     // no longer moving, for whatever reason
 //                    log.debug( "Not moving, $currentState")
                     done = true
 //                    log.debug( "Moving towards $targetTile at $currentState")
                 }
-                if( Math.abs(targetTile.x - currentState.x)  < step && Math.abs(targetTile.y - currentState.y) < step ) {
+                if (Math.abs(targetTile.x - currentState.x) < step && Math.abs(targetTile.y - currentState.y) < step) {
                     done = true
                 }
 
@@ -63,20 +63,20 @@ class BombahHandler implements BombahService.Iface {
             }
         }
         controllerState.directionPadDown = false
-        game.controllerEvent( playerId, controllerState )
+        game.controllerEvent(playerId, controllerState)
 
         return new MoveActionResult(myState: game.getPlayer(playerId), mapState: game.mapState)
     }
 
     @Override
     BombActionResult bomb(int playerId, BombAction bombAction) {
-        return game.bomb( playerId, bombAction);
+        return game.bomb(playerId, bombAction);
     }
 
     @Override
     MapState waitTicks(int gameId, int ticks) {
-        def tick = game.mapState.currentTick+ticks
-        return waitForTick( gameId, tick )
+        def tick = game.mapState.currentTick + ticks
+        return waitForTick(gameId, tick)
     }
 
     @Override
@@ -86,17 +86,17 @@ class BombahHandler implements BombahService.Iface {
     }
 
     @Override
-    synchronized GameInfo joinGame(int gameId) {
-        if( !runningGame ||runningGame.gameState == Game.GameState.FINISHED ) {
+    synchronized GameInfo joinGame(int gameId, String username, String clientname) {
+        if (!runningGame || runningGame.gameState == Game.GameState.FINISHED) {
             runningGame = createGame();
         }
 
-        def playerId = game.join()
-        if (playerId > 0 ) {
+        def playerId = game.join(username, clientname)
+        if (playerId > 0) {
             def info = game.gameInfo.clone()
             info.playerId = playerId
             return info
-        } else{
+        } else {
             throw new GameOverException()
         }
     }

@@ -49,7 +49,7 @@ public class BombahService {
 
     public MapState waitForTick(int gameId, int tick) throws YouAreDeadException, GameOverException, org.apache.thrift.TException;
 
-    public GameInfo joinGame(int gameId) throws GameOverException, org.apache.thrift.TException;
+    public GameInfo joinGame(int gameId, String username, String clientname) throws GameOverException, org.apache.thrift.TException;
 
     public GameInfo getGameInfo(int gameId) throws GameOverException, org.apache.thrift.TException;
 
@@ -75,7 +75,7 @@ public class BombahService {
 
     public void waitForTick(int gameId, int tick, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.waitForTick_call> resultHandler) throws org.apache.thrift.TException;
 
-    public void joinGame(int gameId, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.joinGame_call> resultHandler) throws org.apache.thrift.TException;
+    public void joinGame(int gameId, String username, String clientname, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.joinGame_call> resultHandler) throws org.apache.thrift.TException;
 
     public void getGameInfo(int gameId, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getGameInfo_call> resultHandler) throws org.apache.thrift.TException;
 
@@ -279,16 +279,18 @@ public class BombahService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "waitForTick failed: unknown result");
     }
 
-    public GameInfo joinGame(int gameId) throws GameOverException, org.apache.thrift.TException
+    public GameInfo joinGame(int gameId, String username, String clientname) throws GameOverException, org.apache.thrift.TException
     {
-      send_joinGame(gameId);
+      send_joinGame(gameId, username, clientname);
       return recv_joinGame();
     }
 
-    public void send_joinGame(int gameId) throws org.apache.thrift.TException
+    public void send_joinGame(int gameId, String username, String clientname) throws org.apache.thrift.TException
     {
       joinGame_args args = new joinGame_args();
       args.setGameId(gameId);
+      args.setUsername(username);
+      args.setClientname(clientname);
       sendBase("joinGame", args);
     }
 
@@ -622,24 +624,30 @@ public class BombahService {
       }
     }
 
-    public void joinGame(int gameId, org.apache.thrift.async.AsyncMethodCallback<joinGame_call> resultHandler) throws org.apache.thrift.TException {
+    public void joinGame(int gameId, String username, String clientname, org.apache.thrift.async.AsyncMethodCallback<joinGame_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      joinGame_call method_call = new joinGame_call(gameId, resultHandler, this, ___protocolFactory, ___transport);
+      joinGame_call method_call = new joinGame_call(gameId, username, clientname, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class joinGame_call extends org.apache.thrift.async.TAsyncMethodCall {
       private int gameId;
-      public joinGame_call(int gameId, org.apache.thrift.async.AsyncMethodCallback<joinGame_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String username;
+      private String clientname;
+      public joinGame_call(int gameId, String username, String clientname, org.apache.thrift.async.AsyncMethodCallback<joinGame_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.gameId = gameId;
+        this.username = username;
+        this.clientname = clientname;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("joinGame", org.apache.thrift.protocol.TMessageType.CALL, 0));
         joinGame_args args = new joinGame_args();
         args.setGameId(gameId);
+        args.setUsername(username);
+        args.setClientname(clientname);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -947,7 +955,7 @@ public class BombahService {
       protected joinGame_result getResult(I iface, joinGame_args args) throws org.apache.thrift.TException {
         joinGame_result result = new joinGame_result();
         try {
-          result.success = iface.joinGame(args.gameId);
+          result.success = iface.joinGame(args.gameId, args.username, args.clientname);
         } catch (GameOverException gameOverException) {
           result.gameOverException = gameOverException;
         }
@@ -6684,6 +6692,8 @@ public class BombahService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("joinGame_args");
 
     private static final org.apache.thrift.protocol.TField GAME_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gameId", org.apache.thrift.protocol.TType.I32, (short)1);
+    private static final org.apache.thrift.protocol.TField USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("username", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField CLIENTNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("clientname", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6692,10 +6702,14 @@ public class BombahService {
     }
 
     public int gameId; // required
+    public String username; // required
+    public String clientname; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      GAME_ID((short)1, "gameId");
+      GAME_ID((short)1, "gameId"),
+      USERNAME((short)2, "username"),
+      CLIENTNAME((short)3, "clientname");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6712,6 +6726,10 @@ public class BombahService {
         switch(fieldId) {
           case 1: // GAME_ID
             return GAME_ID;
+          case 2: // USERNAME
+            return USERNAME;
+          case 3: // CLIENTNAME
+            return CLIENTNAME;
           default:
             return null;
         }
@@ -6759,6 +6777,10 @@ public class BombahService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.GAME_ID, new org.apache.thrift.meta_data.FieldMetaData("gameId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.USERNAME, new org.apache.thrift.meta_data.FieldMetaData("username", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.CLIENTNAME, new org.apache.thrift.meta_data.FieldMetaData("clientname", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(joinGame_args.class, metaDataMap);
     }
@@ -6767,11 +6789,15 @@ public class BombahService {
     }
 
     public joinGame_args(
-      int gameId)
+      int gameId,
+      String username,
+      String clientname)
     {
       this();
       this.gameId = gameId;
       setGameIdIsSet(true);
+      this.username = username;
+      this.clientname = clientname;
     }
 
     /**
@@ -6781,6 +6807,12 @@ public class BombahService {
       __isset_bit_vector.clear();
       __isset_bit_vector.or(other.__isset_bit_vector);
       this.gameId = other.gameId;
+      if (other.isSetUsername()) {
+        this.username = other.username;
+      }
+      if (other.isSetClientname()) {
+        this.clientname = other.clientname;
+      }
     }
 
     public joinGame_args deepCopy() {
@@ -6791,6 +6823,8 @@ public class BombahService {
     public void clear() {
       setGameIdIsSet(false);
       this.gameId = 0;
+      this.username = null;
+      this.clientname = null;
     }
 
     public int getGameId() {
@@ -6816,6 +6850,54 @@ public class BombahService {
       __isset_bit_vector.set(__GAMEID_ISSET_ID, value);
     }
 
+    public String getUsername() {
+      return this.username;
+    }
+
+    public joinGame_args setUsername(String username) {
+      this.username = username;
+      return this;
+    }
+
+    public void unsetUsername() {
+      this.username = null;
+    }
+
+    /** Returns true if field username is set (has been assigned a value) and false otherwise */
+    public boolean isSetUsername() {
+      return this.username != null;
+    }
+
+    public void setUsernameIsSet(boolean value) {
+      if (!value) {
+        this.username = null;
+      }
+    }
+
+    public String getClientname() {
+      return this.clientname;
+    }
+
+    public joinGame_args setClientname(String clientname) {
+      this.clientname = clientname;
+      return this;
+    }
+
+    public void unsetClientname() {
+      this.clientname = null;
+    }
+
+    /** Returns true if field clientname is set (has been assigned a value) and false otherwise */
+    public boolean isSetClientname() {
+      return this.clientname != null;
+    }
+
+    public void setClientnameIsSet(boolean value) {
+      if (!value) {
+        this.clientname = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case GAME_ID:
@@ -6826,6 +6908,22 @@ public class BombahService {
         }
         break;
 
+      case USERNAME:
+        if (value == null) {
+          unsetUsername();
+        } else {
+          setUsername((String)value);
+        }
+        break;
+
+      case CLIENTNAME:
+        if (value == null) {
+          unsetClientname();
+        } else {
+          setClientname((String)value);
+        }
+        break;
+
       }
     }
 
@@ -6833,6 +6931,12 @@ public class BombahService {
       switch (field) {
       case GAME_ID:
         return Integer.valueOf(getGameId());
+
+      case USERNAME:
+        return getUsername();
+
+      case CLIENTNAME:
+        return getClientname();
 
       }
       throw new IllegalStateException();
@@ -6847,6 +6951,10 @@ public class BombahService {
       switch (field) {
       case GAME_ID:
         return isSetGameId();
+      case USERNAME:
+        return isSetUsername();
+      case CLIENTNAME:
+        return isSetClientname();
       }
       throw new IllegalStateException();
     }
@@ -6870,6 +6978,24 @@ public class BombahService {
         if (!(this_present_gameId && that_present_gameId))
           return false;
         if (this.gameId != that.gameId)
+          return false;
+      }
+
+      boolean this_present_username = true && this.isSetUsername();
+      boolean that_present_username = true && that.isSetUsername();
+      if (this_present_username || that_present_username) {
+        if (!(this_present_username && that_present_username))
+          return false;
+        if (!this.username.equals(that.username))
+          return false;
+      }
+
+      boolean this_present_clientname = true && this.isSetClientname();
+      boolean that_present_clientname = true && that.isSetClientname();
+      if (this_present_clientname || that_present_clientname) {
+        if (!(this_present_clientname && that_present_clientname))
+          return false;
+        if (!this.clientname.equals(that.clientname))
           return false;
       }
 
@@ -6899,6 +7025,26 @@ public class BombahService {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetUsername()).compareTo(typedOther.isSetUsername());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUsername()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.username, typedOther.username);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetClientname()).compareTo(typedOther.isSetClientname());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetClientname()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.clientname, typedOther.clientname);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -6921,6 +7067,22 @@ public class BombahService {
 
       sb.append("gameId:");
       sb.append(this.gameId);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("username:");
+      if (this.username == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.username);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("clientname:");
+      if (this.clientname == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.clientname);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -6974,6 +7136,22 @@ public class BombahService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // USERNAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.username = iprot.readString();
+                struct.setUsernameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // CLIENTNAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.clientname = iprot.readString();
+                struct.setClientnameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -6992,6 +7170,16 @@ public class BombahService {
         oprot.writeFieldBegin(GAME_ID_FIELD_DESC);
         oprot.writeI32(struct.gameId);
         oprot.writeFieldEnd();
+        if (struct.username != null) {
+          oprot.writeFieldBegin(USERNAME_FIELD_DESC);
+          oprot.writeString(struct.username);
+          oprot.writeFieldEnd();
+        }
+        if (struct.clientname != null) {
+          oprot.writeFieldBegin(CLIENTNAME_FIELD_DESC);
+          oprot.writeString(struct.clientname);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -7013,19 +7201,39 @@ public class BombahService {
         if (struct.isSetGameId()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetUsername()) {
+          optionals.set(1);
+        }
+        if (struct.isSetClientname()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetGameId()) {
           oprot.writeI32(struct.gameId);
+        }
+        if (struct.isSetUsername()) {
+          oprot.writeString(struct.username);
+        }
+        if (struct.isSetClientname()) {
+          oprot.writeString(struct.clientname);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, joinGame_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.gameId = iprot.readI32();
           struct.setGameIdIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.username = iprot.readString();
+          struct.setUsernameIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.clientname = iprot.readString();
+          struct.setClientnameIsSet(true);
         }
       }
     }
