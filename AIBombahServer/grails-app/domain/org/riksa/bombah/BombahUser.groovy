@@ -8,6 +8,9 @@ import java.security.SecureRandom
  * Bombah User, i.e. a person that made an AI client
  */
 class BombahUser {
+    Date dateCreated
+    Date lastUpdated
+
     static int SALT_SIZE_BYTES = 32
     final static SecureRandom secureRandom = new SecureRandom()
     def credentialMatcher
