@@ -26,6 +26,7 @@ import org.riksa.bombah.thrift.BombState
 import org.riksa.bombah.thrift.GameInfo
 import org.riksa.bombah.thrift.FlameState
 import org.riksa.bombah.thrift.Tile
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,7 +41,7 @@ import org.riksa.bombah.thrift.Tile
 def url = "http://localhost:8080/AIBombahServer/bombah/json"
 def log = LoggerFactory.getLogger(getClass())
 def username = "testUser"
-def clientId = 1
+def clientIdGenerator = new AtomicInteger(1)
 //FileInputStream fis =  new FileInputStream("log4j.properties");
 //LogManager.getLogManager().readConfiguration(fis);
 
@@ -54,7 +55,7 @@ def clientRunnable = new Runnable() {
         try {
             def client = createClient(transport)
             log.debug("#Joining game")
-            def gameInfo = client.joinGame(gameId, username, "testClient_#" + clientId++)
+            def gameInfo = client.joinGame(gameId, username, "testClient_#" + clientIdGenerator.incrementAndGet())
             if (gameInfo) {
                 def ai = new AmazingAi(gameInfo)
                 client.waitForStart(gameId)
