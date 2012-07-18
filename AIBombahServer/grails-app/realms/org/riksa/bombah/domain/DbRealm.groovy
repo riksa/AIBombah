@@ -6,6 +6,7 @@ import org.apache.shiro.authc.UnknownAccountException
 import org.apache.shiro.authc.SimpleAccount
 
 import org.riksa.bombah.BombahUser
+import org.apache.shiro.util.SimpleByteSource
 
 class DbRealm {
     static authTokenClass = org.apache.shiro.authc.UsernamePasswordToken
@@ -34,7 +35,7 @@ class DbRealm {
 
         // Now check the user's password against the hashed value stored
         // in the database.
-        def account = new SimpleAccount(username, user.passwordHash, "DbRealm")
+        def account = new SimpleAccount(username, user.passwordHash, new SimpleByteSource(user.salt.bytes), "DbRealm")
         if (!credentialMatcher.doCredentialsMatch(authToken, account)) {
             log.info "Invalid password (DB realm)"
             throw new IncorrectCredentialsException("Invalid password for user '${username}'")
