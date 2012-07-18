@@ -16,9 +16,6 @@ class BombahController {
 
     def json() {
         withFormat {
-            html {
-                redirect( uri: "/" )
-            }
             json {
                 try {
                     def input = request.inputStream.bytes;
@@ -41,6 +38,9 @@ class BombahController {
                 } catch (e) {
                     log.error(e.getMessage(), e)
                 }
+            }
+            html {
+                redirect( uri: "/" )
             }
         }
     }
