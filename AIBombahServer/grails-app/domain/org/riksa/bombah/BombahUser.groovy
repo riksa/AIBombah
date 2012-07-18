@@ -39,4 +39,10 @@ class BombahUser {
         salt(nullable: true)
         passwordHash(nullable: true)
     }
+
+    @Override
+    String toString() {
+        return username
+    }
+
 }

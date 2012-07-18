@@ -36,6 +36,7 @@ class Game {
     def buffs
     Random random = new Random()
     final double INFECTION_RADIUS_SQUARED = Math.pow(0.5d, 2)
+    Match match
 
     enum DestroyEnum {
         CONTINUE,
@@ -150,7 +151,7 @@ class Game {
 
         def client = BombahClient.findByUserAndClientname(user, clientname)
         if (!client) {
-            client = new BombahClient(clientname: clientname).save(failOnError: true)
+            client = new BombahClient(user: user, clientname: clientname).save(failOnError: true)
             user.addToClients(client)
         }
 
@@ -175,8 +176,8 @@ class Game {
     }
 
     GameInfo loadMap(def width, def height, String asciiArt) {
-        def rate = Constants.TICKS_PER_SECOND
-        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 30 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
+        def rate = Constants.TICKS_PER_SECOND * 3
+        GameInfo gameInfo = new GameInfo(mapWidth: width, mapHeight: height, ticksTotal: 3 * 60 * Constants.TICKS_PER_SECOND, ticksPerSecond: rate)
 
         if (asciiArt.length() != width * height) {
             log.error("Map is not $width X $height")
@@ -339,19 +340,15 @@ class Game {
             switch (buff) {
                 case Tile.BUFF_BOMB:
                     it.bombAmount++
-                    log.debug("Got bomb")
                     break;
                 case Tile.BUFF_CHAIN:
                     it.chain = true
-                    log.debug("Got chain")
                     break;
                 case Tile.BUFF_FLAME:
                     it.bombSize++
-                    log.debug("Got flame")
                     break;
                 case Tile.BUFF_FOOT:
                     it.foot = true
-                    log.debug("Got foot")
                     break
                 case Tile.DEBUFF:
                     infect(it, randomDisease(), Constants.TICKS_DISEASE)
@@ -617,7 +614,16 @@ class Game {
 
     void startGame() {
         log.debug("Starting game #${gameInfo.gameId}")
-        match = new Match().save()
+        Match.withNewTransaction {
+            match = new Match()
+            players.each {
+                PlayerState playerState ->
+                def client = BombahClient.findById(playerState.playerId)
+                match.addToClients(client)
+                client.addToMatches(match)
+            }
+            match.save(failOnError: true)
+        }
 
         final long sleepTime = 1000l / gameInfo.ticksPerSecond
 
@@ -670,14 +676,29 @@ class Game {
     }
 
     void stopGame() {
-        log.debug("Game over");
-
         if (timer) {
             timer.cancel()
         }
         timer = null
 
         gameState = GameState.FINISHED
+
+        Match.withNewTransaction {
+
+            List alive = players.findAll {
+                PlayerState playerState ->
+                playerState.alive
+            }
+
+            if (alive.size() == 1) {
+                def playerState = alive.get(0)
+                match.setWinner(BombahClient.findById(playerState.playerId))
+            }
+
+            match.save(flush: true)
+        }
+
+        log.debug("Game over");
     }
 
 //    void waitTicks(int ticks) {

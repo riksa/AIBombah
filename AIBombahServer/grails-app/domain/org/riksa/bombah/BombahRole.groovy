@@ -9,4 +9,10 @@ class BombahRole {
     static constraints = {
         name(nullable: false, blank: false, unique: true)
     }
+
+    @Override
+    String toString() {
+        return name
+    }
+
 }

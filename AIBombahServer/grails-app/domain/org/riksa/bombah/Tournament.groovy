@@ -8,4 +8,10 @@ class Tournament {
 
     static constraints = {
     }
+
+    @Override
+    String toString() {
+        return "Tournament $dateCreated"
+    }
+
 }
