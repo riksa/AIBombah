@@ -33,6 +33,13 @@
       <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/resources-1.1.6/grails-app/i18n" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/resources-1.1.6/grails-app/taglib" isTestSource="false" />
     </content>
+    <content url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/shiro-1.1.4">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/shiro-1.1.4/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/shiro-1.1.4/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/shiro-1.1.4/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/shiro-1.1.4/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/shiro-1.1.4/grails-app/taglib" isTestSource="false" />
+    </content>
     <content url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/tomcat-2.0.4" />
     <content url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/webxml-1.4.1">
       <sourceFolder url="file://$USER_HOME$/.grails/2.0.4/projects/AIBombahServer/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
@@ -47,6 +54,14 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.2.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-codec/commons-codec/jars/commons-codec-1.6.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.shiro/shiro-core/bundles/shiro-core-1.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.shiro/shiro-spring/bundles/shiro-spring-1.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.opensymphony.quartz/quartz/jars/quartz-1.6.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.shiro/shiro-quartz/bundles/shiro-quartz-1.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jasig.cas.client/cas-client-core/jars/cas-client-core-3.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.shiro/shiro-web/bundles/shiro-web-1.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.shiro/shiro-cas/bundles/shiro-cas-1.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.shiro/shiro-ehcache/bundles/shiro-ehcache-1.2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
