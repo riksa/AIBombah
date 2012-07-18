@@ -20,6 +20,10 @@ class BootStrap {
         user.password = "admin"
         user.addToRoles(adminRole)
         user.save(failOnError: true)
+
+        def playerRole = new BombahRole(name: "player").save(failOnError: true)
+        playerRole.addToPermissions("match:list")
+        playerRole.addToPermissions("tournament:list")
     }
 
 
